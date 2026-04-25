@@ -671,7 +671,11 @@ const ProjectDetailModule = {
                 <button class="btn btn-secondary" id="pd-visit-btn">Log Visit</button>
             `;
         } else if (p.status === 'sold') {
-            stageActions = `<p class="text-muted">Client is sold — see the Clients tab for ongoing work.</p>`;
+            const isAdmin = LaunchLocal.currentUser?.role === 'admin';
+            stageActions = `
+                <p class="text-muted">Client is sold — see the Clients tab for ongoing work.</p>
+                ${isAdmin ? `<button class="btn btn-ghost btn-sm" id="pd-rollback-btn" style="color: var(--danger);">Roll back to Prospect</button>` : ''}
+            `;
         } else {
             stageActions = `
                 <p class="text-muted text-sm">Sales actions unlock once the site has been QA-approved.</p>
@@ -780,6 +784,7 @@ const ProjectDetailModule = {
         document.getElementById('pd-pitched-btn')?.addEventListener('click', () => this.advanceStatus('pitched'));
         document.getElementById('pd-sold-btn')?.addEventListener('click', () => this.advanceStatus('sold'));
         document.getElementById('pd-visit-btn')?.addEventListener('click', () => this.openVisitLog());
+        document.getElementById('pd-rollback-btn')?.addEventListener('click', () => this.rollbackToProspect());
     },
 
     openVisitLog() {
@@ -792,6 +797,75 @@ const ProjectDetailModule = {
                 this.renderActiveTab();
             }, 300);
         });
+    },
+
+    /**
+     * Roll a sold client back to a site-ready prospect. Deletes the project
+     * doc + any invoices linked to the prospect; resets prospect.status to
+     * 'site-ready'. Site files in Storage are kept untouched.
+     *
+     * Admin-only — the gate is also enforced by the button visibility, but
+     * Firestore rules ultimately back-stop this.
+     */
+    async rollbackToProspect() {
+        const p = this.prospect;
+        const proj = this.project;
+        if (p.status !== 'sold') {
+            LaunchLocal.toast('Only sold clients can be rolled back.', 'warning');
+            return;
+        }
+
+        // Quick count of invoices we'd delete, for a clearer confirm prompt
+        let invoiceCount = 0;
+        try {
+            const invs = await DB.getDocs('invoices', { where: [['prospectId', '==', p.id]] });
+            invoiceCount = invs.length;
+        } catch { /* fall through — confirm without count */ }
+
+        const ok = window.confirm(
+            `Roll ${p.businessName} back from a client to a prospect?\n\n`
+            + `This will:\n`
+            + `  • delete the project record (revisions, comms log, sale info)\n`
+            + (invoiceCount > 0 ? `  • delete ${invoiceCount} invoice${invoiceCount === 1 ? '' : 's'} linked to this prospect\n` : '')
+            + `  • set the prospect back to "site-ready"\n\n`
+            + `Site files in Storage and the QA-approved site doc are kept.\n`
+            + `This cannot be undone.`
+        );
+        if (!ok) return;
+
+        try {
+            if (proj) {
+                await DB.deleteDoc('projects', proj.id);
+            }
+
+            const invs = await DB.getDocs('invoices', { where: [['prospectId', '==', p.id]] });
+            for (const inv of invs) {
+                await DB.deleteDoc('invoices', inv.id);
+            }
+
+            await DB.updateDoc('prospects', p.id, { status: 'site-ready' });
+
+            await DB.logActivity(
+                'project_rolled_back',
+                'projects',
+                `Reset ${p.businessName} from client back to prospect (site-ready)`,
+                { prospectId: p.id, projectId: proj ? proj.id : null, invoicesDeleted: invs.length },
+                proj ? proj.id : p.id
+            );
+
+            LaunchLocal.toast(
+                invs.length > 0
+                    ? `${p.businessName} rolled back. Deleted project + ${invs.length} invoice${invs.length === 1 ? '' : 's'}.`
+                    : `${p.businessName} rolled back to prospect.`,
+                'success'
+            );
+
+            // Send the operator to the prospect's pre-sale view
+            setTimeout(() => { window.location.hash = '#prospects'; }, 1200);
+        } catch (err) {
+            console.error('rollbackToProspect failed:', err);
+            LaunchLocal.toast('Failed to roll back. Check console for details.', 'error');
+        }
     },
 
     async advanceStatus(newStatus) {
