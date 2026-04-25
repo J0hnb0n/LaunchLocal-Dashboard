@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaunchLocal — Dashboard</title>
+
+    <!-- Pre-paint theme resolve (avoids flash) -->
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem('launchlocal:theme');
+                if (t === 'light' || t === 'dark') {
+                    document.documentElement.setAttribute('data-theme', t);
+                }
+            } catch (_) {}
+        })();
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/motion.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/modules.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+
+    <!-- Full-page loading screen (shown while auth state resolves) -->
+    <div id="app-loading" class="loading-screen" style="min-height: 100vh;">
+        <div class="spinner spinner-lg"></div>
+        <p>Loading LaunchLocal...</p>
+    </div>
+
+    <!-- Main App Shell (hidden until auth confirmed) -->
+    <div id="app-shell" class="app-layout" style="display: none;">
+
+        <!-- Sidebar Overlay (mobile) -->
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <div class="sidebar-brand-icon">L</div>
+                <h2>Launch<span>Local</span></h2>
+            </div>
+
+            <nav class="sidebar-nav" id="sidebar-nav">
+                <a class="nav-item active" href="#dashboard" data-module="dashboard">
+                    <span class="nav-item-icon" data-icon="dashboard"></span>
+                    Dashboard
+                </a>
+                <a class="nav-item" href="#scouting" data-module="scouting" data-roles="admin,sales">
+                    <span class="nav-item-icon" data-icon="map"></span>
+                    Scouting
+                </a>
+                <a class="nav-item" href="#prospects" data-module="prospects" data-roles="admin,sales">
+                    <span class="nav-item-icon" data-icon="search"></span>
+                    Prospects
+                </a>
+                <a class="nav-item" href="#projects" data-module="projects" data-roles="admin,developer,sales">
+                    <span class="nav-item-icon" data-icon="folder"></span>
+                    Projects
+                </a>
+                <a class="nav-item" href="#billing" data-module="billing" data-roles="admin">
+                    <span class="nav-item-icon" data-icon="wallet"></span>
+                    Billing
+                </a>
+                <a class="nav-item" href="#expenses" data-module="expenses" data-roles="admin">
+                    <span class="nav-item-icon" data-icon="receipt"></span>
+                    Expenses
+                </a>
+                <a class="nav-item" href="#metrics" data-module="metrics" data-roles="admin,developer,sales">
+                    <span class="nav-item-icon" data-icon="trendUp"></span>
+                    Metrics
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-user" id="sidebar-user-menu-trigger">
+                    <div class="sidebar-avatar" id="user-avatar">?</div>
+                    <div class="sidebar-user-info">
+                        <div class="sidebar-user-name" id="user-name">Loading...</div>
+                        <div class="sidebar-user-role" id="user-role-label">—</div>
+                    </div>
+                </div>
+                <button class="btn-logout" id="logout-btn">
+                    <span data-icon="logout"></span>
+                    Sign Out
+                </button>
+            </div>
+        </aside>
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <button class="mobile-menu-toggle icon-btn" id="mobile-menu-btn" aria-label="Toggle menu">
+                    <span data-icon="menu"></span>
+                </button>
+                <div class="header-breadcrumb" id="header-breadcrumb">
+                    <span>LaunchLocal</span>
+                    <span class="sep">/</span>
+                </div>
+                <h1 class="header-title" id="header-title">Dashboard</h1>
+            </div>
+            <div class="header-right">
+                <button class="icon-btn theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <span class="sun-icon" data-icon="sun"></span>
+                    <span class="moon-icon" data-icon="moon"></span>
+                </button>
+                <span class="badge" id="header-role-badge"></span>
+                <div class="dropdown" id="header-user-dropdown">
+                    <button class="icon-btn" id="user-menu-btn" aria-label="Account menu">
+                        <span data-icon="moreVertical"></span>
+                    </button>
+                    <div class="dropdown-menu" id="user-menu">
+                        <div class="dropdown-header">Account</div>
+                        <button class="dropdown-item" id="menu-settings">
+                            <span data-icon="settings"></span>
+                            Settings
+                        </button>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item danger" id="menu-logout">
+                            <span data-icon="logout"></span>
+                            Sign out
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div class="content-wrapper" id="module-content">
+                <!-- Module views render here via router -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Leaflet Map -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Chart.js (metrics + dashboard revenue chart) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <!-- Firebase SDK (v9 compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+    <!-- Utilities (early — must be defined before modules) -->
+    <script src="js/utils/theme.js"></script>
+    <script src="js/utils/icons.js"></script>
+
+    <!-- App Scripts -->
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/db.js"></script>
+    <script src="js/router.js"></script>
+
+    <!-- Utilities -->
+    <script src="js/utils/api.js"></script>
+    <script src="js/utils/scoring.js"></script>
+    <script src="js/utils/sampleFlag.js"></script>
+    <script src="js/utils/sampledata.js"></script>
+    <script src="js/utils/slug.js"></script>
+    <script src="js/utils/grants.js"></script>
+    <script src="js/utils/prompt-generator.js"></script>
+    <script src="js/utils/charts.js"></script>
+
+    <!-- Modules -->
+    <script src="js/modules/dashboard.js"></script>
+    <script src="js/modules/scouting.js"></script>
+    <script src="js/modules/prospects.js"></script>
+    <script src="js/modules/sites.js"></script>
+    <script src="js/modules/sales.js"></script>
+    <script src="js/modules/projects.js"></script>
+    <script src="js/modules/project-detail.js"></script>
+    <script src="js/modules/billing.js"></script>
+    <script src="js/modules/expenses.js"></script>
+    <script src="js/modules/metrics.js"></script>
+    <script src="js/modules/timeline.js"></script>
+    <script src="js/modules/settings.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            LaunchLocal.init();
+            Icons.inject();
+
+            const appLoading = document.getElementById('app-loading');
+            const appShell = document.getElementById('app-shell');
+
+            firebase.auth().onAuthStateChanged(async (user) => {
+                if (!user) {
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                try {
+                    // Get user's role from Firestore
+                    let userDoc = await DB.getDoc('users', user.uid);
+
+                    if (!userDoc) {
+                        // First login — auto-create admin profile
+                        // (LaunchLocal is an internal tool; all authenticated users are staff)
+                        const autoName = user.displayName || user.email.split('@')[0];
+                        await LaunchLocal.db.collection('users').doc(user.uid).set({
+                            name: autoName,
+                            email: user.email,
+                            role: 'admin',
+                            phone: null,
+                            territory: null,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            createdBy: user.uid,
+                            updatedBy: user.uid
+                        });
+                        userDoc = { name: autoName, email: user.email, role: 'admin' };
+                    }
+
+                    const role = userDoc.role || 'admin';
+                    const displayName = userDoc.name || user.email.split('@')[0];
+
+                    // Store in app state
+                    LaunchLocal.currentUser = {
+                        uid: user.uid,
+                        email: user.email,
+                        name: displayName,
+                        role: role
+                    };
+
+                    // Update UI with user info
+                    document.getElementById('user-name').textContent = displayName;
+                    document.getElementById('user-role-label').textContent = role;
+                    document.getElementById('user-avatar').textContent = displayName.charAt(0).toUpperCase();
+
+                    // Set role badge
+                    const roleBadge = document.getElementById('header-role-badge');
+                    roleBadge.textContent = role.charAt(0).toUpperCase() + role.slice(1);
+                    roleBadge.className = `badge badge-${role}`;
+
+                    // Filter nav items based on role
+                    LaunchLocal.applyRoleNav(role);
+
+                    // Hide loading, show app
+                    appLoading.style.display = 'none';
+                    appShell.style.display = 'grid';
+
+                    // Re-inject icons for anything just mounted
+                    Icons.inject();
+
+                    // Initialize router
+                    Router.init();
+
+                    // Update last login
+                    DB.updateDoc('users', user.uid, {
+                        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                    }).catch(() => {}); // non-blocking
+
+                    // Mint / refresh the server-side session cookie. Needed
+                    // for /preview/{slug}/... iframes which can't carry a
+                    // bearer token. Best-effort — failures here only break
+                    // previews, not the rest of the dashboard.
+                    Auth.ensureServerSession().catch((err) => {
+                        console.warn('Server session mint failed:', err);
+                    });
+
+                } catch (error) {
+                    console.error('Failed to load user profile:', error);
+                    appLoading.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">${Icons.get('alert', 22)}</div>
+                            <h3 class="empty-state-title">Failed to Load</h3>
+                            <p class="empty-state-desc">Could not load your profile. Please refresh or contact your admin.</p>
+                            <button class="btn btn-primary" onclick="location.reload()">Retry</button>
+                        </div>
+                    `;
+                }
+            });
+
+            // Theme toggle
+            Theme.bindToggle(document.getElementById('theme-toggle'));
+
+            // Mobile menu toggle
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            mobileBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('open');
+            });
+
+            overlay.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('open');
+            });
+
+            // Header user menu dropdown
+            const userMenuBtn = document.getElementById('user-menu-btn');
+            const userMenu = document.getElementById('user-menu');
+            userMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userMenu.classList.toggle('open');
+            });
+            document.addEventListener('click', (e) => {
+                if (!userMenu.contains(e.target) && e.target !== userMenuBtn) {
+                    userMenu.classList.remove('open');
+                }
+            });
+
+            // Settings route
+            document.getElementById('menu-settings').addEventListener('click', () => {
+                userMenu.classList.remove('open');
+                window.location.hash = '#settings';
+            });
+            document.getElementById('menu-logout').addEventListener('click', () => {
+                userMenu.classList.remove('open');
+                document.getElementById('logout-btn').click();
+            });
+
+            // Logout
+            document.getElementById('logout-btn').addEventListener('click', async () => {
+                try {
+                    await Auth.logout();
+                    window.location.href = 'index.html';
+                } catch (error) {
+                    LaunchLocal.toast('Failed to sign out. Try again.', 'error');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

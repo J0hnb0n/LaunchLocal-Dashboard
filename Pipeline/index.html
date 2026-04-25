@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaunchLocal — Sign In</title>
+
+    <!-- Pre-paint theme -->
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem('launchlocal:theme');
+                if (t === 'light' || t === 'dark') {
+                    document.documentElement.setAttribute('data-theme', t);
+                }
+            } catch (_) {}
+        })();
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/motion.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        .login-divider {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            margin: var(--space-6) 0;
+            color: var(--text-muted);
+            font-size: 11px;
+            font-family: var(--font-mono);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        .login-divider::before,
+        .login-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+        .login-footer {
+            text-align: center;
+            margin-top: var(--space-6);
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+        }
+        .password-toggle {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-mono);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+        .password-toggle:hover {
+            color: var(--accent);
+            background: var(--accent-dim);
+        }
+        .password-wrapper {
+            position: relative;
+        }
+        .login-page-theme {
+            position: absolute;
+            top: var(--space-5);
+            right: var(--space-5);
+            z-index: 2;
+        }
+    </style>
+</head>
+<body class="login-page">
+
+    <button class="icon-btn theme-toggle login-page-theme" id="theme-toggle" aria-label="Toggle theme">
+        <span class="sun-icon" data-icon="sun"></span>
+        <span class="moon-icon" data-icon="moon"></span>
+    </button>
+
+    <!-- Login Card -->
+    <div class="login-card">
+        <div class="login-logo">
+            <div class="login-logo-mark">L</div>
+            <h1>Launch<span>Local</span></h1>
+            <p>Local Business Growth Pipeline</p>
+        </div>
+
+        <!-- Login Error Banner -->
+        <div id="login-error" class="alert alert-error" style="display: none;">
+            <span data-icon="alert"></span>
+            <span id="login-error-text">Invalid email or password.</span>
+        </div>
+
+        <!-- Login Form -->
+        <form id="login-form" novalidate>
+            <div class="form-group">
+                <label class="form-label" for="email">Email</label>
+                <input
+                    type="email"
+                    id="email"
+                    class="form-input"
+                    placeholder="you@launchlocal.ca"
+                    autocomplete="email"
+                    required
+                >
+                <p class="form-error" id="email-error">Please enter a valid email address.</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <div class="password-wrapper">
+                    <input
+                        type="password"
+                        id="password"
+                        class="form-input"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required
+                    >
+                    <button type="button" class="password-toggle" id="password-toggle" aria-label="Toggle password visibility">
+                        Show
+                    </button>
+                </div>
+                <p class="form-error" id="password-error">Password is required.</p>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block btn-lg" id="login-btn">
+                <span class="btn-text">Sign In</span>
+            </button>
+        </form>
+
+        <div class="login-footer">
+            <p>Contact your admin if you need access.</p>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Firebase SDK (v9 compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+    <!-- Utilities -->
+    <script src="js/utils/theme.js"></script>
+    <script src="js/utils/icons.js"></script>
+
+    <!-- App Scripts -->
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            LaunchLocal.init();
+            Icons.inject();
+
+            // Theme toggle
+            Theme.bindToggle(document.getElementById('theme-toggle'));
+
+            // If user is already logged in, redirect to dashboard
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) {
+                    window.location.href = 'dashboard.html';
+                }
+            });
+
+            // Password visibility toggle
+            const toggle = document.getElementById('password-toggle');
+            const passwordInput = document.getElementById('password');
+            toggle.addEventListener('click', () => {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                toggle.textContent = isPassword ? 'Hide' : 'Show';
+            });
+
+            // Login form submission
+            const form = document.getElementById('login-form');
+            const loginBtn = document.getElementById('login-btn');
+            const errorBanner = document.getElementById('login-error');
+            const errorText = document.getElementById('login-error-text');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                errorBanner.style.display = 'none';
+
+                document.querySelectorAll('.form-error').forEach(el => el.classList.remove('visible'));
+                document.querySelectorAll('.form-input').forEach(el => el.classList.remove('error'));
+
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+
+                let hasError = false;
+
+                if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    document.getElementById('email').classList.add('error');
+                    document.getElementById('email-error').classList.add('visible');
+                    hasError = true;
+                }
+
+                if (!password) {
+                    document.getElementById('password').classList.add('error');
+                    document.getElementById('password-error').classList.add('visible');
+                    hasError = true;
+                }
+
+                if (hasError) return;
+
+                loginBtn.classList.add('btn-loading');
+                loginBtn.disabled = true;
+
+                try {
+                    await Auth.login(email, password);
+                } catch (error) {
+                    loginBtn.classList.remove('btn-loading');
+                    loginBtn.disabled = false;
+
+                    let message = 'An error occurred. Please try again.';
+                    switch (error.code) {
+                        case 'auth/user-not-found':
+                        case 'auth/wrong-password':
+                        case 'auth/invalid-credential':
+                            message = 'Invalid email or password.';
+                            break;
+                        case 'auth/too-many-requests':
+                            message = 'Too many failed attempts. Please try again later.';
+                            break;
+                        case 'auth/user-disabled':
+                            message = 'This account has been disabled. Contact your admin.';
+                            break;
+                        case 'auth/network-request-failed':
+                            message = 'Network error. Check your connection and try again.';
+                            break;
+                    }
+
+                    errorText.textContent = message;
+                    errorBanner.style.display = 'flex';
+                }
+            });
+
+            // Clear errors on input
+            document.querySelectorAll('.form-input').forEach(input => {
+                input.addEventListener('input', () => {
+                    input.classList.remove('error');
+                    const errorEl = input.closest('.form-group')?.querySelector('.form-error');
+                    if (errorEl) errorEl.classList.remove('visible');
+                    errorBanner.style.display = 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

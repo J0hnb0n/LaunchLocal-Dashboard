@@ -1,0 +1,67 @@
+/* ============================================
+   LaunchLocal — Motion primitives
+   ============================================ */
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes modalSlideIn {
+    from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes toastSlideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to   { transform: translateX(0);    opacity: 1; }
+}
+
+@keyframes toastSlideOut {
+    from { transform: translateX(0);    opacity: 1; }
+    to   { transform: translateX(100%); opacity: 0; }
+}
+
+@keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
+    50%      { box-shadow: 0 0 0 6px transparent; }
+}
+
+/* Page-swap fade: Router applies .module-enter after injecting content.
+   Opacity-only — a transform (even translate(0)) would make #module-content
+   a containing block for position:fixed modals, anchoring them inside the
+   scrolled list instead of the viewport. */
+@keyframes moduleEnter {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+.module-enter {
+    animation: moduleEnter 220ms var(--easing) both;
+}
+
+/* Attention pulse on status-change targets */
+.flash-accent {
+    animation: pulseGlow 1400ms var(--easing) 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

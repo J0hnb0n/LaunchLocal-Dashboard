@@ -1,0 +1,16 @@
+{
+  "name": "launchlocal-tools",
+  "version": "1.0.0",
+  "private": true,
+  "description": "LaunchLocal operator tools — runs locally on each operator's PC. Currently houses the site-upload pipeline that fires from a Claude Code Stop hook.",
+  "main": "site-upload.js",
+  "scripts": {
+    "upload": "node site-upload.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.7.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

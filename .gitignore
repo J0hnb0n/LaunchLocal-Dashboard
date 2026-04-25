@@ -1,0 +1,37 @@
+.firebase/
+.DS_Store
+Thumbs.db
+node_modules/
+setup.bat
+
+# Client sites live here but each is its own git repo + deploy pipeline.
+# Do not track them inside the Launch Local repo.
+Client-Sites/
+
+# Per-operator local state from the upload pipeline (service-account JSON,
+# upload log, last-run marker). See tools/README.md for context.
+.launchlocal/
+
+# Netlify build/dev artifacts
+.netlify/
+
+# Local env files used by Netlify Functions during dev. Production secrets
+# live in Netlify dashboard env vars, never on disk.
+.env
+.env.local
+.env.*.local
+
+# Operator scratch files that may contain copied secrets.
+keys.txt
+secrets.txt
+*.key
+service-account*.json
+
+# Per-user Claude Code settings (project-wide settings.json IS tracked, so the
+# Stop-hook config travels with the repo).
+.claude/settings.local.json
+.claude/cache/
+.claude/file-history/
+
+# Private business documents — not part of the codebase
+LaunchLocal_Business_Plan.docx

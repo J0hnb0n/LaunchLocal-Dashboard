@@ -1,0 +1,169 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =============================================
+    // Helper Functions
+    // =============================================
+
+    // Check if the user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Get the user's role from their Firestore profile
+    // Returns null if the user document doesn't exist (first login / bootstrap)
+    function getUserRole() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+        : null;
+    }
+
+    // Check if the user has a specific role
+    function hasRole(role) {
+      return isAuthenticated() && getUserRole() == role;
+    }
+
+    // Check if user is an admin
+    function isAdmin() {
+      return hasRole('admin');
+    }
+
+    // Check if user is the document owner
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Check if the prospect is assigned to the current user
+    function isAssignedTo() {
+      return resource.data.assignedTo == request.auth.uid;
+    }
+
+
+    // =============================================
+    // Users Collection
+    // =============================================
+    match /users/{userId} {
+      // Users can read their own profile; admins can read all
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+
+      // Users can create their own profile (bootstrap: first login auto-creates the doc)
+      // Admins can create profiles for other users
+      allow create: if isAuthenticated() && (isOwner(userId) || isAdmin());
+
+      // Admins can update any user profile
+      allow update: if isAdmin();
+
+      // Users can update their own lastLogin field only
+      allow update: if isOwner(userId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastLogin', 'updatedAt', 'updatedBy']);
+
+      // Only admins can delete users
+      allow delete: if isAdmin();
+    }
+
+
+    // =============================================
+    // Prospects Collection
+    // =============================================
+    match /prospects/{prospectId} {
+      // Admin: full access
+      // Sales: read only prospects assigned to them
+      // Developer: read all (needed for site generation context)
+      allow read: if isAuthenticated() && (
+        isAdmin() ||
+        hasRole('developer') ||
+        (hasRole('sales') && isAssignedTo())
+      );
+
+      // Admin + sales can create prospects (scouting import + manual add).
+      // Delete stays admin-only.
+      allow create: if isAdmin() || hasRole('sales');
+      allow delete: if isAdmin();
+
+      // Admin can update anything; sales can update notes and contactLog on their assigned prospects
+      allow update: if isAdmin() ||
+        (hasRole('sales') && isAssignedTo() &&
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['notes', 'contactLog', 'status', 'hotLead', 'nextFollowUp', 'updatedAt', 'updatedBy']));
+    }
+
+
+    // =============================================
+    // Sites Collection
+    // =============================================
+    match /sites/{siteId} {
+      // Admin and developer can read all sites
+      // Sales can read sites linked to their prospects (checked at app level)
+      allow read: if isAuthenticated() && (
+        isAdmin() ||
+        hasRole('developer') ||
+        hasRole('sales')
+      );
+
+      // Only admin can create or delete sites
+      allow create, delete: if isAdmin();
+
+      // Admin: full update. Developer: can update QA fields
+      allow update: if isAdmin() ||
+        (hasRole('developer') &&
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['qaStatus', 'qaReviewer', 'qaDate', 'qaFeedback', 'updatedAt', 'updatedBy']));
+    }
+
+
+    // =============================================
+    // Projects Collection
+    // =============================================
+    match /projects/{projectId} {
+      // Admin: full access
+      // Developer: read all, update revisions and communication
+      // Sales: read projects linked to their prospects (broad read, filtered at app level)
+      allow read: if isAuthenticated() && (
+        isAdmin() ||
+        hasRole('developer') ||
+        hasRole('sales')
+      );
+
+      allow create, delete: if isAdmin();
+
+      allow update: if isAdmin() ||
+        (hasRole('developer') &&
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['revisions', 'communicationLog', 'status', 'updatedAt', 'updatedBy']));
+    }
+
+
+    // =============================================
+    // Invoices Collection
+    // =============================================
+    match /invoices/{invoiceId} {
+      // Only admin can access invoices
+      allow read, write: if isAdmin();
+    }
+
+
+    // =============================================
+    // Expenses Collection
+    // =============================================
+    match /expenses/{expenseId} {
+      // Only admin can access expenses
+      allow read, write: if isAdmin();
+    }
+
+
+    // =============================================
+    // Activity Log Collection
+    // =============================================
+    match /activityLog/{logId} {
+      // All authenticated users can read the activity log
+      allow read: if isAuthenticated();
+
+      // All authenticated users can create log entries
+      allow create: if isAuthenticated();
+
+      // No one can update or delete activity logs (immutable audit trail)
+      allow update, delete: if false;
+    }
+  }
+}

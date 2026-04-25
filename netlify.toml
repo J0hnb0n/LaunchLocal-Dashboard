@@ -1,0 +1,82 @@
+# =====================================================================
+# LaunchLocal — Netlify config
+#
+# Publishes the dashboard from Pipeline/. Functions live in
+# netlify/functions/ and proxy:
+#   - /api/places           → Google Places (server-side key)
+#   - /api/pagespeed        → PageSpeed Insights (server-side key)
+#   - /api/session          → mint Firebase Auth session cookie
+#   - /api/session/clear    → clear session cookie
+#   - /preview/{slug}/...   → fetch generated client-site files from
+#                             Firebase Storage with auth gating
+#
+# Secrets live in Netlify env vars, never in the repo:
+#   - GOOGLE_API_KEY               (Places + PageSpeed)
+#   - FIREBASE_SERVICE_ACCOUNT     (stringified service-account JSON)
+# =====================================================================
+
+[build]
+  publish    = "Pipeline"
+  functions  = "netlify/functions"
+  # No build step — vanilla HTML/CSS/JS. Netlify still needs a value.
+  command    = "echo 'No build step — static publish from Pipeline/'"
+
+[functions]
+  node_bundler = "esbuild"
+  # Keep the _shared helpers off the function-name registry.
+  included_files = ["netlify/functions/_shared/**"]
+
+# ---- API redirects ---------------------------------------------------
+[[redirects]]
+  from   = "/api/session/clear"
+  to     = "/.netlify/functions/auth-clear"
+  status = 200
+  force  = true
+
+[[redirects]]
+  from   = "/api/session"
+  to     = "/.netlify/functions/auth-session"
+  status = 200
+  force  = true
+
+[[redirects]]
+  from   = "/api/places"
+  to     = "/.netlify/functions/places"
+  status = 200
+  force  = true
+
+[[redirects]]
+  from   = "/api/pagespeed"
+  to     = "/.netlify/functions/pagespeed"
+  status = 200
+  force  = true
+
+# ---- Preview proxy ---------------------------------------------------
+# /preview/<slug>/<...> → preview function.
+[[redirects]]
+  from   = "/preview/*"
+  to     = "/.netlify/functions/preview/:splat"
+  status = 200
+  force  = true
+
+# ---- SPA-friendly fallbacks -----------------------------------------
+# The dashboard uses hash routing so no server-side rewrites are needed.
+# Just make sure /dashboard and /dashboard/ both resolve.
+[[redirects]]
+  from   = "/dashboard"
+  to     = "/dashboard.html"
+  status = 200
+
+[[redirects]]
+  from   = "/"
+  to     = "/index.html"
+  status = 200
+
+# ---- Security headers -----------------------------------------------
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options        = "SAMEORIGIN"
+    Referrer-Policy        = "strict-origin-when-cross-origin"
+    Permissions-Policy     = "geolocation=(self), microphone=(), camera=()"

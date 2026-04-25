@@ -1,0 +1,57 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // =============================================
+    // Helper Functions
+    //   Mirror the Firestore rules so Storage and
+    //   Firestore stay aligned on roles.
+    // =============================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function getUserRole() {
+      return firestore.exists(/databases/(default)/documents/users/$(request.auth.uid))
+        ? firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role
+        : null;
+    }
+
+    function hasRole(role) {
+      return isAuthenticated() && getUserRole() == role;
+    }
+
+    function isAdmin()     { return hasRole('admin'); }
+    function isDeveloper() { return hasRole('developer'); }
+    function isSales()     { return hasRole('sales'); }
+
+
+    // =============================================
+    // Generated client sites
+    //   /sites/{slug}/...  — the static files
+    //   produced by Claude Code, uploaded by the
+    //   Stop-hook on each operator's PC.
+    //
+    //   Hook + Netlify preview-proxy use the
+    //   Firebase Admin SDK (service account), which
+    //   bypasses these rules. The rules below are
+    //   defence-in-depth for any direct browser
+    //   access to the bucket.
+    // =============================================
+    match /sites/{slug}/{allPaths=**} {
+      allow read: if isAdmin() || isDeveloper() || isSales();
+      allow write: if isAdmin() || isDeveloper();
+    }
+
+
+    // =============================================
+    // Default deny — anything outside /sites/ is
+    // off-limits to the browser unless we add an
+    // explicit match block for it later.
+    // =============================================
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

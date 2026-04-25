@@ -1,0 +1,159 @@
+/* ============================================
+   LaunchLocal — Theme Tokens
+   Dark-first design. Light mode via [data-theme="light"].
+   Sidebar stays dark in both themes (signature move).
+   ============================================ */
+
+/* ===== DARK (default) ===== */
+:root {
+    /* Accent (sky) */
+    --accent:         #38BDF8;
+    --accent-hover:   #7DD3FC;
+    --accent-pressed: #0EA5E9;
+    --accent-dim:     rgba(56, 189, 248, 0.12);
+    --accent-soft:    rgba(56, 189, 248, 0.20);
+    --accent-glow:    rgba(56, 189, 248, 0.35);
+    --accent-border:  rgba(56, 189, 248, 0.45);
+
+    /* Semantic */
+    --success:        #34D399;
+    --success-dim:    rgba(52, 211, 153, 0.14);
+    --success-border: rgba(52, 211, 153, 0.35);
+
+    --warning:        #FBBF24;
+    --warning-dim:    rgba(251, 191, 36, 0.14);
+    --warning-border: rgba(251, 191, 36, 0.35);
+
+    --danger:         #F87171;
+    --danger-dim:     rgba(248, 113, 113, 0.14);
+    --danger-border:  rgba(248, 113, 113, 0.40);
+
+    --info:           #60A5FA;
+    --info-dim:       rgba(96, 165, 250, 0.14);
+    --info-border:    rgba(96, 165, 250, 0.35);
+
+    /* Surfaces */
+    --bg-app:         #0B1220;
+    --bg-surface:     #111827;
+    --bg-surface-2:   #1A2234;
+    --bg-surface-3:   #243049;
+    --bg-elevated:    #1E293B;
+
+    --bg-sidebar:         #080E1A;
+    --bg-sidebar-hover:   #111A2C;
+    --bg-sidebar-active:  #1A2234;
+
+    --bg-overlay:     rgba(3, 7, 18, 0.75);
+
+    /* Text */
+    --text-primary:   #E6EDF7;
+    --text-secondary: #9AA8BF;
+    --text-muted:     #64748B;
+    --text-inverse:   #0B1220;
+    --text-on-accent: #061624;
+
+    /* Borders */
+    --border:         #1F2A3E;
+    --border-strong:  #2A3854;
+    --border-subtle:  #141E30;
+
+    /* Shadows — dark mode: deeper, ambient */
+    --shadow-sm:      0 1px 2px rgba(0, 0, 0, 0.35);
+    --shadow-md:      0 4px 12px rgba(0, 0, 0, 0.45);
+    --shadow-lg:      0 14px 40px rgba(0, 0, 0, 0.55);
+    --shadow-accent:  0 4px 18px var(--accent-glow);
+    --shadow-inner:   inset 0 1px 0 rgba(255, 255, 255, 0.03);
+
+    color-scheme: dark;
+}
+
+/* ===== LIGHT ===== */
+[data-theme="light"] {
+    --accent:         #0284C7;
+    --accent-hover:   #0369A1;
+    --accent-pressed: #075985;
+    --accent-dim:     rgba(2, 132, 199, 0.08);
+    --accent-soft:    rgba(2, 132, 199, 0.14);
+    --accent-glow:    rgba(2, 132, 199, 0.22);
+    --accent-border:  rgba(2, 132, 199, 0.28);
+
+    --success:        #059669;
+    --success-dim:    rgba(5, 150, 105, 0.10);
+    --success-border: rgba(5, 150, 105, 0.30);
+
+    --warning:        #B45309;
+    --warning-dim:    rgba(180, 83, 9, 0.10);
+    --warning-border: rgba(180, 83, 9, 0.30);
+
+    --danger:         #DC2626;
+    --danger-dim:     rgba(220, 38, 38, 0.08);
+    --danger-border:  rgba(220, 38, 38, 0.25);
+
+    --info:           #2563EB;
+    --info-dim:       rgba(37, 99, 235, 0.10);
+    --info-border:    rgba(37, 99, 235, 0.25);
+
+    --bg-app:         #F7F9FC;
+    --bg-surface:     #FFFFFF;
+    --bg-surface-2:   #F1F5F9;
+    --bg-surface-3:   #E2E8F0;
+    --bg-elevated:    #FFFFFF;
+
+    /* Signature: sidebar stays dark in both themes */
+    --bg-sidebar:         #0B1220;
+    --bg-sidebar-hover:   #111A2C;
+    --bg-sidebar-active:  #1A2234;
+
+    --bg-overlay:     rgba(15, 23, 42, 0.45);
+
+    --text-primary:   #0F172A;
+    --text-secondary: #475569;
+    --text-muted:     #94A3B8;
+    --text-inverse:   #FFFFFF;
+    --text-on-accent: #FFFFFF;
+
+    --border:         #E2E8F0;
+    --border-strong:  #CBD5E1;
+    --border-subtle:  #F1F5F9;
+
+    --shadow-sm:      0 1px 2px rgba(15, 23, 42, 0.06);
+    --shadow-md:      0 4px 14px rgba(15, 23, 42, 0.08);
+    --shadow-lg:      0 14px 36px rgba(15, 23, 42, 0.14);
+    --shadow-accent:  0 4px 16px var(--accent-glow);
+    --shadow-inner:   inset 0 1px 0 rgba(255, 255, 255, 0.7);
+
+    color-scheme: light;
+}
+
+/* ===== Legacy aliases (keep the rest of the CSS working) ===== */
+:root, [data-theme="light"] {
+    --color-primary:        var(--accent);
+    --color-primary-hover:  var(--accent-hover);
+    --color-primary-light:  var(--accent-dim);
+
+    --color-accent:         var(--success);
+    --color-accent-hover:   var(--success);
+    --color-warning:        var(--warning);
+    --color-warning-hover:  var(--warning);
+    --color-danger:         var(--danger);
+    --color-danger-hover:   var(--danger);
+
+    --bg-primary:   var(--bg-surface);
+    --bg-secondary: var(--bg-surface-2);
+
+    --border-color: var(--border);
+    --border-light: var(--border-subtle);
+}
+
+/* ===== Smooth theme transitions ===== */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+    transition:
+        background-color 250ms var(--easing, cubic-bezier(0.4, 0, 0.2, 1)),
+        border-color 250ms var(--easing, cubic-bezier(0.4, 0, 0.2, 1)),
+        color 250ms var(--easing, cubic-bezier(0.4, 0, 0.2, 1)),
+        box-shadow 250ms var(--easing, cubic-bezier(0.4, 0, 0.2, 1)) !important;
+    transition-delay: 0 !important;
+}

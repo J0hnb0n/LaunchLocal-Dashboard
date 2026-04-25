@@ -1,0 +1,12 @@
+{
+  "name": "launchlocal-netlify-functions",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Server-side proxies for the LaunchLocal dashboard. Holds the Google API key, mints/validates Firebase Auth session cookies, and serves authenticated previews of generated client sites from Firebase Storage.",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.7.0"
+  }
+}
