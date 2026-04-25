@@ -1,0 +1,12 @@
+{
+  "name": "launchlocal-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "LaunchLocal dashboard — Netlify deploy root. The actual app is the static site under Pipeline/; this package.json exists so Netlify's esbuild bundler can resolve firebase-admin when it packages the Functions in netlify/functions/.",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.7.0"
+  }
+}
