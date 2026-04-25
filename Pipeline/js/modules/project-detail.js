@@ -521,7 +521,7 @@ const ProjectDetailModule = {
                     <span class="site-preview-frame-url">${LaunchLocal.escapeHtml(previewUrl)}</span>
                     <a class="btn btn-ghost btn-sm" href="${LaunchLocal.escapeHtml(previewUrl)}" target="_blank" rel="noopener">Open in new tab &#8599;</a>
                 </div>
-                <iframe class="site-preview-frame" src="${LaunchLocal.escapeHtml(previewUrl)}" title="Site preview" loading="lazy" sandbox="allow-scripts"></iframe>
+                <iframe class="site-preview-frame" src="${LaunchLocal.escapeHtml(previewUrl)}" title="Site preview" loading="lazy"></iframe>
             </div>
         ` : `
             <div class="alert alert-info" style="margin-bottom:16px;">

@@ -202,6 +202,12 @@ token.
 
 ---
 
+## Preview iframe — same-origin, no sandbox
+
+The preview iframe loads from the same origin as the dashboard (`/preview/{slug}/...`) and runs without a `sandbox` attribute. Reason: a sandboxed iframe gets a unique opaque origin, which causes its subresource requests (CSS, JS, images) to be treated as cross-site — the `__llSession` cookie is dropped and every asset returns 401, leaving an unstyled bare-HTML render.
+
+Trade-off: a buggy or malicious client site could reach into the dashboard via `parent.LaunchLocal.currentUser`, etc. Acceptable today because every preview is a site we generated and reviewed through QA. **Revisit this** when we add a "share preview link with client" feature — at that point move previews to a different subdomain (e.g. `preview.launchlocal-pipeline.netlify.app`) so origin isolation is real.
+
 ## Session lifetime — what to know
 
 The server-side session cookie (`__llSession`) is good for **5 days from
