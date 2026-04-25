@@ -95,23 +95,37 @@ function loadServiceAccount() {
   }
 }
 
-function findRecentSlugs() {
+/**
+ * Decide which slug folders to upload based on CLI args.
+ *
+ *   (no args)         → recent window only (default; what the Stop-hook uses)
+ *   --all             → every slug folder in Client-Sites/
+ *   <slug> [<slug>...] → just those slug folders
+ *   --help            → print usage and exit
+ */
+function findSlugsToUpload({ all, slugs }) {
   if (!fs.existsSync(CLIENT_SITES_DIR)) {
     log(`Client-Sites/ does not exist at ${CLIENT_SITES_DIR}.`);
     return [];
   }
-  const cutoff = Date.now() - RECENT_WINDOW_MS;
-  const recent = [];
-  for (const entry of fs.readdirSync(CLIENT_SITES_DIR, { withFileTypes: true })) {
-    if (!entry.isDirectory()) continue;
-    if (SKIP_DIRS.has(entry.name)) continue;
-    if (entry.name.startsWith('.')) continue;
-    const dir = path.join(CLIENT_SITES_DIR, entry.name);
-    if (latestMtime(dir) > cutoff) {
-      recent.push({ slug: entry.name, dir });
-    }
+
+  const allEntries = fs.readdirSync(CLIENT_SITES_DIR, { withFileTypes: true })
+    .filter(e => e.isDirectory() && !SKIP_DIRS.has(e.name) && !e.name.startsWith('.'))
+    .map(e => ({ slug: e.name, dir: path.join(CLIENT_SITES_DIR, e.name) }));
+
+  if (slugs && slugs.length > 0) {
+    const wanted = new Set(slugs);
+    const matched = allEntries.filter(e => wanted.has(e.slug));
+    const missing = [...wanted].filter(s => !allEntries.find(e => e.slug === s));
+    missing.forEach(s => log(`No folder Client-Sites/${s} — skipping.`));
+    return matched;
   }
-  return recent;
+
+  if (all) return allEntries;
+
+  // Default: recent window
+  const cutoff = Date.now() - RECENT_WINDOW_MS;
+  return allEntries.filter(({ dir }) => latestMtime(dir) > cutoff);
 }
 
 function latestMtime(dir) {
@@ -249,13 +263,40 @@ async function uploadSlug({ admin, bucket, db }, { slug, dir }) {
   return { slug, status: 'uploaded', fileCount: localFiles.length };
 }
 
+function printHelp() {
+  console.log(`
+Usage: node site-upload.js [options] [slug...]
+
+  (no args)        Upload slug folders modified within the last 30 minutes.
+                   This is what the Stop-hook calls.
+
+  --all            Upload every slug folder in Client-Sites/.
+                   Use once after first deploy to sync existing sites.
+
+  slug [slug...]   Upload only the named slug folders (folder name under
+                   Client-Sites/, e.g. "Lams-Restaurant").
+
+  --help, -h       Print this message and exit.
+`);
+}
+
 async function main() {
-  const slugs = findRecentSlugs();
-  if (slugs.length === 0) {
-    log('No recently-modified site folders. Nothing to do.');
+  const args = process.argv.slice(2);
+  if (args.includes('--help') || args.includes('-h')) {
+    printHelp();
     return;
   }
-  log(`Found ${slugs.length} recent slug(s): ${slugs.map(s => s.slug).join(', ')}`);
+  const all   = args.includes('--all');
+  const slugs = args.filter(a => !a.startsWith('--'));
+
+  const targets = findSlugsToUpload({ all, slugs });
+  if (targets.length === 0) {
+    log(all || slugs.length > 0
+      ? 'No matching slug folders found.'
+      : 'No recently-modified site folders. Nothing to do.');
+    return;
+  }
+  log(`Found ${targets.length} slug(s): ${targets.map(s => s.slug).join(', ')}`);
 
   // Lazy-require so missing deps fail with a clear message instead of crashing
   // before the diagnostic log lines above.
@@ -280,7 +321,7 @@ async function main() {
   const db = admin.firestore();
   const ctx = { admin, bucket, db };
 
-  for (const s of slugs) {
+  for (const s of targets) {
     try {
       await uploadSlug(ctx, s);
     } catch (err) {
