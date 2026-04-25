@@ -120,11 +120,15 @@ Logic in `js/utils/scoring.js`. Score ranges: **0–20 Low, 20–50 Medium, 50�
 _Auto-maintained by the dashboard refresh (daily noon + Claude Code session-end hook). Top 3 open items surface as to-dos in the AI_Projects dashboard. `[ ]` = open, `[x]` = done. Prefer engaging/build-style items over pure cleanup. Keep item text stable so check-off state persists in the dashboard. The loop may mark items done based on recent commits, add inferred new items, and reorder — manual edits always win._
 
 - [x] Firebase Storage — client site files uploaded by Stop hook + previewed in dashboard
+- [x] site-upload --all flag + per-slug args — batch or targeted upload from CLI
+- [x] Admin-only Roll back to Prospect button — sold clients can be reverted to pitched status without losing history
 - [ ] "Push to Netlify" button — promote a finished site to a dedicated Netlify project so we can send the URL to a client
 - [ ] Claude API integration — replace manual copy/paste site-gen with the Anthropic SDK
 - [ ] Stripe integration — wire `stripeInvoiceId` to live invoice flow + webhook-driven status
 - [ ] Email notifications — follow-ups, invoice sent/overdue, QA handoffs
 - [ ] Facebook Graph enrichment — scoring references it, no calls wired
+- [ ] "Sync All" button in Sites module — trigger site-upload --all from the dashboard with a live upload progress log
+- [ ] Client preview share link — generate a time-limited public URL to hand a prospect their demo site without requiring login
 
 ## Constraints
 - Production tool, not a prototype

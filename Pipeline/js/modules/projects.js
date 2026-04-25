@@ -219,7 +219,7 @@ const ProjectsModule = {
                 <div class="prospect-card-body">
                     <div class="prospect-card-info">
                         <div class="prospect-card-name">${LaunchLocal.escapeHtml(clientName)}</div>
-                        <div class="prospect-card-address">${LaunchLocal.escapeHtml(p.address || '—')}</div>
+                        <div class="prospect-card-address">${LaunchLocal.escapeHtml(p.address || 'E-commerce')}</div>
                         <div class="prospect-card-meta">
                             ${industryChip}
                             ${domainChip}
