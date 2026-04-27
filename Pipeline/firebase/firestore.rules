@@ -153,6 +153,15 @@ service cloud.firestore {
 
 
     // =============================================
+    // Roadmap Collection (shared sprint state)
+    // =============================================
+    match /roadmap/{docId} {
+      // Both partners (admin) read + write the shared sprint roadmap
+      allow read, write: if isAdmin();
+    }
+
+
+    // =============================================
     // Activity Log Collection
     // =============================================
     match /activityLog/{logId} {

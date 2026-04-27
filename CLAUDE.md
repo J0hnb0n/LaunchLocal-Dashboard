@@ -79,12 +79,13 @@ See [Pipeline/docs/DEPLOY.md](Pipeline/docs/DEPLOY.md) — top-to-bottom checkli
 ## Modules (all registered in router)
 1. **Dashboard** (all roles) — KPI cards, pipeline funnel, real-time activity feed
 2. **Scouting** (admin, sales) — Draggable pin + radius circle, category filter, Places nearbySearch, import to prospects (deduped by `googlePlaceId`)
-3. **Prospects** (admin, sales) — Pipeline tabs, search, hot-lead toggle, score breakdown, contact log, follow-up dates
-4. **Sites** (admin, developer) — Prompt generator, auto-probe for `../Client-Sites/{clientSlug}/index.html` (with legacy `{prospectId}` fallback), QA review workflow
-5. **Sales** (admin, sales) — Pitch queue (site-ready), follow-up queue (pitched), cheat sheets, visit logger
-6. **Projects** (admin, developer) — Post-sale mgmt, revisions, maintenance tier, comms log, renewal dates
-7. **Billing** (admin) — Invoice CRUD, commission tracking, `stripeInvoiceId` stub
-8. **Expenses** (admin) — Categorized expense tracking, HST auto-calc (13%), ITC flag
+3. **Roadmap** (admin) — 2-week pre-sales sprint Gantt + execution-order checklist; drag any dot to reschedule. Real-time shared state via single `roadmap/sprint` doc.
+4. **Prospects** (admin, sales) — Pipeline tabs, search, hot-lead toggle, score breakdown, contact log, follow-up dates
+5. **Sites** (admin, developer) — Prompt generator, auto-probe for `../Client-Sites/{clientSlug}/index.html` (with legacy `{prospectId}` fallback), QA review workflow
+6. **Sales** (admin, sales) — Pitch queue (site-ready), follow-up queue (pitched), cheat sheets, visit logger
+7. **Projects** (admin, developer) — Post-sale mgmt, revisions, maintenance tier, comms log, renewal dates
+8. **Billing** (admin) — Invoice CRUD, commission tracking, `stripeInvoiceId` stub
+9. **Expenses** (admin) — Categorized expense tracking, HST auto-calc (13%), ITC flag
 
 ## User Roles
 Stored on `users/{uid}`. Enforced by router + Firestore rules.
@@ -102,6 +103,7 @@ Schemas live in code (`db.js`, module files). Status/type enums below are the co
 - **invoices** — type: `project` | `maintenance` | `automation` | `other`. status: `draft` | `sent` | `paid` | `overdue` | `void`
 - **expenses** — category: `software` | `api` | `advertising` | `domain-hosting` | `equipment` | `contractor` | `travel` | `other`
 - **activityLog** — immutable; all authenticated users can read + append, no update/delete
+- **roadmap/sprint** — single shared doc for the pre-sales sprint module. `checked` map (taskId → bool) and `days` map (taskId → overridden day number). Admin-only read/write
 
 ## Scoring Algorithm
 Logic in `js/utils/scoring.js`. Score ranges: **0–20 Low, 20–50 Medium, 50–80 High, 80+ Hot** (auto-flags `hotLead`).
@@ -129,6 +131,8 @@ _Auto-maintained by the dashboard refresh (daily noon + Claude Code session-end 
 - [ ] Facebook Graph enrichment — scoring references it, no calls wired
 - [ ] "Sync All" button in Sites module — trigger site-upload --all from the dashboard with a live upload progress log
 - [ ] Client preview share link — generate a time-limited public URL to hand a prospect their demo site without requiring login
+- [ ] E-commerce client template — build a dedicated site-gen template for online-only businesses (no physical address) to round out restaurant/tradesperson/salon/retail
+- [ ] Ship the Roadmap module — commit roadmap.js/css + dashboard changes and run `firebase deploy --only firestore:rules` so both partners get the live sprint tracker
 
 ## Constraints
 - Production tool, not a prototype

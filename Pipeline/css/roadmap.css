@@ -1,0 +1,299 @@
+/* ============================================
+   LaunchLocal — Roadmap Module Styles
+   Pre-sales sprint Gantt + checklist.
+   ============================================ */
+
+/* --- Decisions card --- */
+.roadmap-decisions ul {
+    list-style: none;
+    display: grid;
+    gap: var(--space-2);
+    grid-template-columns: 1fr 1fr;
+    padding: 0;
+    margin: 0;
+}
+@media (max-width: 720px) {
+    .roadmap-decisions ul { grid-template-columns: 1fr; }
+}
+.roadmap-decisions li {
+    display: flex;
+    gap: var(--space-2);
+    align-items: flex-start;
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-surface-2);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    color: var(--text-primary);
+}
+.roadmap-decisions li::before {
+    content: "✓";
+    color: var(--success);
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+/* --- Legend --- */
+.roadmap-legend {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+.roadmap-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 6px 12px;
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+.roadmap-chip::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    background: var(--c, var(--accent));
+    border-radius: 50%;
+}
+
+/* --- Gantt --- */
+.roadmap-gantt-wrapper {
+    overflow-x: auto;
+    background: var(--bg-surface);
+    border-radius: var(--radius-md);
+    position: relative;
+}
+.roadmap-gantt {
+    display: grid;
+    grid-template-columns: 280px repeat(14, minmax(56px, 1fr));
+    min-width: 1120px;
+    position: relative;
+}
+.roadmap-gantt .gh,
+.roadmap-gantt .gl,
+.roadmap-gantt .gt {
+    border-bottom: 1px solid var(--border-subtle);
+    background: var(--bg-surface);
+}
+.roadmap-gantt .gh {
+    background: var(--bg-surface-2);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 10px 4px;
+    border-right: 1px solid var(--border);
+}
+.roadmap-gantt .gh.weekend { background: var(--warning-dim); }
+.roadmap-gantt .gh.lane-label {
+    text-align: left;
+    padding: 10px 16px;
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+}
+.roadmap-gantt .gh .dow {
+    display: block;
+    font-size: 10px;
+}
+.roadmap-gantt .gh strong {
+    display: block;
+    font-size: 13px;
+    color: var(--text-primary);
+    margin-top: 2px;
+}
+.roadmap-gantt .gl {
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-right: 1px solid var(--border);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.roadmap-gantt .gl .step {
+    font-family: var(--font-mono);
+    background: var(--bg-surface-2);
+    color: var(--text-secondary);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+.roadmap-gantt .gl .dot-mini {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.roadmap-gantt .gl .gtitle {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.roadmap-gantt .gt { border-right: 1px solid var(--border-subtle); }
+.roadmap-gantt .gt.weekend {
+    background: var(--warning-dim);
+    opacity: 0.5;
+}
+
+.roadmap-dot {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--c, var(--accent));
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    align-self: center;
+    justify-self: center;
+    box-shadow: var(--shadow-sm);
+    user-select: none;
+    transition: transform 0.12s, box-shadow 0.12s;
+    position: relative;
+    z-index: 4;
+}
+.roadmap-dot:hover {
+    transform: scale(1.18);
+    box-shadow: var(--shadow-md);
+}
+.roadmap-dot.dragging {
+    cursor: grabbing;
+    transform: scale(1.25);
+    box-shadow: var(--shadow-md);
+    z-index: 10;
+}
+.roadmap-dot.done { opacity: 0.4; }
+.roadmap-dot.done::after {
+    content: "✓";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: white;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 50%;
+}
+
+.roadmap-today-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--danger);
+    pointer-events: none;
+    z-index: 3;
+}
+.roadmap-today-line::before {
+    content: "TODAY";
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    background: var(--danger);
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 5px;
+    border-radius: 3px;
+    letter-spacing: 0.06em;
+}
+
+/* --- Checklist --- */
+.roadmap-checklist {
+    display: grid;
+    gap: var(--space-2);
+}
+.roadmap-step {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-4);
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    gap: var(--space-3);
+    align-items: flex-start;
+    border-left: 4px solid var(--c, var(--accent));
+    transition: opacity 0.18s, background 0.18s;
+}
+.roadmap-step:hover { background: var(--bg-surface-2); }
+.roadmap-step input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    cursor: pointer;
+    accent-color: var(--success);
+    flex-shrink: 0;
+}
+.roadmap-step.done { opacity: 0.55; }
+.roadmap-step.done .roadmap-step-title { text-decoration: line-through; }
+.roadmap-step-num {
+    background: var(--c, var(--accent));
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    font-family: var(--font-mono);
+    flex-shrink: 0;
+}
+.roadmap-step-title {
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+    color: var(--text-primary);
+}
+.roadmap-step-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.roadmap-step-meta .cat {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 10px;
+}
+.roadmap-step-meta .day-pill {
+    background: var(--bg-surface-2);
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+.roadmap-step-meta .dep-pill {
+    background: var(--accent-dim);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    font-size: 10px;
+}
+.roadmap-step-note {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+    line-height: 1.5;
+}
