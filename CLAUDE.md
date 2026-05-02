@@ -43,6 +43,9 @@ Launch Local/                   (Netlify publishes from here; repo root)
 │   └── preview.js              GET  /preview/{slug}/{...path} → Storage proxy
 ├── tools/                      Per-PC operator pipeline (NOT deployed by Netlify)
 │   ├── README.md, setup-windows.bat, package.json
+│   ├── LAPTOP-WORKFLOW.md      Quick reference for laptop / non-primary-PC sessions
+│   ├── sync-all.sh             Pull main repo + clone-or-pull every Client-Sites/ repo
+│   ├── sync-push.sh            Commit + push uncommitted work across main + Client-Sites/
 │   ├── site-upload-hook.sh     Stop hook bash wrapper
 │   └── site-upload.js          firebase-admin uploader
 ├── Client-Sites/               (gitignored — auto-uploaded to Firebase Storage by hook)
