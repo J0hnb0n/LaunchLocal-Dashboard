@@ -18,7 +18,7 @@ const SalesModule = {
             <div class="page-header">
                 <div>
                     <h2 class="page-title">Sales</h2>
-                    <p class="page-subtitle">Pitch queue, cheat sheets, and visit logging.</p>
+                    <p class="page-subtitle">Pitch queue, brief + live script, and visit logging.</p>
                 </div>
             </div>
 
@@ -44,14 +44,23 @@ const SalesModule = {
                 <div class="loading-screen"><div class="spinner spinner-lg"></div></div>
             </div>
 
-            <!-- Cheat Sheet Modal -->
+            <!-- Pitch Brief Modal (tabs: Brief | Live Script | Comparison) -->
             <div class="modal-overlay" id="cheatsheet-modal">
                 <div class="modal modal-xl">
                     <div class="modal-header">
-                        <h3 class="modal-title" id="cs-title">Sales Cheat Sheet</h3>
+                        <h3 class="modal-title" id="cs-title">Pitch Brief</h3>
                         <button class="modal-close" id="cs-close">&times;</button>
                     </div>
-                    <div class="modal-body" id="cs-body"></div>
+                    <div class="modal-tabs" id="cs-tabs" role="tablist">
+                        <button class="modal-tab active" data-cstab="brief" role="tab">Brief</button>
+                        <button class="modal-tab" data-cstab="script" role="tab">Live Script</button>
+                        <button class="modal-tab" data-cstab="comparison" role="tab">Comparison</button>
+                    </div>
+                    <div class="modal-body" id="cs-body">
+                        <div class="cs-tab-panel active" data-cspanel="brief"></div>
+                        <div class="cs-tab-panel" data-cspanel="script"></div>
+                        <div class="cs-tab-panel" data-cspanel="comparison"></div>
+                    </div>
                     <div class="modal-footer" id="cs-footer"></div>
                 </div>
             </div>
@@ -186,41 +195,73 @@ const SalesModule = {
         if (!p) return;
 
         const modal = document.getElementById('cheatsheet-modal');
-        document.getElementById('cs-title').textContent = `Sales Cheat Sheet — ${p.businessName}`;
-        const pricing = this.getPricing(p);
+        document.getElementById('cs-title').textContent = `Pitch Brief — ${p.businessName}`;
 
-        document.getElementById('cs-body').innerHTML = `
+        // Render all three tab panels
+        const briefPanel      = modal.querySelector('[data-cspanel="brief"]');
+        const scriptPanel     = modal.querySelector('[data-cspanel="script"]');
+        const comparisonPanel = modal.querySelector('[data-cspanel="comparison"]');
+
+        briefPanel.innerHTML      = this.renderBriefPanel(p);
+        scriptPanel.innerHTML     = LaunchLocal.SalesScript.render(p);
+        comparisonPanel.innerHTML = this.renderComparisonPanel(p);
+
+        // Wire script-panel interactivity (avg-ticket persistence, print, reset)
+        LaunchLocal.SalesScript.bind(scriptPanel, {
+            onAvgTicketChange: (prospectId, val) => this.persistAvgTicket(prospectId, val)
+        });
+
+        // Tab switching
+        const tabs = modal.querySelectorAll('.modal-tab');
+        const panels = modal.querySelectorAll('.cs-tab-panel');
+        tabs.forEach(t => {
+            t.onclick = () => {
+                const target = t.getAttribute('data-cstab');
+                tabs.forEach(x => x.classList.toggle('active', x === t));
+                panels.forEach(x => x.classList.toggle('active', x.getAttribute('data-cspanel') === target));
+                // Re-render script tab if avg ticket changed in another tab session
+                if (target === 'script') {
+                    const fresh = this.prospects.find(x => x.id === p.id) || p;
+                    scriptPanel.innerHTML = LaunchLocal.SalesScript.render(fresh);
+                    LaunchLocal.SalesScript.bind(scriptPanel, {
+                        onAvgTicketChange: (pid, v) => this.persistAvgTicket(pid, v)
+                    });
+                }
+            };
+        });
+        // Default to Brief tab on every open
+        tabs.forEach((t, i) => t.classList.toggle('active', i === 0));
+        panels.forEach((x, i) => x.classList.toggle('active', i === 0));
+
+        // Footer
+        const siteUrl = this.getSiteUrlForProspect(p.id);
+        const siteLinkBtn = siteUrl
+            ? `<a class="btn btn-primary" href="${LaunchLocal.escapeHtml(siteUrl)}" target="_blank" rel="noopener">Open Their Site &#8599;</a>`
+            : '';
+
+        document.getElementById('cs-footer').innerHTML = `
+            <button class="btn btn-secondary" id="cs-close-btn">Close</button>
+            ${siteLinkBtn}
+            <button class="btn btn-success cs-sold-btn" data-id="${p.id}">Mark as Sold</button>
+        `;
+
+        document.getElementById('cs-close').onclick = () => modal.classList.remove('open');
+        document.getElementById('cs-close-btn').onclick = () => modal.classList.remove('open');
+        modal.querySelector('.cs-sold-btn')?.addEventListener('click', () => {
+            this.moveStatus(p.id, 'sold');
+            modal.classList.remove('open');
+        });
+
+        modal.classList.add('open');
+    },
+
+    /* ---------- Tab 1: Brief ---------- */
+    renderBriefPanel(p) {
+        const pricing = LaunchLocal.SalesScript.getSmartPricing(p);
+        const upsells = this.getUpsells(p);
+
+        return `
             <div class="cheatsheet-grid">
-
-                <div class="cs-section cs-full">
-                    <h4 class="cs-section-title">Before vs After</h4>
-                    <div class="comparison-grid">
-                        <div class="comparison-col old">
-                            <div class="comparison-header">THEIR CURRENT SITUATION</div>
-                            <ul class="comparison-list">
-                                ${p.website
-                                    ? `<li class="con">Outdated website (${p.website})</li>`
-                                    : '<li class="con">No website whatsoever</li>'}
-                                ${p.scoreBreakdown?.noSSL ? '<li class="con">No SSL — Chrome marks it as "Not Secure"</li>' : ''}
-                                ${p.scoreBreakdown?.noMobile ? '<li class="con">Not mobile-friendly — 60%+ of searches are mobile</li>' : ''}
-                                ${p.scoreBreakdown?.pageSpeed ? '<li class="con">Slow load speed — visitors bounce in under 3s</li>' : ''}
-                                <li class="con">Missing out on local search traffic</li>
-                                <li class="con">Competitors with modern sites are outranking them</li>
-                            </ul>
-                        </div>
-                        <div class="comparison-col new">
-                            <div class="comparison-header">WITH LAUNCHLOCAL</div>
-                            <ul class="comparison-list">
-                                <li class="pro">Modern, mobile-first design</li>
-                                <li class="pro">SSL secured (https://)</li>
-                                <li class="pro">PageSpeed score 95+</li>
-                                <li class="pro">Google Business Profile integration</li>
-                                <li class="pro">Click-to-call &amp; contact form</li>
-                                <li class="pro">Live in under 48 hours</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
 
                 <div class="cs-section">
                     <h4 class="cs-section-title">Talking Points</h4>
@@ -241,29 +282,35 @@ const SalesModule = {
                         </li>` : ''}
                         <li>
                             <strong>Local credibility:</strong>
-                            "We only work with Hamilton businesses. We're not some overseas agency — we're right here."
+                            "We only work with local businesses. We're not some overseas agency — we're right here."
                         </li>
                         <li>
                             <strong>Speed advantage:</strong>
-                            "Most agencies take 3 months and charge $10k. We launch in 48 hours."
+                            "Most agencies take 3 months and charge $10k. We launch in 14 days."
                         </li>
                     </ul>
                 </div>
 
                 <div class="cs-section cs-pricing-section">
-                    <h4 class="cs-section-title">Recommended Pricing</h4>
+                    <h4 class="cs-section-title">Smart Pricing</h4>
                     <div class="pricing-recommendation">
                         <div class="pricing-item">
                             <div class="pricing-label">One-Time Build</div>
-                            <div class="pricing-value">${pricing.build}</div>
+                            <div class="pricing-value">${LaunchLocal.escapeHtml(pricing.buildDisplay)}</div>
                         </div>
                         <div class="pricing-item">
                             <div class="pricing-label">Monthly Maintenance</div>
-                            <div class="pricing-value">${pricing.maintenance}</div>
+                            <div class="pricing-value">${LaunchLocal.escapeHtml(pricing.maintenanceDisplay)}</div>
                         </div>
                     </div>
+                    <div class="pricing-tier-row">
+                        <span class="badge badge-${pricing.tier === 'premium' ? 'success' : pricing.tier === 'value' ? 'warning' : 'primary'}">
+                            ${LaunchLocal.escapeHtml(pricing.tierLabel)} tier
+                        </span>
+                        <span class="text-muted text-sm">${LaunchLocal.escapeHtml(pricing.reasoning)}</span>
+                    </div>
                     <div class="pricing-upsell">
-                        <strong>Upsell opportunities:</strong> ${pricing.upsells.join(' &bull; ')}
+                        <strong>Upsell opportunities:</strong> ${upsells.join(' &bull; ')}
                     </div>
                 </div>
 
@@ -271,26 +318,55 @@ const SalesModule = {
 
             </div>
         `;
+    },
 
-        const siteUrl = this.getSiteUrlForProspect(p.id);
-        const siteLinkBtn = siteUrl
-            ? `<a class="btn btn-primary" href="${LaunchLocal.escapeHtml(siteUrl)}" target="_blank" rel="noopener">Open Their Site &#8599;</a>`
-            : '';
-
-        document.getElementById('cs-footer').innerHTML = `
-            <button class="btn btn-secondary" id="cs-close-btn">Close</button>
-            ${siteLinkBtn}
-            <button class="btn btn-success cs-sold-btn" data-id="${p.id}">Mark as Sold</button>
+    /* ---------- Tab 3: Comparison ---------- */
+    renderComparisonPanel(p) {
+        return `
+            <div class="cheatsheet-grid">
+                <div class="cs-section cs-full">
+                    <h4 class="cs-section-title">Before vs After</h4>
+                    <div class="comparison-grid">
+                        <div class="comparison-col old">
+                            <div class="comparison-header">THEIR CURRENT SITUATION</div>
+                            <ul class="comparison-list">
+                                ${p.website
+                                    ? `<li class="con">Outdated website (${LaunchLocal.escapeHtml(p.website)})</li>`
+                                    : '<li class="con">No website whatsoever</li>'}
+                                ${p.scoreBreakdown?.noSSL ? '<li class="con">No SSL — Chrome marks it as "Not Secure"</li>' : ''}
+                                ${p.scoreBreakdown?.noMobile ? '<li class="con">Not mobile-friendly — 60%+ of searches are mobile</li>' : ''}
+                                ${p.scoreBreakdown?.pageSpeed ? '<li class="con">Slow load speed — visitors bounce in under 3s</li>' : ''}
+                                <li class="con">Missing out on local search traffic</li>
+                                <li class="con">Competitors with modern sites are outranking them</li>
+                            </ul>
+                        </div>
+                        <div class="comparison-col new">
+                            <div class="comparison-header">WITH LAUNCHLOCAL</div>
+                            <ul class="comparison-list">
+                                <li class="pro">Modern, mobile-first design</li>
+                                <li class="pro">SSL secured (https://)</li>
+                                <li class="pro">PageSpeed score 95+</li>
+                                <li class="pro">Google Business Profile integration</li>
+                                <li class="pro">Click-to-call &amp; contact form</li>
+                                <li class="pro">Live in 14 days — guaranteed</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
         `;
+    },
 
-        document.getElementById('cs-close').onclick = () => modal.classList.remove('open');
-        document.getElementById('cs-close-btn').onclick = () => modal.classList.remove('open');
-        document.querySelector('.cs-sold-btn')?.addEventListener('click', () => {
-            this.moveStatus(p.id, 'sold');
-            modal.classList.remove('open');
-        });
-
-        modal.classList.add('open');
+    /* ---------- Persist avgTicket back to the prospect ---------- */
+    async persistAvgTicket(prospectId, value) {
+        try {
+            await DB.updateDoc('prospects', prospectId, { avgTicket: value });
+            const p = this.prospects.find(x => x.id === prospectId);
+            if (p) p.avgTicket = value;
+        } catch {
+            // Non-critical — don't toast on every keystroke. Console is enough.
+            console.warn('Failed to persist avgTicket', prospectId, value);
+        }
     },
 
     openVisitLog(id) {
@@ -434,14 +510,26 @@ const SalesModule = {
         }
     },
 
+    /**
+     * Legacy shim — kept for any external caller. Prefer
+     * LaunchLocal.SalesScript.getSmartPricing(p) directly.
+     */
     getPricing(p) {
-        const build = p.prospectScore >= 70 ? '$2,500' : '$1,800';
-        const maintenance = '$150/mo';
+        const sp = LaunchLocal.SalesScript.getSmartPricing(p);
+        return {
+            build: sp.buildDisplay,
+            maintenance: sp.maintenanceDisplay,
+            tier: sp.tierLabel,
+            upsells: this.getUpsells(p)
+        };
+    },
+
+    getUpsells(p) {
         const upsells = [];
         if (['salon', 'restaurant'].includes(p.industry)) upsells.push('Online booking ($50/mo)');
         upsells.push('Google Ads setup ($300 one-time)');
         if (!p.facebookUrl) upsells.push('Facebook page setup ($200)');
-        return { build, maintenance, upsells };
+        return upsells;
     },
 
     getScoreClass(score) {

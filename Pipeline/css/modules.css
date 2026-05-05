@@ -2204,3 +2204,480 @@ td.td-sub {
     padding-top: var(--space-3);
     border-top: 1px solid var(--border-subtle);
 }
+
+/* ============================================
+   Pitch Brief — Modal Tabs
+   ============================================ */
+/* When a modal has tabs, switch to flex layout so only the body scrolls */
+.modal:has(.modal-tabs) {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.modal:has(.modal-tabs) .modal-header,
+.modal:has(.modal-tabs) .modal-tabs,
+.modal:has(.modal-tabs) .modal-footer {
+    flex-shrink: 0;
+    position: static;
+}
+.modal:has(.modal-tabs) .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+.modal-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 0 var(--space-5);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-surface);
+    flex-shrink: 0;
+}
+.modal-tab {
+    appearance: none;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-secondary);
+    padding: var(--space-3) var(--space-4);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color .15s ease, border-color .15s ease;
+    margin-bottom: -1px;
+}
+.modal-tab:hover { color: var(--text-primary); }
+.modal-tab.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+}
+.cs-tab-panel { display: none; }
+.cs-tab-panel.active { display: block; }
+.pricing-tier-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+    flex-wrap: wrap;
+}
+
+/* ============================================
+   Sales Script (Live Script tab)
+   ============================================ */
+.sales-script {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+/* Header */
+.ss-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+}
+.ss-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 var(--space-2) 0;
+}
+.ss-header-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: var(--space-2);
+}
+.ss-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    background: var(--bg-surface-3);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+}
+.ss-pill-tier-premium  { background: var(--success-dim); border-color: var(--success-border); color: var(--success); }
+.ss-pill-tier-standard { background: var(--accent-dim, var(--bg-surface-3)); border-color: var(--border-strong); }
+.ss-pill-tier-value    { background: var(--warning-dim); border-color: var(--warning-border); color: var(--warning); }
+.ss-header-sub {
+    color: var(--text-muted);
+    font-size: 12px;
+    text-transform: lowercase;
+}
+
+/* Avg ticket input */
+.ss-avgticket-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 200px;
+}
+.ss-avgticket-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.ss-hint {
+    font-size: 10px;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--text-muted);
+    font-weight: 400;
+    font-style: italic;
+}
+.ss-avgticket-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 4px 8px;
+}
+.ss-avgticket-prefix,
+.ss-avgticket-suffix {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+.ss-avgticket-input {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 14px;
+    width: 70px;
+    text-align: center;
+    outline: none;
+}
+.ss-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: var(--space-3);
+    justify-content: flex-end;
+}
+
+/* Prep block */
+.ss-prep {
+    padding: var(--space-3) var(--space-4);
+    background: var(--warning-dim);
+    border-left: 3px solid var(--warning);
+    border-radius: var(--radius-sm);
+}
+.ss-prep-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--warning);
+    margin: 0 0 var(--space-2) 0;
+}
+.ss-prep-list {
+    margin: 0;
+    padding-left: var(--space-4);
+    font-size: 13px;
+    color: var(--text-primary);
+}
+.ss-prep-list li { margin-bottom: 2px; }
+
+/* Steps */
+.ss-steps {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+.ss-step {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    transition: border-color .15s ease, opacity .15s ease;
+}
+.ss-step-done {
+    opacity: 0.55;
+    border-color: var(--success-border);
+    background: var(--success-dim);
+}
+.ss-step-head {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+}
+.ss-step-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: var(--text-on-accent);
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+}
+.ss-step-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    color: var(--text-primary);
+}
+.ss-step-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.ss-tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--bg-surface-2);
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-family: var(--font-mono);
+}
+.ss-tag-time { color: var(--warning); border-color: var(--warning-border); background: var(--warning-dim); }
+.ss-tag-goal { color: var(--text-secondary); }
+
+.ss-step-check {
+    cursor: pointer;
+    user-select: none;
+}
+.ss-step-check input { display: none; }
+.ss-step-check span {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--border-strong);
+    border-radius: 6px;
+    transition: all .15s ease;
+    position: relative;
+}
+.ss-step-check input:checked + span {
+    background: var(--success);
+    border-color: var(--success);
+}
+.ss-step-check input:checked + span::after {
+    content: '✓';
+    color: var(--text-on-accent);
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.ss-criterion {
+    font-size: 11px;
+    color: var(--success);
+    background: var(--success-dim);
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    border-left: 2px solid var(--success);
+    margin-bottom: var(--space-3);
+    font-weight: 500;
+    font-family: var(--font-mono);
+}
+
+.ss-step-body { color: var(--text-primary); }
+.ss-intro { margin-bottom: var(--space-2); color: var(--text-secondary); font-style: italic; }
+
+/* Dialog block — what the rep actually says */
+.ss-dialog {
+    background: var(--accent-dim, var(--bg-surface-2));
+    border-left: 3px solid var(--color-primary);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-sm);
+    margin: var(--space-2) 0;
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.6;
+}
+.ss-dialog em { color: var(--text-muted); }
+
+.ss-note {
+    margin-top: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-surface-2);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-style: italic;
+}
+
+.ss-list {
+    margin: var(--space-2) 0;
+    padding-left: var(--space-4);
+}
+.ss-list li { margin-bottom: var(--space-2); }
+.ss-em { color: var(--text-muted); font-size: 12px; }
+
+/* Stack table */
+.ss-stack-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--space-3) 0;
+    font-size: 13px;
+}
+.ss-stack-table th {
+    text-align: left;
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-surface-2);
+    color: var(--text-muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+}
+.ss-stack-table td {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+}
+.ss-stack-table tfoot td {
+    border-top: 2px solid var(--border-strong);
+    border-bottom: none;
+    background: var(--bg-surface-2);
+    font-size: 14px;
+}
+.ss-stack-val-cell { text-align: right; white-space: nowrap; font-family: var(--font-mono); }
+.ss-stack-val { color: var(--success); font-weight: 600; }
+.ss-stack-included {
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 12px;
+}
+
+/* Guarantees */
+.ss-guarantees {
+    margin: var(--space-2) 0;
+    padding-left: var(--space-4);
+}
+.ss-guarantees li {
+    margin-bottom: var(--space-2);
+    line-height: 1.5;
+}
+.ss-yes-list {
+    margin: var(--space-2) 0;
+    padding-left: var(--space-4);
+}
+.ss-yes-list li { margin-bottom: 4px; }
+
+/* Objections */
+.ss-objections {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+.ss-obj {
+    padding: var(--space-3);
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+}
+.ss-obj-q {
+    font-weight: 700;
+    color: var(--danger);
+    margin-bottom: var(--space-2);
+    font-size: 13px;
+}
+.ss-obj-a {
+    color: var(--text-primary);
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+/* Timing summary */
+.ss-timing {
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-surface-2);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-md);
+}
+.ss-timing-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 var(--space-2) 0;
+    font-family: var(--font-mono);
+}
+.ss-timing-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+.ss-timing-table td {
+    padding: 4px 0;
+    color: var(--text-primary);
+}
+.ss-timing-table td:last-child {
+    text-align: right;
+    font-family: var(--font-mono);
+    color: var(--text-secondary);
+}
+
+/* Mobile / tablet */
+@media (max-width: 768px) {
+    .ss-header { grid-template-columns: 1fr; }
+    .ss-actions { justify-content: flex-start; }
+    .ss-step-head { grid-template-columns: auto 1fr; }
+    .ss-step-check { grid-column: 1 / -1; justify-self: flex-end; }
+    .modal-tabs { padding: 0 var(--space-3); overflow-x: auto; }
+    .modal-tab { white-space: nowrap; }
+}
+
+/* Print — clean 1-pager */
+@media print {
+    body.printing-script * { visibility: hidden; }
+    body.printing-script .sales-script,
+    body.printing-script .sales-script * { visibility: visible; }
+    body.printing-script .sales-script {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 24px;
+        background: white;
+        color: black;
+        font-size: 11pt;
+    }
+    body.printing-script .ss-actions,
+    body.printing-script .ss-step-check,
+    body.printing-script .ss-avgticket-wrap { display: none; }
+    body.printing-script .ss-step,
+    body.printing-script .ss-dialog,
+    body.printing-script .ss-prep,
+    body.printing-script .ss-timing,
+    body.printing-script .ss-obj,
+    body.printing-script .ss-stack-table {
+        background: white !important;
+        color: black !important;
+        border: 1px solid #999 !important;
+        page-break-inside: avoid;
+    }
+    body.printing-script .ss-step-num { background: #333; color: white; }
+}
