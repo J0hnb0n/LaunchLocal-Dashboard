@@ -40,14 +40,18 @@ You are building a **production-ready website** for a real local business as par
 
 ## Output Location
 
-**First step — set your working directory** to the slug folder. The auto-upload Stop hook detects work by scanning recently-modified `Client-Sites/<slug>/` folders, so the build must land there.
+**First step — set your working directory** to the slug folder under the Launch Local repo. The auto-upload Stop hook detects work by scanning recently-modified `Client-Sites/<slug>/` folders inside the repo, so the build **must** land at the absolute path below — relative paths from random working directories are unreliable across operators and machines.
 
 ```bash
-mkdir -p Client-Sites/{{clientSlug}}
-cd Client-Sites/{{clientSlug}}
+# Resolves to: $HOME/Documents/AI_Projects/Launch Local on standard installs.
+# Override the LAUNCHLOCAL_REPO env var if your repo lives elsewhere.
+LL_REPO="${LAUNCHLOCAL_REPO:-$HOME/Documents/AI_Projects/Launch Local}"
+mkdir -p "$LL_REPO/Client-Sites/{{clientSlug}}"
+cd "$LL_REPO/Client-Sites/{{clientSlug}}"
+echo "Working in: $(pwd)"
 ```
 
-(Run Claude Code from the `Launch Local` repo root for that relative path to resolve. If you started from elsewhere, use the absolute path instead.)
+Confirm the `Working in:` line resolves to a path containing `Launch Local/Client-Sites/{{clientSlug}}` before writing any files. If it doesn't, the upload hook won't see them.
 
 All file paths below are relative to the slug folder.
 
