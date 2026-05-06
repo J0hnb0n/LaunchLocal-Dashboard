@@ -4,9 +4,8 @@ Thumbs.db
 node_modules/
 setup.bat
 
-# Client sites live here but each is its own git repo + deploy pipeline.
-# Do not track them inside the Launch Local repo.
-Client-Sites/
+# Client sites are tracked in this repo so every PC gets them via git pull.
+# The Stop hook still uploads them to Firebase Storage for dashboard previews.
 
 # Per-operator local state from the upload pipeline (service-account JSON,
 # upload log, last-run marker). See tools/README.md for context.

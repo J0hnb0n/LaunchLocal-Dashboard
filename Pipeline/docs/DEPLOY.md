@@ -161,23 +161,17 @@ doc with `role: 'admin'`. To downgrade (e.g., to `sales`), edit the
 
 ## 8. Update GitHub Secrets across client-site repos
 
-The rotated Firebase CI token from step 0 has to be re-pasted into every
-repo that uses GitHub Actions to deploy a client site to Firebase
-Hosting.
+The rotated Firebase CI token from step 0 has to be re-pasted into any
+repo that uses GitHub Actions to deploy to Firebase Hosting.
 
-For each repo, **Settings → Secrets and variables → Actions → `FIREBASE_TOKEN`** → update with the new value:
+Client sites no longer have their own repos or Firebase Hosting deploys —
+they live inside the main Launch Local repo and are previewed via
+Firebase Storage + the dashboard. Only non-Launch-Local projects need
+the token:
 
 - [ ] [J0hnb0n/topiq](https://github.com/J0hnb0n/topiq/settings/secrets/actions)
-- [ ] [J0hnb0n/taylor-optical](https://github.com/J0hnb0n/taylor-optical/settings/secrets/actions)
-- [ ] [J0hnb0n/little-bones](https://github.com/J0hnb0n/little-bones/settings/secrets/actions)
-- [ ] [J0hnb0n/woodley-genealogy](https://github.com/J0hnb0n/woodley-genealogy/settings/secrets/actions)
-- [ ] [J0hnb0n/noko-pool-co](https://github.com/J0hnb0n/noko-pool-co/settings/secrets/actions) — even though archived
 
-After each update, push a no-op commit (e.g. update the README) to
-verify the deploy succeeds with the new token.
-
-**Done when:** at least one client-site CI run is green with the new
-token.
+**Done when:** the CI run is green with the new token.
 
 ---
 

@@ -18,11 +18,11 @@ Internal web app that automates prospecting, site generation, sales, and client 
 - **Repo:** `J0hnb0n/LaunchLocal-Dashboard`
 - **Maps:** Leaflet + OpenStreetMap (scouting), Nominatim geocoding
 - **APIs:** Google Places v1 + PageSpeed Insights — both proxied through Netlify Functions (`/api/places`, `/api/pagespeed`). The API key lives in `GOOGLE_API_KEY` Netlify env var, never in the client bundle.
-- **Site gen + sync:** Manual Claude Code CLI builds at `Client-Sites/{slug}/`. A Claude Code Stop hook (`.claude/settings.json` → `tools/site-upload-hook.sh`) auto-uploads recently-modified slug folders to Firebase Storage at `sites/{slug}/`. The dashboard previews them via `/preview/{slug}/...` (auth-gated Netlify Function over Storage). No per-PC sharing or git rules to learn — partner just installs the hook once.
+- **Site gen + sync:** Manual Claude Code CLI builds at `Client-Sites/{slug}/`. All client sites are tracked in this repo (not separate repos) — one `git pull` gets every site on any PC. A Claude Code Stop hook (`.claude/settings.json` → `tools/site-upload-hook.sh`) auto-uploads recently-modified slug folders to Firebase Storage at `sites/{slug}/`. The dashboard previews them via `/preview/{slug}/...` (auth-gated Netlify Function over Storage). Client sites have no independent Firebase Hosting — previews go through the dashboard only.
 - **Auth on previews:** Firebase ID token → server-side session cookie (`__llSession`) minted by `/api/session`. The preview iframe carries the cookie; bearer tokens not needed.
 - **Stripe:** Field stubs only (`stripeInvoiceId`), no live API yet
 - **Project Root:** `C:\Users\Woodl\Documents\AI_Projects\Launch Local`
-- **Client Folder Naming:** Every new site auto-slugs from `businessName` → Title-Case-Hyphen (e.g. "Lam's Restaurant" → `Lams-Restaurant`). Logic in `Pipeline/js/utils/slug.js`. Slug is stable once generated (regen preserves it). Stored on both the `sites` doc and in `formData.clientSlug`.
+- **Client Folder Naming:** Every new site auto-slugs from `businessName` → Title-Case-Hyphen (e.g. "Lam's Restaurant" → `Lams-Restaurant`). Logic in `Pipeline/js/utils/slug.js`. Slug is stable once generated (regen preserves it). Stored on both the `sites` doc and in `formData.clientSlug`. New sites are just folders under `Client-Sites/` — commit and push to make them available on every PC.
 
 ## Architecture
 SPA with hash routing. `Pipeline/index.html` = login only; successful auth redirects to `Pipeline/dashboard.html`, which renders modules into a content area. Firebase Auth handles session persistence.
@@ -44,11 +44,11 @@ Launch Local/                   (Netlify publishes from here; repo root)
 ├── tools/                      Per-PC operator pipeline (NOT deployed by Netlify)
 │   ├── README.md, setup-windows.bat, package.json
 │   ├── LAPTOP-WORKFLOW.md      Quick reference for laptop / non-primary-PC sessions
-│   ├── sync-all.sh             Pull main repo + clone-or-pull every Client-Sites/ repo
-│   ├── sync-push.sh            Commit + push uncommitted work across main + Client-Sites/
+│   ├── sync-all.sh             Pull main repo (includes all Client-Sites/)
+│   ├── sync-push.sh            Commit + push uncommitted work
 │   ├── site-upload-hook.sh     Stop hook bash wrapper
 │   └── site-upload.js          firebase-admin uploader
-├── Client-Sites/               (gitignored — auto-uploaded to Firebase Storage by hook)
+├── Client-Sites/               (tracked in repo — syncs to every PC via git pull)
 │   └── {ClientSlug}/           Claude Code output (index.html, style.css, script.js, README.md, assets/)
 └── Pipeline/                   Dashboard SPA (Netlify publish dir)
     ├── index.html, dashboard.html, firebase.json, .firebaserc
@@ -118,8 +118,10 @@ Logic in `js/utils/scoring.js`. Score ranges: **0–20 Low, 20–50 Medium, 50�
 - Log to `activityLog` on every major pipeline action (created, generated, status change, sale, payment)
 - Money in cents; dates as Firestore Timestamps, displayed in Eastern Time
 
-## Current Status (2026-04-24)
+## Current Status (2026-05-06)
 **Phases 1–5 COMPLETE.** Foundation, prospecting, site generation + QA, sales/projects/billing, expenses, **plus phase 5: cloud sync + online deploy** — auto-upload Stop hook, Firebase Storage as the shared file system, Netlify Functions for Google API proxying + auth-gated previews, server-side session cookies. Multi-PC operator workflow ready.
+
+**Architecture cleanup (May 2026):** Client sites consolidated into the main repo — no more separate GitHub repos per site. Taylor Optical Firebase Hosting disabled; all client previews go through the dashboard. Woodley Genealogy removed (cancelled). Noko Pool Co retained as archived reference.
 
 ## Roadmap
 _Auto-maintained by the dashboard refresh (daily noon + Claude Code session-end hook). Top 3 open items surface as to-dos in the AI_Projects dashboard. `[ ]` = open, `[x]` = done. Prefer engaging/build-style items over pure cleanup. Keep item text stable so check-off state persists in the dashboard. The loop may mark items done based on recent commits, add inferred new items, and reorder — manual edits always win._

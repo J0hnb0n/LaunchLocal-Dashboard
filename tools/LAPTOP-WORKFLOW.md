@@ -5,6 +5,9 @@ PC). The laptop holds a normal git checkout — **GitHub is the source of truth*
 sync via `git push`/`pull`, never via cloud-folder sync (OneDrive/Dropbox/iCloud
 will corrupt `.git/`).
 
+All client sites live inside this repo at `Client-Sites/{slug}/`. One pull gets
+everything — no separate repos to manage.
+
 ---
 
 ## Start of session
@@ -14,8 +17,7 @@ cd "Launch Local"
 tools/sync-all.sh
 ```
 
-Pulls the main repo and clones-or-pulls every client repo listed in
-`tools/sync-all.sh` into `Client-Sites/{slug}/`. Run once at the start of every
+Pulls the repo (including all client sites). Run once at the start of every
 laptop session before doing any work.
 
 ---
@@ -25,22 +27,20 @@ laptop session before doing any work.
 ```bash
 tools/sync-push.sh
 # or with a custom commit message:
-tools/sync-push.sh -m "Taylor-Optical hero copy"
+tools/sync-push.sh -m "Little-Bones hero copy"
 ```
 
-Walks the main repo + every git repo under `Client-Sites/`, stages + commits
-any uncommitted work as `WIP: laptop sync YYYY-MM-DD-HHMM` (or your `-m`
-message), and pushes. Run before closing the laptop.
+Stages + commits any uncommitted work as `WIP: laptop sync YYYY-MM-DD-HHMM`
+(or your `-m` message), and pushes. Run before closing the laptop.
 
 ---
 
 ## If `sync-all.sh` shows a merge conflict
 
-The script uses `git pull --ff-only`, which refuses to merge. If it fails on
-a repo:
+The script uses `git pull --ff-only`, which refuses to merge. If it fails:
 
 ```bash
-cd "Launch Local"           # or cd Client-Sites/<slug> for a client repo
+cd "Launch Local"
 git pull                    # produces conflict markers
 # resolve in your editor
 git add -A
@@ -48,24 +48,15 @@ git commit -m "Resolve merge"
 git push
 ```
 
-Then re-run `sync-all.sh` to confirm the rest synced.
+Then re-run `sync-all.sh` to confirm it's clean.
 
 ---
 
 ## Adding a new client site
 
-Edit `tools/sync-all.sh` and append to the `SITES` array:
-
-```bash
-SITES=(
-  "Taylor-Optical:J0hnb0n/Taylor-Optical"
-  "Little-Bones-Grill:J0hnb0n/Little-Bones"
-  "New-Client-Slug:owner/repo"          # ← here
-)
-```
-
-Slug is the `Client-Sites/{slug}/` folder name; repo is the GitHub `<owner>/<name>`.
-Slug and repo can diverge.
+Just create the folder under `Client-Sites/{ClientSlug}/` and commit. The slug
+is auto-derived from `businessName` (Title-Case-Hyphen, apostrophes stripped).
+No extra setup needed — the next `sync-push.sh` or commit will include it.
 
 ---
 
