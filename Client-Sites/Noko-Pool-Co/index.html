@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Noko Pool Co | Pool Service Ontario</title>
+  <meta name="description" content="Noko Pool Co — professional pool openings, cleanings, and closings across Norfolk, Haldimand, Oxford, and Brant Counties. Above ground from $250. Now booking 2026!">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ─── RESET & ROOT ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:    #07152a;
+      --navy2:   #0c2040;
+      --pool:    #0891b2;
+      --aqua:    #22d3ee;
+      --sun:     #f59e0b;
+      --white:   #ffffff;
+      --light:   #f0f9ff;
+      --text:    #1e293b;
+      --muted:   #64748b;
+
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      --t: 0.35s;
+      --shadow: 0 24px 64px rgba(0,0,0,0.10);
+      --glow:   0 20px 60px rgba(34,211,238,0.25);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      color: var(--text);
+      background: var(--white);
+      overflow-x: hidden;
+    }
+
+    img { display: block; max-width: 100%; }
+    a   { text-decoration: none; }
+
+    /* ─── NAV ─── */
+    #nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.6rem 3rem;
+      transition: background var(--t) var(--ease),
+                  padding    var(--t) var(--ease),
+                  box-shadow var(--t) var(--ease);
+    }
+
+    #nav.solid {
+      background: rgba(7,21,42,0.96);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 1rem 3rem;
+      box-shadow: 0 1px 0 rgba(34,211,238,0.12);
+    }
+
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      letter-spacing: 0.08em;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      gap: 0.2em;
+    }
+    .nav-logo .dot { color: var(--aqua); }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 2.2rem;
+    }
+    .nav-links a {
+      color: rgba(255,255,255,0.75);
+      font-size: 0.88rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      transition: color var(--t);
+    }
+    .nav-links a:hover { color: var(--aqua); }
+
+    .nav-book {
+      background: var(--aqua);
+      color: var(--navy) !important;
+      font-weight: 700 !important;
+      padding: 0.55rem 1.4rem;
+      border-radius: 50px;
+      transition: background var(--t), transform var(--t), box-shadow var(--t) !important;
+    }
+    .nav-book:hover {
+      background: white !important;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(34,211,238,0.35) !important;
+    }
+
+    /* Hamburger */
+    #ham {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+    #ham span {
+      display: block;
+      width: 24px; height: 2px;
+      background: white;
+      border-radius: 2px;
+      transition: var(--t);
+    }
+
+    /* Mobile overlay */
+    #mob-nav {
+      position: fixed;
+      inset: 0;
+      background: var(--navy);
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s var(--ease);
+    }
+    #mob-nav.open { opacity: 1; pointer-events: all; }
+    #mob-nav a {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 7vw, 4rem);
+      color: white;
+      letter-spacing: 0.1em;
+      transition: color var(--t);
+    }
+    #mob-nav a:hover { color: var(--aqua); }
+    #mob-close {
+      position: absolute;
+      top: 1.5rem; right: 2rem;
+      background: none; border: none;
+      color: white; font-size: 1.8rem;
+      cursor: pointer; line-height: 1;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      position: relative;
+      height: 100svh;
+      min-height: 600px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: var(--navy);
+    }
+
+    #caustic {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+    }
+
+    .hero-vignette {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 50%, transparent 30%, rgba(7,21,42,0.7) 100%),
+        linear-gradient(to bottom, rgba(7,21,42,0.15) 0%, rgba(7,21,42,0.6) 70%, rgba(7,21,42,0.9) 100%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      text-align: center;
+      padding: 2rem;
+      max-width: 960px;
+    }
+
+    /* Staggered hero entrances */
+    .hero-badge,
+    .hero h1,
+    .hero-tagline,
+    .hero-ctas,
+    .hero-scroll { opacity: 0; }
+
+    .hero-badge  { animation: riseIn 0.9s var(--ease) 0.3s  forwards; }
+    .hero h1     { animation: riseIn 0.9s var(--ease) 0.55s forwards; }
+    .hero-tagline{ animation: riseIn 0.9s var(--ease) 0.75s forwards; }
+    .hero-ctas   { animation: riseIn 0.9s var(--ease) 0.95s forwards; }
+    .hero-scroll { animation: riseIn 0.9s var(--ease) 1.3s  forwards; }
+
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(32px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(245,158,11,0.12);
+      border: 1px solid rgba(245,158,11,0.35);
+      color: var(--sun);
+      padding: 0.45rem 1.1rem;
+      border-radius: 50px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 1.8rem;
+    }
+    .badge-dot {
+      width: 7px; height: 7px;
+      background: var(--sun);
+      border-radius: 50%;
+      animation: dotPulse 1.4s ease-in-out infinite;
+    }
+    @keyframes dotPulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    .hero h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4.5rem, 14vw, 11rem);
+      color: var(--white);
+      line-height: 0.88;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.15em;
+    }
+    .hero h1 .accent { color: var(--aqua); }
+
+    .hero-tagline {
+      font-size: clamp(0.85rem, 1.8vw, 1.1rem);
+      color: rgba(255,255,255,0.55);
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      margin-bottom: 2.8rem;
+    }
+    .hero-tagline span {
+      margin: 0 0.8rem;
+      color: rgba(34,211,238,0.5);
+      font-size: 0.7em;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-aqua {
+      background: var(--aqua);
+      color: var(--navy);
+      padding: 1rem 2.6rem;
+      border-radius: 50px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      letter-spacing: 0.04em;
+      transition: all var(--t) var(--ease);
+      box-shadow: 0 10px 36px rgba(34,211,238,0.4);
+    }
+    .btn-aqua:hover {
+      background: white;
+      transform: translateY(-3px);
+      box-shadow: 0 16px 48px rgba(34,211,238,0.45);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: white;
+      padding: 1rem 2.6rem;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: 0.04em;
+      border: 1.5px solid rgba(255,255,255,0.28);
+      transition: all var(--t) var(--ease);
+    }
+    .btn-ghost:hover {
+      border-color: var(--aqua);
+      color: var(--aqua);
+      transform: translateY(-3px);
+    }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 3.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.35);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+    .scroll-mouse {
+      width: 22px; height: 36px;
+      border: 1.5px solid rgba(255,255,255,0.25);
+      border-radius: 11px;
+      position: relative;
+    }
+    .scroll-mouse::after {
+      content: '';
+      position: absolute;
+      top: 5px; left: 50%;
+      transform: translateX(-50%);
+      width: 3px; height: 7px;
+      background: var(--aqua);
+      border-radius: 2px;
+      animation: scrollBob 1.6s ease-in-out infinite;
+    }
+    @keyframes scrollBob {
+      0%   { transform: translateX(-50%) translateY(0); opacity: 1; }
+      100% { transform: translateX(-50%) translateY(11px); opacity: 0; }
+    }
+
+    /* Wave divider */
+    .wave {
+      position: absolute;
+      bottom: -2px; left: 0; right: 0;
+      z-index: 4;
+      line-height: 0;
+    }
+    .wave svg { display: block; width: 100%; }
+
+    /* Animated wave shape */
+    .wave-animated {
+      position: absolute;
+      bottom: 55px; left: 0; right: 0;
+      z-index: 3;
+      opacity: 0.15;
+    }
+    .wave-animated svg {
+      width: 200%;
+      animation: waveShift 8s linear infinite;
+    }
+    @keyframes waveShift {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ─── SECTION BASE ─── */
+    section { padding: 5.5rem 2rem; }
+    .wrap   { max-width: 1200px; margin: 0 auto; }
+
+    .eyebrow {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--pool);
+      margin-bottom: 0.7rem;
+    }
+    .eyebrow.light { color: var(--aqua); }
+
+    .sec-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.4rem, 6vw, 4.5rem);
+      line-height: 0.95;
+      letter-spacing: 0.04em;
+      color: var(--navy);
+      margin-bottom: 1.2rem;
+    }
+    .sec-title.light { color: var(--white); }
+
+    .sec-sub {
+      font-size: 1.05rem;
+      color: var(--muted);
+      line-height: 1.65;
+      max-width: 520px;
+    }
+    .sec-sub.light { color: rgba(255,255,255,0.55); }
+
+    /* ─── SERVICES BAND ─── */
+    .services-band {
+      background: var(--navy2);
+      padding: 4rem 2rem;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,0.06);
+    }
+
+    .svc-card {
+      background: var(--navy2);
+      padding: 3.5rem 2.5rem;
+      text-align: center;
+      position: relative;
+      transition: background var(--t);
+      cursor: default;
+      overflow: hidden;
+    }
+    .svc-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--pool), var(--aqua));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.45s var(--ease);
+    }
+    .svc-card:hover { background: rgba(34,211,238,0.04); }
+    .svc-card:hover::after { transform: scaleX(1); }
+
+    .svc-icon {
+      width: 72px; height: 72px;
+      margin: 0 auto 1.8rem;
+      color: var(--aqua);
+    }
+    .svc-icon svg { width: 100%; height: 100%; }
+
+    .svc-card h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      letter-spacing: 0.06em;
+      color: var(--white);
+      margin-bottom: 0.8rem;
+    }
+    .svc-card p {
+      color: rgba(255,255,255,0.45);
+      font-size: 0.92rem;
+      line-height: 1.65;
+    }
+
+    /* ─── PRICING ─── */
+    .pricing-section { background: var(--light); }
+
+    .pricing-intro {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin-bottom: 3.5rem;
+    }
+
+    .pricing-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.8rem;
+    }
+
+    .price-card {
+      background: white;
+      border-radius: 28px;
+      padding: 2.8rem;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      transition: transform var(--t), box-shadow var(--t);
+    }
+    .price-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--pool), var(--aqua));
+    }
+    .price-card:hover {
+      transform: translateY(-10px);
+      box-shadow: var(--glow);
+    }
+
+    .price-card.hero-card {
+      background: var(--navy);
+      color: white;
+    }
+    .price-card.hero-card::before {
+      background: linear-gradient(90deg, var(--aqua), var(--sun));
+    }
+
+    .price-type {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--pool);
+      margin-bottom: 0.5rem;
+    }
+    .hero-card .price-type { color: var(--aqua); }
+
+    .price-card h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.9rem;
+      letter-spacing: 0.04em;
+      color: var(--navy);
+      margin-bottom: 1.2rem;
+    }
+    .hero-card h3 { color: white; }
+
+    .price-val {
+      display: flex;
+      align-items: baseline;
+      gap: 0.35rem;
+      margin-bottom: 1.8rem;
+    }
+    .price-from-label {
+      font-size: 0.88rem;
+      color: var(--muted);
+      font-weight: 400;
+    }
+    .hero-card .price-from-label { color: rgba(255,255,255,0.45); }
+
+    .price-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 4rem;
+      letter-spacing: 0.02em;
+      color: var(--navy);
+      line-height: 1;
+    }
+    .hero-card .price-num { color: var(--aqua); }
+
+    .price-features {
+      list-style: none;
+      margin-bottom: 2.2rem;
+    }
+    .price-features li {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      font-size: 0.93rem;
+      color: var(--muted);
+    }
+    .hero-card .price-features li {
+      border-bottom-color: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.6);
+    }
+    .price-features li::before {
+      content: '✓';
+      color: var(--pool);
+      font-weight: 800;
+      font-size: 0.85rem;
+      min-width: 18px;
+    }
+    .hero-card .price-features li::before { color: var(--aqua); }
+
+    .btn-full {
+      display: block;
+      text-align: center;
+      padding: 0.95rem;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.05em;
+      transition: all var(--t);
+    }
+    .btn-full.dark  { background: var(--navy); color: white; }
+    .btn-full.aqua  { background: var(--aqua); color: var(--navy); }
+    .btn-full.navy2 { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.15); }
+    .btn-full:hover { opacity: 0.85; transform: translateY(-2px); }
+
+    /* ─── PILLARS ─── */
+    .pillars-section { padding: 6rem 2rem; }
+
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 3.5rem;
+      margin-top: 4rem;
+    }
+
+    .pillar {
+      position: relative;
+      padding-top: 0.5rem;
+    }
+    .pillar-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 7rem;
+      color: rgba(8,145,178,0.07);
+      line-height: 1;
+      position: absolute;
+      top: -1.5rem; left: -0.8rem;
+      letter-spacing: -0.02em;
+      pointer-events: none;
+    }
+    .pillar-icon {
+      width: 56px; height: 56px;
+      background: rgba(8,145,178,0.09);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--pool);
+      margin-bottom: 1.5rem;
+      position: relative;
+      transition: background var(--t), transform var(--t);
+    }
+    .pillar:hover .pillar-icon {
+      background: rgba(34,211,238,0.14);
+      transform: scale(1.07);
+    }
+    .pillar h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.9rem;
+      letter-spacing: 0.05em;
+      color: var(--navy);
+      margin-bottom: 0.7rem;
+      position: relative;
+    }
+    .pillar p {
+      color: var(--muted);
+      font-size: 0.94rem;
+      line-height: 1.65;
+      position: relative;
+    }
+
+    /* ─── AREAS ─── */
+    .areas-section {
+      background: var(--navy);
+      padding: 6rem 2rem;
+    }
+
+    .areas-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      margin-top: 3rem;
+      align-items: center;
+    }
+
+    .areas-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .area-tile {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(34,211,238,0.12);
+      border-radius: 20px;
+      padding: 1.8rem 1.5rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      transition: all var(--t);
+      cursor: default;
+    }
+    .area-tile:hover {
+      background: rgba(34,211,238,0.07);
+      border-color: rgba(34,211,238,0.35);
+      transform: translateY(-4px);
+    }
+    .area-pin {
+      width: 40px; height: 40px;
+      background: rgba(34,211,238,0.1);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--aqua);
+      flex-shrink: 0;
+    }
+    .area-tile h4 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.3rem;
+      letter-spacing: 0.05em;
+      color: white;
+      margin-bottom: 0.25rem;
+    }
+    .area-tile p {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.35);
+      line-height: 1.4;
+    }
+
+    /* ─── MISSION ─── */
+    .mission-section {
+      background: linear-gradient(135deg, #0284c7 0%, #0891b2 40%, #0e7490 100%);
+      padding: 7rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .mission-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 30px 30px;
+    }
+    .mission-section .wrap { position: relative; z-index: 1; }
+
+    .mission-quote {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.2rem, 6vw, 4.2rem);
+      color: white;
+      letter-spacing: 0.04em;
+      line-height: 1.05;
+      max-width: 820px;
+      margin: 0 auto 2rem;
+    }
+    .mission-body {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.78);
+      line-height: 1.65;
+      max-width: 580px;
+      margin: 0 auto;
+    }
+
+    /* ─── CONTACT ─── */
+    .contact-section { background: var(--light); }
+
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 4.5rem;
+      margin-top: 3.5rem;
+      align-items: start;
+    }
+
+    .contact-details { display: flex; flex-direction: column; gap: 1.8rem; }
+
+    .cdet {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.2rem;
+    }
+    .cdet-icon {
+      width: 50px; height: 50px;
+      background: rgba(8,145,178,0.1);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--pool);
+      flex-shrink: 0;
+    }
+    .cdet-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.3rem;
+    }
+    .cdet-val {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--navy);
+    }
+    .cdet-val a {
+      color: var(--navy);
+      transition: color var(--t);
+    }
+    .cdet-val a:hover { color: var(--pool); }
+
+    .cta-box {
+      background: var(--navy);
+      border-radius: 20px;
+      padding: 2rem;
+      margin-top: 0.5rem;
+    }
+    .cta-box h4 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      color: var(--aqua);
+      letter-spacing: 0.06em;
+      margin-bottom: 0.5rem;
+    }
+    .cta-box p {
+      color: rgba(255,255,255,0.6);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    .cta-box .btn-aqua {
+      display: inline-block;
+      margin-top: 1.2rem;
+      font-size: 0.9rem;
+      padding: 0.85rem 2rem;
+    }
+
+    /* Form */
+    .contact-form {
+      background: white;
+      border-radius: 28px;
+      padding: 2.8rem;
+      box-shadow: var(--shadow);
+    }
+    .form-h {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      letter-spacing: 0.04em;
+      color: var(--navy);
+      margin-bottom: 1.8rem;
+    }
+
+    .fgroup { margin-bottom: 1.2rem; }
+    .fgroup label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 0.45rem;
+    }
+    .fgroup input,
+    .fgroup select,
+    .fgroup textarea {
+      width: 100%;
+      padding: 0.85rem 1.1rem;
+      border: 1.5px solid rgba(0,0,0,0.09);
+      border-radius: 12px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      color: var(--text);
+      background: var(--light);
+      outline: none;
+      transition: border-color var(--t), background var(--t);
+      appearance: none;
+    }
+    .fgroup input:focus,
+    .fgroup select:focus,
+    .fgroup textarea:focus {
+      border-color: var(--pool);
+      background: white;
+    }
+    .fgroup textarea { resize: vertical; min-height: 110px; }
+
+    .frow { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .form-btn {
+      width: 100%;
+      padding: 1.05rem;
+      border: none;
+      border-radius: 14px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      background: var(--navy);
+      color: white;
+      cursor: pointer;
+      transition: all var(--t);
+      margin-top: 0.5rem;
+    }
+    .form-btn:hover { background: var(--pool); transform: translateY(-2px); }
+
+    #form-success {
+      display: none;
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+    .success-emoji { font-size: 3.5rem; margin-bottom: 1rem; }
+    .success-title { font-family:'Bebas Neue',sans-serif; font-size:2rem; letter-spacing:0.06em; color:var(--navy); margin-bottom:0.5rem; }
+    .success-sub { color:var(--muted); font-size:0.95rem; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: #04101f;
+      padding: 4rem 2rem 2rem;
+      color: rgba(255,255,255,0.4);
+    }
+    .footer-top {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 3.5rem;
+      padding-bottom: 3rem;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .footer-brand-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.2rem;
+      letter-spacing: 0.08em;
+      color: white;
+      margin-bottom: 0.7rem;
+    }
+    .footer-brand-name .aqua { color: var(--aqua); }
+    .footer-brand p {
+      font-size: 0.88rem;
+      line-height: 1.6;
+      max-width: 280px;
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-socials {
+      display: flex;
+      gap: 0.75rem;
+    }
+    .social {
+      width: 40px; height: 40px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.5);
+      transition: all var(--t);
+    }
+    .social:hover { background: var(--aqua); color: var(--navy); }
+
+    .footer-col h4 {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+      margin-bottom: 1.3rem;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: 0.75rem; }
+    .footer-col a {
+      color: rgba(255,255,255,0.45);
+      font-size: 0.9rem;
+      transition: color var(--t);
+    }
+    .footer-col a:hover { color: var(--aqua); }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 1.5rem auto 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    /* ─── SCROLL REVEALS ─── */
+    .rev {
+      opacity: 0;
+      transform: translateY(36px);
+      transition: opacity 0.75s var(--ease), transform 0.75s var(--ease);
+    }
+    .rev.d1 { transition-delay: 0.1s; }
+    .rev.d2 { transition-delay: 0.2s; }
+    .rev.d3 { transition-delay: 0.3s; }
+    .rev.in  { opacity: 1; transform: none; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      .contact-layout { grid-template-columns: 1fr; gap: 2.5rem; }
+      .areas-layout   { grid-template-columns: 1fr; gap: 2rem; }
+      .footer-top     { grid-template-columns: 1fr; gap: 2.5rem; }
+    }
+
+    @media (max-width: 768px) {
+      #nav { padding: 1.2rem 1.5rem; }
+      #nav.solid { padding: 0.9rem 1.5rem; }
+      .nav-links { display: none; }
+      #ham { display: flex; }
+      .services-grid { grid-template-columns: 1fr; }
+      .areas-cards { grid-template-columns: 1fr; }
+      .frow { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 540px) {
+      .hero-ctas { flex-direction: column; align-items: center; }
+      .btn-aqua, .btn-ghost { width: 100%; max-width: 280px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ MOBILE NAV ═══════════════════════════ -->
+<div id="mob-nav">
+  <button id="mob-close">✕</button>
+  <a href="#services" onclick="closeMob()">Services</a>
+  <a href="#pricing"  onclick="closeMob()">Pricing</a>
+  <a href="#areas"    onclick="closeMob()">Areas</a>
+  <a href="#contact"  onclick="closeMob()" style="color:var(--aqua)">Book Now</a>
+</div>
+
+<!-- ═══════════════════════════ NAVBAR ═══════════════════════════ -->
+<nav id="nav">
+  <a href="#home" class="nav-logo">NOKO<span class="dot"> •</span> POOL CO</a>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#areas">Service Areas</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="tel:5194298174" class="nav-book">Book Now</a></li>
+  </ul>
+  <div id="ham">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+<section class="hero" id="home">
+  <canvas id="caustic"></canvas>
+  <div class="hero-vignette"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Now Booking 2026 Pool Openings
+    </div>
+
+    <h1>NOKO<br><span class="accent">POOL CO</span></h1>
+
+    <p class="hero-tagline">
+      Openings <span>◆</span> Cleanings <span>◆</span> Closings
+    </p>
+
+    <div class="hero-ctas">
+      <a href="tel:5194298174" class="btn-aqua">📞 Call 519 429 8174</a>
+      <a href="#services" class="btn-ghost">Our Services ↓</a>
+    </div>
+  </div>
+
+  <!-- Animated wave -->
+  <div class="wave-animated">
+    <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,40 C240,70 480,10 720,40 C960,70 1200,10 1440,40 C1680,70 1920,10 2160,40 C2400,70 2640,10 2880,40 L2880,80 L0,80 Z" fill="#22d3ee"/>
+    </svg>
+  </div>
+
+  <!-- Static wave divider -->
+  <div class="wave">
+    <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="#0c2040"/>
+    </svg>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="hero-scroll">
+    <div class="scroll-mouse"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ SERVICES BAND ═══════════════════════════ -->
+<section class="services-band" id="services">
+  <div class="wrap">
+    <div class="services-grid">
+
+      <!-- Opening -->
+      <div class="svc-card rev">
+        <div class="svc-icon">
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M40 12 L40 40 M40 12 L28 24 M40 12 L52 24" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="10" y="46" width="60" height="26" rx="6" stroke="currentColor" stroke-width="3"/>
+            <path d="M10 58 C22 50, 34 66, 46 58 C58 50, 70 66, 70 58" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3>Pool Openings</h3>
+        <p>Spring startup done right. Cover removal, equipment reconnection, water balancing, and full system inspection to get you swim-ready fast.</p>
+      </div>
+
+      <!-- Cleaning -->
+      <div class="svc-card rev d1">
+        <div class="svc-icon">
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="40" cy="36" r="22" stroke="currentColor" stroke-width="3"/>
+            <path d="M28 30 Q40 22 52 30" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+            <path d="M26 40 Q40 48 54 40" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+            <path d="M22 58 C30 68 50 68 58 58" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3>Pool Cleanings</h3>
+        <p>Crystal-clear water all summer long. Regular vacuuming, skimming, brushing, and chemical maintenance so you can dive in worry-free.</p>
+      </div>
+
+      <!-- Closing -->
+      <div class="svc-card rev d2">
+        <div class="svc-icon">
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M40 68 L40 40 M40 68 L28 56 M40 68 L52 56" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="10" y="8" width="60" height="26" rx="6" stroke="currentColor" stroke-width="3"/>
+            <path d="M10 22 C22 14, 34 30, 46 22 C58 14, 70 30, 70 22" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3>Pool Closings</h3>
+        <p>Protect your investment through the Ontario winter. Full winterization, equipment blowout, cover installation, and chemical treatment.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ PRICING ═══════════════════════════ -->
+<section class="pricing-section" id="pricing">
+  <div class="wrap">
+    <div class="pricing-intro">
+      <div>
+        <span class="eyebrow rev">Transparent Pricing</span>
+        <h2 class="sec-title rev">Honest Rates.<br>No Surprises.</h2>
+      </div>
+      <p class="sec-sub rev" style="text-align:right;">No hidden fees. Straightforward pricing for above ground and inground pools — call for a custom cleaning or closing quote.</p>
+    </div>
+
+    <div class="pricing-cards">
+
+      <!-- Above Ground -->
+      <div class="price-card rev">
+        <div class="price-type">Above Ground</div>
+        <h3>Pool Opening</h3>
+        <div class="price-val">
+          <span class="price-from-label">From</span>
+          <span class="price-num">$250</span>
+        </div>
+        <ul class="price-features">
+          <li>Cover removal &amp; storage</li>
+          <li>Equipment reconnection</li>
+          <li>Water chemistry balance</li>
+          <li>System startup &amp; inspection</li>
+          <li>Debris removal</li>
+        </ul>
+        <a href="tel:5194298174" class="btn-full dark">Book Your Opening</a>
+      </div>
+
+      <!-- Inground — Featured -->
+      <div class="price-card hero-card rev d1">
+        <div class="price-type">Inground</div>
+        <h3>Pool Opening</h3>
+        <div class="price-val">
+          <span class="price-from-label">From</span>
+          <span class="price-num">$275</span>
+        </div>
+        <ul class="price-features">
+          <li>Cover removal &amp; storage</li>
+          <li>Equipment reconnection</li>
+          <li>Water chemistry balance</li>
+          <li>System startup &amp; inspection</li>
+          <li>Debris removal</li>
+          <li>Return line plugs removed</li>
+        </ul>
+        <a href="tel:5194298174" class="btn-full aqua">Book Your Opening</a>
+      </div>
+
+      <!-- Cleanings & Closings -->
+      <div class="price-card rev d2">
+        <div class="price-type">All Pool Types</div>
+        <h3>Cleanings &amp; Closings</h3>
+        <div class="price-val">
+          <span class="price-from-label" style="font-size:1.3rem;font-weight:700;color:var(--pool);">Custom Quote</span>
+        </div>
+        <ul class="price-features">
+          <li>Weekly / bi-weekly maintenance</li>
+          <li>Chemistry testing &amp; balancing</li>
+          <li>Vacuuming &amp; skimming</li>
+          <li>Fall winterization</li>
+          <li>Cover installation</li>
+          <li>Equipment blowout</li>
+        </ul>
+        <a href="tel:5194298174" class="btn-full dark">Get a Free Quote</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ PILLARS ═══════════════════════════ -->
+<section class="pillars-section">
+  <div class="wrap">
+    <span class="eyebrow rev">Why Noko</span>
+    <h2 class="sec-title rev">Local. Professional.<br>Trusted.</h2>
+
+    <div class="pillars-grid">
+
+      <div class="pillar rev">
+        <div class="pillar-num">01</div>
+        <div class="pillar-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+        </div>
+        <h3>Expert Practices</h3>
+        <p>Trained professionals with hands-on experience across all pool types and equipment brands. We do the job right — the first time.</p>
+      </div>
+
+      <div class="pillar rev d1">
+        <div class="pillar-num">02</div>
+        <div class="pillar-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <h3>Affordable Services</h3>
+        <p>Competitive rates without compromising quality. Transparent pricing with no hidden fees — exactly what you see is what you pay.</p>
+      </div>
+
+      <div class="pillar rev d2">
+        <div class="pillar-num">03</div>
+        <div class="pillar-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <h3>Fully Insured</h3>
+        <p>Complete peace of mind knowing your property is protected. We're fully insured — so you can relax while we take care of your pool.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ SERVICE AREAS ═══════════════════════════ -->
+<section class="areas-section" id="areas">
+  <div class="wrap">
+    <div class="areas-layout">
+      <div>
+        <span class="eyebrow light rev">Where We Work</span>
+        <h2 class="sec-title light rev">Serving Southern<br>Ontario</h2>
+        <p class="sec-sub light rev">Proudly serving your local community across four counties. Not sure if we cover your area? Give us a call — we'll let you know.</p>
+        <br>
+        <a href="tel:5194298174" class="btn-aqua rev" style="display:inline-block;margin-top:1rem;">Call 519 429 8174</a>
+      </div>
+
+      <div class="areas-cards">
+        <div class="area-tile rev">
+          <div class="area-pin">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+          </div>
+          <div>
+            <h4>Norfolk County</h4>
+            <p>Simcoe, Port Dover, Delhi &amp; area</p>
+          </div>
+        </div>
+
+        <div class="area-tile rev d1">
+          <div class="area-pin">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+          </div>
+          <div>
+            <h4>Haldimand County</h4>
+            <p>Caledonia, Cayuga, Dunnville &amp; area</p>
+          </div>
+        </div>
+
+        <div class="area-tile rev d1">
+          <div class="area-pin">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+          </div>
+          <div>
+            <h4>Oxford County</h4>
+            <p>Woodstock, Tillsonburg, Ingersoll &amp; area</p>
+          </div>
+        </div>
+
+        <div class="area-tile rev d2">
+          <div class="area-pin">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+          </div>
+          <div>
+            <h4>Brant County</h4>
+            <p>Brantford, Paris, Burford &amp; area</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ MISSION ═══════════════════════════ -->
+<section class="mission-section">
+  <div class="wrap">
+    <div class="mission-quote rev">
+      "Serving Your Community,<br>One Pool at a Time"
+    </div>
+    <p class="mission-body rev d1">
+      Our mission is to provide quality cleaning and maintenance to swimming pools across your local community. With integrity in mind, we keep our customers stress-free while we open, close, and care for their pools all season long.
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ CONTACT ═══════════════════════════ -->
+<section class="contact-section" id="contact">
+  <div class="wrap">
+    <span class="eyebrow rev">Get In Touch</span>
+    <h2 class="sec-title rev">Ready to Book?</h2>
+
+    <div class="contact-layout">
+
+      <!-- Left: Details -->
+      <div class="contact-details rev">
+
+        <div class="cdet">
+          <div class="cdet-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 15z"/>
+            </svg>
+          </div>
+          <div>
+            <div class="cdet-label">Phone</div>
+            <div class="cdet-val"><a href="tel:5194298174">519 429 8174</a></div>
+          </div>
+        </div>
+
+        <div class="cdet">
+          <div class="cdet-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </div>
+          <div>
+            <div class="cdet-label">Email</div>
+            <div class="cdet-val"><a href="mailto:nokopoolco@gmail.com">nokopoolco@gmail.com</a></div>
+          </div>
+        </div>
+
+        <div class="cdet">
+          <div class="cdet-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div>
+            <div class="cdet-label">Hours</div>
+            <div class="cdet-val">Mon – Fri: 8am – 8pm</div>
+          </div>
+        </div>
+
+        <!-- Booking CTA box -->
+        <div class="cta-box">
+          <h4>📅 Spots Filling Fast!</h4>
+          <p>We're now booking 2026 pool openings across Southern Ontario. Call today to lock in your preferred date before the spring rush.</p>
+          <a href="tel:5194298174" class="btn-aqua">Call to Reserve Your Date</a>
+        </div>
+
+      </div>
+
+      <!-- Right: Form -->
+      <div class="contact-form rev d1">
+        <div class="form-h">Send a Message</div>
+        <form id="cform" onsubmit="handleForm(event)">
+          <div class="frow">
+            <div class="fgroup">
+              <label>First Name</label>
+              <input type="text" placeholder="John" required>
+            </div>
+            <div class="fgroup">
+              <label>Last Name</label>
+              <input type="text" placeholder="Smith" required>
+            </div>
+          </div>
+          <div class="fgroup">
+            <label>Email</label>
+            <input type="email" placeholder="john@example.com" required>
+          </div>
+          <div class="fgroup">
+            <label>Phone</label>
+            <input type="tel" placeholder="519 000 0000">
+          </div>
+          <div class="fgroup">
+            <label>Service Needed</label>
+            <select>
+              <option>Pool Opening — Above Ground</option>
+              <option>Pool Opening — Inground</option>
+              <option>Pool Cleaning</option>
+              <option>Pool Closing</option>
+              <option>Not Sure / Other</option>
+            </select>
+          </div>
+          <div class="fgroup">
+            <label>Message</label>
+            <textarea placeholder="Tell us about your pool and any preferred dates..."></textarea>
+          </div>
+          <button type="submit" class="form-btn">Send Message →</button>
+        </form>
+        <div id="form-success">
+          <div class="success-emoji">🎉</div>
+          <div class="success-title">Message Sent!</div>
+          <p class="success-sub">Thanks for reaching out. We'll be in touch within one business day.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="footer-brand-name">NOKO <span class="aqua">POOL CO</span></div>
+      <p>Your local, professional pool service company serving Norfolk, Haldimand, Oxford, and Brant Counties since 2024.</p>
+      <div class="footer-socials">
+        <a href="https://www.instagram.com/nokopoolco/" class="social" target="_blank" aria-label="Instagram">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+          </svg>
+        </a>
+        <a href="https://www.facebook.com/profile.php?id=61559534487864" class="social" target="_blank" aria-label="Facebook">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h4>Services</h4>
+      <ul>
+        <li><a href="#services">Pool Openings</a></li>
+        <li><a href="#services">Pool Cleanings</a></li>
+        <li><a href="#services">Pool Closings</a></li>
+        <li><a href="#pricing">View Pricing</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="tel:5194298174">519 429 8174</a></li>
+        <li><a href="mailto:nokopoolco@gmail.com">nokopoolco@gmail.com</a></li>
+        <li><a href="#areas">Norfolk County</a></li>
+        <li><a href="#areas">Haldimand County</a></li>
+        <li><a href="#areas">Oxford County</a></li>
+        <li><a href="#areas">Brant County</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <span>© 2026 Noko Pool Co. All rights reserved.</span>
+    <span>Mon–Fri 8am–8pm · 519 429 8174</span>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════ SCRIPTS ═══════════════════════════ -->
+<script>
+/* ─── CAUSTIC CANVAS ─── */
+(function() {
+  const c   = document.getElementById('caustic');
+  const ctx = c.getContext('2d');
+  let   t   = 0;
+
+  function resize() {
+    c.width  = window.innerWidth;
+    c.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Light blob sources — each has a resting position, orbit, radius, speed, phase
+  const blobs = [
+    { bx:0.25, by:0.35, r:380, sp:0.50, ph:0.0,  ax:0.12, ay:0.09 },
+    { bx:0.65, by:0.25, r:300, sp:0.37, ph:2.1,  ax:0.08, ay:0.13 },
+    { bx:0.50, by:0.65, r:430, sp:0.27, ph:4.2,  ax:0.11, ay:0.07 },
+    { bx:0.80, by:0.50, r:270, sp:0.61, ph:1.0,  ax:0.07, ay:0.10 },
+    { bx:0.15, by:0.70, r:240, sp:0.44, ph:3.3,  ax:0.10, ay:0.09 },
+    { bx:0.90, by:0.20, r:200, sp:0.55, ph:5.5,  ax:0.09, ay:0.11 },
+    { bx:0.40, by:0.15, r:180, sp:0.70, ph:1.8,  ax:0.06, ay:0.08 },
+  ];
+
+  // Shimmer line params
+  const lines = Array.from({length: 10}, (_, i) => ({
+    xRatio: 0.05 + i * 0.09,
+    phX: i * 0.7,
+    phY: i * 0.5,
+    spd: 0.18 + i * 0.025,
+    width: 0.6 + Math.random() * 0.8,
+  }));
+
+  function frame() {
+    t += 0.007;
+    ctx.clearRect(0, 0, c.width, c.height);
+
+    // --- Glow blobs ---
+    blobs.forEach(b => {
+      const x = c.width  * (b.bx + b.ax * Math.sin(t * b.sp + b.ph));
+      const y = c.height * (b.by + b.ay * Math.cos(t * b.sp * 0.8 + b.ph + 1));
+      const g = ctx.createRadialGradient(x, y, 0, x, y, b.r);
+      g.addColorStop(0,   'rgba(28, 210, 255, 0.17)');
+      g.addColorStop(0.35,'rgba(8, 145, 178, 0.09)');
+      g.addColorStop(0.7, 'rgba(2, 80, 160, 0.04)');
+      g.addColorStop(1,   'rgba(0, 30, 80, 0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, c.width, c.height);
+    });
+
+    // --- Shimmer lines (caustic effect) ---
+    ctx.save();
+    ctx.globalAlpha = 0.05;
+    lines.forEach(l => {
+      const x1 = c.width  * (l.xRatio + 0.04 * Math.sin(t * l.spd + l.phX));
+      const y1 = c.height * (0.05     + 0.06 * Math.cos(t * l.spd + l.phY));
+      const x2 = c.width  * (1 - l.xRatio + 0.04 * Math.cos(t * l.spd * 0.9 + l.phX));
+      const y2 = c.height * (0.95 - 0.06 * Math.sin(t * l.spd + l.phY));
+
+      const cx_ = c.width  * (0.3 + 0.4 * Math.sin(t * 0.18 + l.phX * 0.5));
+      const cy_ = c.height * (0.4 + 0.2 * Math.cos(t * 0.12 + l.phY));
+
+      const lg = ctx.createLinearGradient(x1, y1, x2, y2);
+      lg.addColorStop(0,    'rgba(130, 245, 255, 0)');
+      lg.addColorStop(0.45, 'rgba(130, 245, 255, 0.9)');
+      lg.addColorStop(0.55, 'rgba(180, 255, 255, 1)');
+      lg.addColorStop(1,    'rgba(130, 245, 255, 0)');
+
+      ctx.strokeStyle = lg;
+      ctx.lineWidth   = l.width * (1 + 0.4 * Math.sin(t * 0.8 + l.phX));
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.quadraticCurveTo(cx_, cy_, x2, y2);
+      ctx.stroke();
+    });
+    ctx.restore();
+
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+
+/* ─── NAVBAR SCROLL ─── */
+(function() {
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('solid', window.scrollY > 60);
+  }, { passive: true });
+})();
+
+/* ─── MOBILE NAV ─── */
+(function() {
+  const ham    = document.getElementById('ham');
+  const mob    = document.getElementById('mob-nav');
+  const close_ = document.getElementById('mob-close');
+
+  ham.addEventListener('click', () => {
+    mob.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  });
+
+  window.closeMob = function() {
+    mob.classList.remove('open');
+    document.body.style.overflow = '';
+  };
+  close_.addEventListener('click', closeMob);
+})();
+
+/* ─── SCROLL REVEAL ─── */
+(function() {
+  const els = document.querySelectorAll('.rev');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  els.forEach(el => obs.observe(el));
+})();
+
+/* ─── CONTACT FORM ─── */
+function handleForm(e) {
+  e.preventDefault();
+  document.getElementById('cform').style.display = 'none';
+  document.getElementById('form-success').style.display = 'block';
+}
+
+/* ─── SMOOTH ANCHOR SCROLL ─── */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+});
+</script>
+
+</body>
+</html>

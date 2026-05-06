@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Little Bones Grill — Norwich, Ontario</title>
+  <link rel="icon" type="image/jpeg" href="Product Photos/flame logo.jpg" />
+  <meta property="og:title" content="Little Bones Grill — Norwich, Ontario" />
+  <meta property="og:description" content="Fresh-made sandwiches, sled dogs &amp; weekly specials. Wed–Sat, 11 AM–5 PM. 7 Stover Street S, Norwich, Ontario." />
+  <meta property="og:image" content="Product Photos/henhouse chicken sandwich.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <style>
+    :root {
+      --bg:        #eae3d4;
+      --bg-dark:   #1c1510;
+      --cream:     #f6f1e9;
+      --accent:    #b35a26;
+      --accent-lt: #d4784a;
+      --gold:      #c4903a;
+      --text:      #291d10;
+      --muted:     #6b5744;
+      --border:    #d6cbb8;
+      --nav-h:     72px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── NAV ── */
+    #nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: var(--nav-h); z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px;
+      transition: background 0.5s, box-shadow 0.5s;
+    }
+    #nav.scrolled {
+      background: rgba(234,227,212,0.93);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 1px 0 var(--border);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 12px; }
+    .nav-badge {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--bg-dark); overflow: hidden; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nav-badge svg { width: 42px; height: 42px; }
+    .nav-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px; font-weight: 600; letter-spacing: 0.04em;
+    }
+    .nav-links { display: flex; gap: 36px; list-style: none; }
+    .nav-links a {
+      font-size: 13px; font-weight: 500; letter-spacing: 0.12em;
+      text-transform: uppercase; opacity: 0.72;
+      transition: opacity 0.2s;
+    }
+    .nav-links a:hover { opacity: 1; }
+    .nav-cta {
+      background: var(--accent) !important; color: #fff !important;
+      opacity: 1 !important; padding: 10px 22px; border-radius: 2px;
+    }
+    .nav-cta:hover { background: var(--accent-lt) !important; }
+
+    /* ── HAMBURGER BUTTON ── */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 6px 4px;
+      z-index: 101;
+    }
+    .nav-hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 1px;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* ── MOBILE NAV DRAWER ── */
+    #nav-drawer {
+      display: none;
+      position: fixed;
+      top: var(--nav-h);
+      left: 0; right: 0;
+      background: rgba(234,227,212,0.97);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 99;
+      padding: 4px 24px 24px;
+      border-bottom: 1px solid var(--border);
+      flex-direction: column;
+      box-shadow: 0 8px 24px rgba(41,29,16,0.1);
+    }
+    #nav-drawer.open { display: flex; }
+    #nav-drawer a {
+      font-size: 14px; font-weight: 500; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--text);
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+      opacity: 0.78;
+    }
+    #nav-drawer a.nav-drawer-cta {
+      display: block;
+      background: var(--accent); color: #fff;
+      text-align: center; padding: 14px;
+      border-radius: 2px; margin-top: 10px;
+      border: none; opacity: 1;
+    }
+    #nav-drawer a.nav-drawer-cta:hover { background: var(--accent-lt); }
+
+    /* ── HERO SCROLL ── */
+    #hero-scroll { position: relative; height: 480vh; }
+    #hero-sticky {
+      position: sticky; top: 0;
+      height: 100vh;    /* fallback */
+      height: 100svh;   /* small viewport = chrome bars always accounted for */
+      overflow: hidden; display: flex;
+      align-items: center; justify-content: center;
+      background: var(--bg);
+    }
+    #hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.6s ease; }
+
+    #scroll-hint {
+      position: absolute; bottom: 36px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      color: var(--text); opacity: 0.6; pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    #scroll-hint span { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; }
+    .scroll-arrow {
+      width: 1px; height: 38px; background: var(--text);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { transform: scaleY(1); opacity: 0.5; }
+      50%      { transform: scaleY(1.5); opacity: 1; }
+    }
+
+    #hero-wordmark {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-end;
+      padding-bottom: 80px; opacity: 0;
+      pointer-events: none; text-align: center;
+      transition: opacity 0.5s;
+    }
+    #hero-wordmark.visible { opacity: 1; pointer-events: auto; }
+    .wm-eye { font-size: 11px; font-weight: 600; letter-spacing: 0.28em; text-transform: uppercase; color: var(--text); margin-bottom: 12px; }
+    #hero-wordmark h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(52px, 7.5vw, 100px);
+      font-weight: 300; letter-spacing: 0.06em; line-height: 1;
+      color: var(--bg-dark);
+      text-shadow: 0 2px 12px rgba(246,241,233,0.35);
+      display: inline-block;
+      background: rgba(234,227,212,0.78);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      padding: 10px 36px;
+      border-radius: 20px;
+    }
+    #hero-wordmark h1 em { font-style: italic; color: var(--bg-dark); }
+    .wm-sub {
+      margin-top: 14px; font-size: 12px; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--text);
+      background: rgba(234,227,212,0.78);
+      backdrop-filter: blur(6px);
+      padding: 7px 18px; border-radius: 20px;
+    }
+    .wm-cta {
+      margin-top: 30px; padding: 14px 38px;
+      background: var(--accent); color: #fff;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.2em;
+      text-transform: uppercase; border-radius: 2px;
+      transition: background 0.2s, transform 0.2s; pointer-events: auto;
+    }
+    .wm-cta:hover { background: var(--accent-lt); transform: translateY(-2px); }
+
+    /* ── SHARED ── */
+    section { padding: 100px 40px; }
+    .section-label {
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(36px, 5vw, 68px);
+      font-weight: 400; line-height: 1.05;
+    }
+    .section-title em { font-style: italic; color: var(--accent); }
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.75s, transform 0.75s; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── MENU ── */
+    #menu { background: var(--bg); padding-top: 40px; }
+    .menu-inner { max-width: 1100px; margin: 0 auto; }
+    .menu-header {
+      display: flex; align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 60px; flex-wrap: wrap; gap: 20px;
+    }
+    .menu-note { font-size: 14px; color: var(--muted); font-style: italic; line-height: 1.7; text-align: right; }
+    .menu-sections { display: flex; flex-direction: column; gap: 56px; }
+    .menu-section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px; font-weight: 600; letter-spacing: 0.05em;
+      padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 24px;
+    }
+    .menu-items { display: flex; flex-direction: column; }
+    .menu-item {
+      display: grid; grid-template-columns: 1fr auto;
+      gap: 24px; padding: 20px 0;
+      border-bottom: 1px solid var(--border); align-items: start;
+    }
+    .menu-item:last-child { border-bottom: none; }
+    .menu-item-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 600; margin-bottom: 5px;
+    }
+    .menu-item-desc { font-size: 14px; color: var(--muted); line-height: 1.65; }
+    .menu-item-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px; font-weight: 600;
+      color: var(--accent); white-space: nowrap; padding-top: 2px;
+    }
+
+    /* ── GALLERY / THE FOOD ── */
+    #gallery { background: var(--bg-dark); }
+    #gallery .section-label { color: var(--gold); }
+    #gallery .section-title { color: var(--cream); }
+    .gallery-grid {
+      max-width: 1200px; margin: 56px auto 0;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+    }
+    .gallery-item { overflow: hidden; border-radius: 3px; background: #2a1e14; }
+    .gallery-item img { width: 100%; height: 300px; object-fit: cover; display: block; transition: transform 0.6s; }
+    .gallery-item:hover img { transform: scale(1.05); }
+    .gallery-item.tall { grid-row: span 2; }
+    .gallery-item.tall img { height: 610px; }
+
+    /* ── PEOPLE / STORY / SETTING ── */
+    #pss { background: var(--cream); }
+    .pss-inner { max-width: 1100px; margin: 0 auto; }
+    .pss-tabs {
+      display: flex; gap: 6px; margin-bottom: 64px;
+    }
+    .pss-tab {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.2em;
+      text-transform: uppercase; padding: 12px 34px;
+      border: 1px solid var(--border); border-radius: 2px;
+      background: transparent; color: var(--muted);
+      cursor: pointer; transition: all 0.22s; font-family: 'Outfit', sans-serif;
+    }
+    .pss-tab.active {
+      background: var(--bg-dark); color: var(--cream);
+      border-color: var(--bg-dark);
+    }
+    .pss-tab:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+    .pss-panel { display: none; }
+    .pss-panel.active { display: block; animation: panelFade 0.45s ease; }
+    @keyframes panelFade {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: none; }
+    }
+    .pss-two-col {
+      display: grid; grid-template-columns: 420px 1fr;
+      gap: 80px; align-items: center;
+    }
+    .pss-two-col.photo-right { grid-template-columns: 1fr 420px; }
+    .pss-photo img {
+      width: 100%; height: 520px;
+      object-fit: cover; object-position: center top; border-radius: 4px;
+    }
+    .pss-text p { margin-top: 22px; font-size: 17px; line-height: 1.85; color: var(--muted); }
+    .pss-text blockquote {
+      margin-top: 36px; padding: 18px 24px;
+      border-left: 3px solid var(--accent);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-style: italic;
+      color: var(--text); line-height: 1.55;
+    }
+    .pss-text blockquote small {
+      display: block; margin-top: 8px; font-size: 14px;
+      color: var(--muted); font-style: normal; letter-spacing: 0.05em;
+    }
+    .team-names { margin-top: 40px; display: flex; gap: 48px; }
+    .team-name h4 { font-family: 'Cormorant Garamond', serif; font-size: 23px; font-weight: 600; }
+    .team-name span { font-size: 12px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; }
+
+    /* ── VISIT ── */
+    #visit { background: var(--bg-dark); }
+    #visit .section-label { color: var(--gold); }
+    #visit .section-title { color: var(--cream); }
+    .visit-inner { max-width: 1100px; margin: 0 auto; }
+    .visit-grid { margin-top: 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+    .visit-cards { display: flex; flex-direction: column; gap: 20px; }
+    .visit-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 26px 30px; }
+    .visit-card-label { font-size: 11px; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+    .visit-card-value { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--cream); line-height: 1.55; }
+    .visit-card-value a { color: var(--accent-lt); }
+    .hours-row {
+      display: flex; justify-content: space-between;
+      font-family: 'Cormorant Garamond', serif; font-size: 18px;
+      color: var(--cream); padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .hours-row:last-child { border-bottom: none; }
+    .hours-row .day { color: rgba(246,241,233,0.5); }
+    .visit-note { margin-top: 12px; font-size: 12px; color: rgba(246,241,233,0.45); font-style: italic; }
+    .visit-map { border-radius: 4px; overflow: hidden; border: 1px solid rgba(255,255,255,0.12); min-height: 400px; }
+    .visit-map iframe { width: 100%; height: 100%; min-height: 400px; border: none; display: block; }
+
+    /* ── FOOTER ── */
+    footer { background: var(--bg-dark); color: var(--cream); padding: 64px 40px 40px; }
+    .footer-inner { max-width: 1100px; margin: 0 auto; }
+    .footer-top {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.1);
+      flex-wrap: wrap; gap: 28px;
+    }
+    .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 300; letter-spacing: 0.06em; }
+    .footer-logo em { color: var(--gold); font-style: italic; }
+    .footer-tagline { font-size: 13px; color: rgba(246,241,233,0.45); letter-spacing: 0.12em; margin-top: 5px; }
+    .footer-socials { display: flex; gap: 14px; }
+    .social-btn {
+      display: flex; align-items: center; gap: 8px; padding: 11px 20px;
+      border: 1px solid rgba(255,255,255,0.18); border-radius: 2px;
+      font-size: 12px; font-weight: 500; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--cream); transition: background 0.2s, border-color 0.2s;
+    }
+    .social-btn:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.35); }
+    .social-btn svg { width: 15px; height: 15px; }
+    .footer-bottom {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 32px; font-size: 12px; color: rgba(246,241,233,0.3);
+      flex-wrap: wrap; gap: 12px;
+    }
+    .admin-trigger {
+      background: none; border: none; color: rgba(246,241,233,0.18);
+      font-size: 11px; letter-spacing: 0.1em; cursor: pointer;
+      font-family: 'Outfit', sans-serif; transition: color 0.25s;
+    }
+    .admin-trigger:hover { color: rgba(246,241,233,0.55); }
+
+    /* ── ADMIN MODAL ── */
+    #admin-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.72); z-index: 1000;
+      align-items: center; justify-content: center;
+    }
+    #admin-overlay.open { display: flex; }
+    #admin-modal {
+      background: var(--cream); border-radius: 6px;
+      width: 90%; max-width: 780px; max-height: 86vh;
+      overflow-y: auto; padding: 44px; position: relative;
+    }
+    .admin-modal-title { font-family: 'Cormorant Garamond', serif; font-size: 34px; font-weight: 600; margin-bottom: 6px; }
+    .admin-modal-sub { font-size: 14px; color: var(--muted); margin-bottom: 32px; }
+    .admin-close { position: absolute; top: 18px; right: 22px; background: none; border: none; font-size: 30px; cursor: pointer; color: var(--muted); }
+    #admin-password-screen input {
+      width: 100%; padding: 13px 16px;
+      border: 1px solid var(--border); border-radius: 3px;
+      font-family: 'Outfit', sans-serif; font-size: 16px;
+      background: #fff; color: var(--text); margin-bottom: 14px; outline: none;
+    }
+    #admin-password-screen input:focus { border-color: var(--accent); }
+    .admin-btn {
+      padding: 12px 28px; background: var(--accent); color: #fff;
+      border: none; border-radius: 3px;
+      font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600;
+      letter-spacing: 0.07em; cursor: pointer; transition: background 0.2s;
+    }
+    .admin-btn:hover { background: var(--accent-lt); }
+    .admin-btn.sec { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .admin-btn.sec:hover { background: var(--border); }
+    .admin-error { color: #c0392b; font-size: 13px; margin-top: 8px; display: none; }
+    #admin-editor { display: none; }
+    .admin-sec-block { border: 1px solid var(--border); border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
+    .admin-sec-hdr { background: var(--bg); padding: 12px 16px; display: flex; align-items: center; gap: 10px; }
+    .admin-sec-name { flex: 1; background: none; border: none; font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--text); outline: none; }
+    .admin-rm { background: none; border: none; color: var(--muted); font-size: 22px; cursor: pointer; line-height: 1; transition: color 0.2s; }
+    .admin-rm:hover { color: #c0392b; }
+    .admin-items-wrap { padding: 14px 16px; }
+    .admin-col-labels { display: grid; grid-template-columns: 1.2fr 2fr 80px 32px; gap: 8px; font-size: 11px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+    .admin-item-row { display: grid; grid-template-columns: 1.2fr 2fr 80px 32px; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .ai { padding: 8px 10px; border: 1px solid var(--border); border-radius: 3px; font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--text); background: #fff; outline: none; width: 100%; }
+    .ai:focus { border-color: var(--accent); }
+    .add-item-btn { width: 100%; padding: 9px; background: none; border: 1px dashed var(--border); border-radius: 3px; color: var(--muted); font-size: 13px; cursor: pointer; margin-top: 4px; font-family: 'Outfit', sans-serif; transition: all 0.2s; }
+    .add-item-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .admin-footer-row { display: flex; gap: 12px; margin-top: 24px; }
+
+    /* ══════════════════════════════════════
+       RESPONSIVE — TABLET (≤960px)
+    ══════════════════════════════════════ */
+    @media (max-width: 960px) {
+      section { padding: 70px 24px; }
+      #menu { padding-top: 36px; }
+
+      /* Nav */
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+      #nav { padding: 0 20px; }
+
+      /* PSS panels */
+      .pss-two-col,
+      .pss-two-col.photo-right { grid-template-columns: 1fr; gap: 40px; }
+      /* On mobile, always show photo first (even in .photo-right Story panel) */
+      .pss-two-col.photo-right .pss-photo { order: -1; }
+      .pss-photo img { height: 320px; }
+      .pss-tabs { flex-wrap: wrap; }
+      .pss-tab { padding: 10px 22px; flex: 1; text-align: center; }
+
+      /* Gallery */
+      .gallery-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .gallery-item.tall,
+      .gallery-item.tall img { grid-row: span 1; height: 260px; }
+      .gallery-item img { height: 260px; }
+
+      /* Visit */
+      .visit-grid { grid-template-columns: 1fr; gap: 32px; }
+      .visit-map { min-height: 320px; }
+      .visit-map iframe { min-height: 320px; }
+
+      /* Footer */
+      .footer-top { flex-direction: column; align-items: flex-start; }
+      .footer-socials { flex-direction: row; flex-wrap: wrap; }
+
+      /* Admin */
+      .admin-item-row,
+      .admin-col-labels { grid-template-columns: 1fr 1fr 70px 32px; }
+
+      /* Menu sections gap */
+      .menu-sections { gap: 44px; }
+    }
+
+    @media (max-width: 600px) {
+      .gallery-grid { grid-template-columns: 1fr; }
+      .gallery-item img,
+      .gallery-item.tall img { height: 240px; }
+    }
+
+    /* ══════════════════════════════════════
+       RESPONSIVE — PHONE (≤480px)
+    ══════════════════════════════════════ */
+    @media (max-width: 480px) {
+      :root { --nav-h: 60px; }
+      section { padding: 56px 18px; }
+      #menu { padding-top: 28px; }
+
+      /* Hero canvas — shrink and centre the animation on mobile */
+      #hero-canvas {
+        position: absolute;
+        inset: auto;
+        width: 92vw;
+        height: 62vw;     /* comfortable ~3:2 landscape ratio */
+        top: 38%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 10px;
+      }
+
+      /* Hero wordmark — always visible on mobile.
+         100svh on #hero-sticky sizes the container to the small viewport
+         (chrome bars visible), so 60px reliably clears the bottom bar. */
+      #hero-wordmark {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        transform: none !important;
+        padding-bottom: 60px;
+      }
+      #hero-wordmark h1 { font-size: clamp(38px, 12vw, 56px); background: none; backdrop-filter: none; -webkit-backdrop-filter: none; padding: 0; border-radius: 0; }
+
+      /* Hide scroll hint on mobile — wordmark CTA serves as guidance */
+      #scroll-hint { display: none; }
+      .wm-eye { font-size: 10px; letter-spacing: 0.2em; margin-bottom: 8px; }
+      .wm-sub {
+        font-size: 10px; letter-spacing: 0.1em;
+        padding: 6px 14px; margin-top: 10px;
+        max-width: 280px;
+      }
+      .wm-cta { padding: 12px 28px; margin-top: 16px; font-size: 11px; letter-spacing: 0.16em; }
+
+      /* Menu */
+      .menu-header { margin-bottom: 32px; }
+      .menu-sections { gap: 36px; }
+      .menu-section-title { font-size: 23px; }
+      .menu-item { gap: 10px; padding: 16px 0; }
+      .menu-item-name { font-size: 19px; }
+      .menu-item-desc { font-size: 13px; }
+      .menu-item-price { font-size: 17px; }
+
+      /* Gallery */
+      #gallery { padding: 56px 18px; }
+      .gallery-grid { margin-top: 36px; }
+
+      /* PSS */
+      .pss-tabs { margin-bottom: 40px; gap: 4px; }
+      .pss-tab { padding: 10px 10px; font-size: 10px; letter-spacing: 0.12em; }
+      .pss-photo img { height: 220px; }
+      .pss-text p { font-size: 15px; line-height: 1.75; margin-top: 16px; }
+      .pss-text blockquote { font-size: 18px; margin-top: 24px; padding: 14px 18px; }
+      .team-names { flex-direction: column; gap: 18px; margin-top: 28px; }
+
+      /* Visit */
+      .visit-card { padding: 18px 20px; }
+      .visit-card-value { font-size: 19px; }
+      .hours-row { font-size: 15px; }
+      .visit-note { font-size: 11px; }
+
+      /* Footer */
+      footer { padding: 40px 18px 28px; }
+      .footer-logo { font-size: 24px; }
+      .footer-tagline { font-size: 11px; letter-spacing: 0.08em; }
+      .footer-socials { flex-direction: column; }
+      .social-btn { justify-content: center; padding: 12px 18px; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; gap: 8px; }
+
+      /* Admin modal */
+      #admin-modal { padding: 28px 20px; }
+      .admin-modal-title { font-size: 26px; }
+      .admin-item-row,
+      .admin-col-labels { grid-template-columns: 1fr 70px 32px; }
+      .admin-col-labels span:nth-child(2),
+      .admin-item-row input:nth-child(2) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="#" class="nav-logo">
+      <div class="nav-badge" style="background:#fff;">
+        <img src="Product Photos/flame logo.jpg" alt="Little Bones Grill" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;" />
+      </div>
+      <span class="nav-name">Little Bones Grill</span>
+    </a>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links">
+      <li><a href="#menu">Menu</a></li>
+      <li><a href="#gallery">The Food</a></li>
+      <li><a href="#pss">Our Story</a></li>
+      <li><a href="#visit" class="nav-cta">Visit Us</a></li>
+    </ul>
+  </nav>
+
+  <!-- MOBILE NAV DRAWER -->
+  <div id="nav-drawer">
+    <a href="#menu" onclick="closeDrawer()">Menu</a>
+    <a href="#gallery" onclick="closeDrawer()">The Food</a>
+    <a href="#pss" onclick="closeDrawer()">Our Story</a>
+    <a href="#visit" class="nav-drawer-cta" onclick="closeDrawer()">Visit Us</a>
+  </div>
+
+  <!-- HERO -->
+  <section id="hero-scroll">
+    <div id="hero-sticky">
+      <canvas id="hero-canvas"></canvas>
+      <div id="scroll-hint">
+        <span>Scroll</span>
+        <div class="scroll-arrow"></div>
+      </div>
+      <div id="hero-wordmark">
+        <p class="wm-eye">Norwich, Ontario</p>
+        <h1>Little <em>Bones</em> Grill</h1>
+        <p class="wm-sub">Fresh Ingredients &nbsp;·&nbsp; Made to Order &nbsp;·&nbsp; Open Wed – Sat</p>
+        <a href="#menu" class="wm-cta">View the Menu</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- MENU -->
+  <section id="menu">
+    <div class="menu-inner">
+      <div class="menu-header reveal">
+        <div>
+          <p class="section-label">What We're Serving</p>
+          <h2 class="section-title">The <em>Menu</em></h2>
+        </div>
+      </div>
+      <div class="menu-sections reveal" id="menu-display"></div>
+    </div>
+  </section>
+
+  <!-- THE FOOD -->
+  <section id="gallery">
+    <div style="max-width:1200px;margin:0 auto;">
+      <p class="section-label reveal">The Food</p>
+      <h2 class="section-title reveal">Fresh From <em>The Shack</em></h2>
+      <div class="gallery-grid reveal">
+        <div class="gallery-item">
+          <img src="Product Photos/henhouse chicken sandwich.png" alt="The Henhouse chicken sandwich" />
+        </div>
+        <div class="gallery-item">
+          <img src="Product Photos/burger.png" alt="Little Bones Grill burger" />
+        </div>
+        <div class="gallery-item tall">
+          <img src="Product Photos/Gemini_Generated_Image_c9kwioc9kwioc9kw.png" alt="Little Bones poutine" />
+        </div>
+        <div class="gallery-item">
+          <img src="Product Photos/Gemini_Generated_Image_14u1v14u1v14u1v1.png" alt="Little Bones food" />
+        </div>
+        <div class="gallery-item">
+          <img src="Product Photos/Gemini_Generated_Image_jm0fryjm0fryjm0f.png" alt="Little Bones food" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PEOPLE / STORY / SETTING -->
+  <section id="pss">
+    <div class="pss-inner">
+
+      <!-- Tab navigation -->
+      <div class="pss-tabs reveal">
+        <button class="pss-tab active" data-panel="people">People</button>
+        <button class="pss-tab" data-panel="story">Story</button>
+        <button class="pss-tab" data-panel="setting">Setting</button>
+      </div>
+
+      <!-- PEOPLE PANEL -->
+      <div class="pss-panel active" id="pss-people">
+        <div class="pss-two-col">
+          <div class="pss-photo">
+            <img src="Product Photos/people.jpg"
+                 alt="Mat Taylor and his mom — Little Bones Grill" />
+          </div>
+          <div class="pss-text">
+            <p class="section-label">The People</p>
+            <h2 class="section-title">Family Run. <em>Community</em> Loved.</h2>
+            <p>Little Bones is Mat Taylor's labour of love — a brand new structure built from the ground up with his dad's help, who donated the electrical work and more. At the grill every single day alongside Mat is his mom, who has been part of the operation for three years running.</p>
+            <p>"Mom knows everybody," Mat laughs. It's routine to have customers who know each other, and know the family. That's exactly the kind of place Little Bones is — not just somewhere you eat, but somewhere you belong.</p>
+            <div class="team-names">
+              <div class="team-name">
+                <h4>Mat Taylor</h4>
+                <span>Owner &amp; Pitmaster</span>
+              </div>
+              <div class="team-name">
+                <h4>Mom</h4>
+                <span>The Backbone</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STORY PANEL -->
+      <div class="pss-panel" id="pss-story">
+        <div class="pss-two-col photo-right">
+          <div class="pss-text">
+            <p class="section-label">Our Story</p>
+            <h2 class="section-title">Born &amp; Raised in <em>Norwich</em></h2>
+            <p>Little Bones Grill started with a vision: bring real, craft-made food to the small town of Norwich, Ontario — the kind of food that punches way above its weight. Mat Taylor, born and raised right here, couldn't imagine opening up anywhere else.</p>
+            <p>What started as a humble chip wagon quickly became something far more interesting. Mat transformed it into a proper sandwich shack with a creekside patio, serving up inventive, ingredient-driven sandwiches, smoked meats, hot dogs, and rotating weekly specials.</p>
+            <p>Every item on the menu has a story — most named after songs by The Tragically Hip. The <em>Henhouse</em>, the <em>El Dorado</em>, the <em>Sled Dogs</em>. Good music. Good food. Good people.</p>
+            <blockquote>
+              "At this point, there's no possible way I could do this without her."
+              <small>— Mat Taylor, on his mom</small>
+            </blockquote>
+          </div>
+          <div class="pss-photo">
+            <img src="Product Photos/story.jpg"
+                 alt="Little Bones Grill shack lit up at night" />
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTING PANEL -->
+      <div class="pss-panel" id="pss-setting">
+        <div class="pss-two-col">
+          <div class="pss-photo">
+            <img src="Product Photos/settings.jpg"
+                 alt="Guests gathered at Little Bones Grill patio" style="object-position: center center;" />
+          </div>
+          <div class="pss-text">
+            <p class="section-label">The Setting</p>
+            <h2 class="section-title">Small Town. <em>Real</em> Food.</h2>
+            <p>Norwich is the kind of place where the grill owner's mom already knows your name — and so does the person behind you in line. Tucked just off the main road at 7 Stover Street, Little Bones has quietly become part of the town's rhythm.</p>
+            <p>The shack itself was built from scratch. String lights hang overhead, a creekside patio fills up fast on a good day, and the lineup moves at just the right pace. People show up on a Wednesday like clockwork — regulars, families, and the occasional drive-in from out of town who heard about the Henhouse and had to see for themselves.</p>
+            <p>It's not just a place to grab lunch. It's a reason to get outside.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- VISIT -->
+  <section id="visit">
+    <div class="visit-inner">
+      <div class="reveal">
+        <p class="section-label">Find Us</p>
+        <h2 class="section-title">Come <em>Visit</em></h2>
+      </div>
+      <div class="visit-grid">
+        <div class="visit-cards reveal">
+          <div class="visit-card">
+            <div class="visit-card-label">Hours</div>
+            <div class="hours-row"><span class="day">Wednesday</span><span>11:00 AM – 5:00 PM</span></div>
+            <div class="hours-row"><span class="day">Thursday</span><span>11:00 AM – 5:00 PM</span></div>
+            <div class="hours-row"><span class="day">Friday</span><span>11:00 AM – 5:00 PM</span></div>
+            <div class="hours-row"><span class="day">Saturday</span><span>11:00 AM – 5:00 PM</span></div>
+            <div class="hours-row"><span class="day">Sun – Tue</span><span>Closed</span></div>
+            <p class="visit-note">⚠ We close early when we sell out — arrive early to avoid missing out!</p>
+          </div>
+          <div class="visit-card">
+            <div class="visit-card-label">Location</div>
+            <div class="visit-card-value">7 Stover Street S<br/>Norwich, Ontario</div>
+          </div>
+          <div class="visit-card">
+            <div class="visit-card-label">Call Ahead</div>
+            <div class="visit-card-value"><a href="tel:5198034563">519-803-4563</a></div>
+          </div>
+
+        </div>
+        <div class="visit-map reveal">
+          <iframe
+            src="https://maps.google.com/maps?q=7+Stover+Street+S,+Norwich,+Ontario,+Canada&output=embed&z=15"
+            allowfullscreen loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            title="Little Bones Grill location">
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <div class="footer-logo" style="display:flex;align-items:center;gap:14px;"><img src="Product Photos/flame logo.jpg" alt="" style="width:40px;height:40px;object-fit:contain;border-radius:50%;background:rgba(255,255,255,0.08);" />Little <em>Bones</em> Grill</div>
+          <div class="footer-tagline">Norwich, Ontario &nbsp;·&nbsp; 7 Stover Street S &nbsp;·&nbsp; 519-803-4563</div>
+        </div>
+        <div class="footer-socials">
+          <a href="https://www.instagram.com/little.bones.grill/" target="_blank" rel="noopener" class="social-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="2" y="2" width="20" height="20" rx="5"/>
+              <circle cx="12" cy="12" r="4"/>
+              <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/>
+            </svg>
+            Instagram
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=100057353863781" target="_blank" rel="noopener" class="social-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+            </svg>
+            Facebook
+          </a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 Little Bones Grill · Norwich, Ontario</span>
+        <button class="admin-trigger" onclick="openAdmin()">Manage Menu</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ADMIN MODAL -->
+  <div id="admin-overlay">
+    <div id="admin-modal">
+      <button class="admin-close" onclick="closeAdmin()">×</button>
+      <div id="admin-password-screen">
+        <div class="admin-modal-title">Menu Manager</div>
+        <p class="admin-modal-sub">Enter your password to edit the live menu.</p>
+        <input type="password" id="admin-pw" placeholder="Password"
+               onkeydown="if(event.key==='Enter')checkPw()" />
+        <button class="admin-btn" onclick="checkPw()">Unlock</button>
+        <div class="admin-error" id="pw-err">Incorrect password — try again.</div>
+      </div>
+      <div id="admin-editor">
+        <div class="admin-modal-title">Edit Menu</div>
+        <p class="admin-modal-sub">Add sections, items, descriptions and prices. Hit Save &amp; Publish when done.</p>
+        <div id="admin-secs"></div>
+        <div class="admin-footer-row">
+          <button class="admin-btn sec" onclick="addSec()">+ Add Section</button>
+          <button class="admin-btn" onclick="saveMenu()">Save &amp; Publish</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  /* ════════════════════════════════════════
+     SCROLL-DRIVEN FRAME ANIMATION
+  ════════════════════════════════════════ */
+  const FRAMES    = 192;
+  const FRAME_DIR = 'frames/frame_';
+  const imgs      = [];
+  let curFrame    = 1;
+
+  const canvas = document.getElementById('hero-canvas');
+  const ctx    = canvas.getContext('2d');
+
+  function pad(n) { return String(n).padStart(4, '0'); }
+
+  function resizeCanvas() {
+    const mobile = window.innerWidth <= 480;
+    if (mobile) {
+      // On mobile: render at a smaller contained size; CSS centres it
+      const w = Math.round(window.innerWidth * 0.92);
+      const h = Math.round(w * 0.674); // ~3:2 landscape ratio
+      canvas.width  = w;
+      canvas.height = h;
+    } else {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    drawF(curFrame);
+  }
+
+  function drawF(idx) {
+    const img = imgs[idx];
+    if (!img || !img.complete || !img.naturalWidth) return;
+    const sc = Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
+    const w  = img.naturalWidth  * sc;
+    const h  = img.naturalHeight * sc;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
+  }
+
+  // Load frame 1 immediately, then the rest
+  function loadFrame(i) {
+    const img = new Image();
+    img.src = FRAME_DIR + pad(i) + '.webp';
+    img.onload  = () => { if (i === 1) { resizeCanvas(); } };
+    imgs[i] = img;
+  }
+  loadFrame(1);
+  // Stagger remaining loads so frame 1 renders first
+  setTimeout(() => { for (let i = 2; i <= FRAMES; i++) loadFrame(i); }, 100);
+
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  /* scroll → frame + canvas fade */
+  const scrollHint = document.getElementById('scroll-hint');
+  const wordmark   = document.getElementById('hero-wordmark');
+  const heroSec    = document.getElementById('hero-scroll');
+
+  window.addEventListener('scroll', () => {
+    const rect  = heroSec.getBoundingClientRect();
+    const total = heroSec.offsetHeight - window.innerHeight;
+    const prog  = Math.min(1, Math.max(0, -rect.top) / total);
+
+    // Canvas fades in as soon as scrolling begins; fades back out when returning to top
+    canvas.style.opacity = Math.min(1, prog * 18).toFixed(3);
+
+    const idx = Math.max(1, Math.min(FRAMES, Math.round(prog * (FRAMES - 1)) + 1));
+    if (idx !== curFrame) { curFrame = idx; drawF(idx); }
+
+    const isMobile = window.innerWidth <= 480;
+
+    scrollHint.style.opacity = isMobile ? '0' : Math.max(0, 1 - prog * 10).toFixed(2);
+
+    // On mobile the wordmark is always visible via CSS; skip JS-driven fade
+    if (!isMobile) {
+      if (prog > 0.87) {
+        const p = (prog - 0.87) / 0.13;
+        wordmark.classList.add('visible');
+        wordmark.style.opacity   = p.toFixed(3);
+        wordmark.style.transform = `translateY(${((1 - p) * 22).toFixed(1)}px)`;
+      } else {
+        wordmark.classList.remove('visible');
+        wordmark.style.opacity   = '0';
+        wordmark.style.transform = 'translateY(22px)';
+      }
+    }
+  }, { passive: true });
+
+  /* Nav scroll */
+  window.addEventListener('scroll', () => {
+    document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60);
+  }, { passive: true });
+
+  /* Reveal on scroll */
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  /* ════════════════════════════════════════
+     MOBILE NAV HAMBURGER
+  ════════════════════════════════════════ */
+  const hamburger = document.getElementById('nav-hamburger');
+  const navDrawer = document.getElementById('nav-drawer');
+
+  function closeDrawer() {
+    hamburger.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    navDrawer.classList.remove('open');
+  }
+
+  hamburger.addEventListener('click', () => {
+    const isOpen = hamburger.classList.toggle('open');
+    hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    navDrawer.classList.toggle('open', isOpen);
+  });
+
+  // Close drawer when scrolling begins
+  window.addEventListener('scroll', () => {
+    if (navDrawer.classList.contains('open')) closeDrawer();
+  }, { passive: true });
+
+  /* ════════════════════════════════════════
+     ANIMATED SCROLL TO MENU
+     All "#menu" links (CTA, mobile drawer, desktop nav) play
+     the animation at exactly 30 fps before landing on the menu.
+     Linear scroll = constant scroll speed = constant frame rate.
+     Uses behavior:'instant' per frame so CSS scroll-behavior
+     doesn't interfere with the RAF timing.
+  ════════════════════════════════════════ */
+  function animatedScrollToMenu(e) {
+    e.preventDefault();
+    const menuEl  = document.getElementById('menu');
+    const heroEnd = heroSec.offsetTop + heroSec.offsetHeight - window.innerHeight;
+
+    // Already past (or at the end of) the animation — go straight to menu
+    if (window.scrollY >= heroEnd - 50) {
+      menuEl.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+
+    // Calculate remaining frames from the current scroll position
+    const currentProg     = Math.max(0, Math.min(1, window.scrollY / heroEnd));
+    const framesRemaining = Math.round((1 - currentProg) * (FRAMES - 1));
+    const ANIM_MS         = (framesRemaining / 60) * 1000; // 60 fps → duration in ms
+
+    const startPos = window.scrollY;
+    const distance = heroEnd - startPos;
+    let   startTime = null;
+
+    function rafStep(ts) {
+      if (!startTime) startTime = ts;
+      const elapsed = ts - startTime;
+      const t       = Math.min(elapsed / ANIM_MS, 1);
+      // Linear progress = constant frame advance = true 30 fps feel
+      // behavior:'instant' bypasses CSS scroll-behavior:smooth so RAF controls timing
+      window.scrollTo({ top: startPos + distance * t, behavior: 'instant' });
+      if (t < 1) {
+        requestAnimationFrame(rafStep);
+      } else {
+        // Animation complete — smooth glide to the menu section
+        menuEl.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+    requestAnimationFrame(rafStep);
+  }
+
+  // Attach to all "#menu" links: hero CTA, mobile nav drawer, and desktop nav
+  document.querySelectorAll('a[href="#menu"]').forEach(link => {
+    link.addEventListener('click', animatedScrollToMenu);
+  });
+
+  /* ════════════════════════════════════════
+     AUTO-SCROLL INTRO
+     On page load, automatically plays the hero
+     animation from start to finish so the title
+     is revealed. Cancelled immediately if the
+     user scrolls, touches, or presses a key.
+  ════════════════════════════════════════ */
+  function startAutoScroll() {
+    const heroEnd = heroSec.offsetTop + heroSec.offsetHeight - window.innerHeight;
+    if (window.scrollY > 20) return; // user already scrolled — don't hijack
+
+    const DURATION = 4800; // ms — adjust for pacing feel
+    let startTime  = null;
+    let cancelled  = false;
+
+    function cancel() { cancelled = true; }
+    window.addEventListener('wheel',       cancel, { once: true, passive: true });
+    window.addEventListener('touchstart',  cancel, { once: true, passive: true });
+    window.addEventListener('keydown',     cancel, { once: true });
+
+    function step(ts) {
+      if (cancelled) return;
+      if (!startTime) startTime = ts;
+      const t     = Math.min((ts - startTime) / DURATION, 1);
+      // Ease-in-out quad: starts and ends gently, full speed in the middle
+      const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+      window.scrollTo({ top: Math.round(heroEnd * eased), behavior: 'instant' });
+      if (t < 1) requestAnimationFrame(step);
+    }
+
+    requestAnimationFrame(step);
+  }
+
+  // Wait for frame 1 to be ready so the canvas isn't blank when scroll begins
+  // Mobile gets a longer delay to account for slower network/render times
+  (function waitForFrame1() {
+    const delay = window.innerWidth <= 480 ? 1000 : 400;
+    if (imgs[1] && imgs[1].complete && imgs[1].naturalWidth) {
+      setTimeout(startAutoScroll, delay);
+    } else {
+      imgs[1].addEventListener('load', () => setTimeout(startAutoScroll, delay), { once: true });
+    }
+  })();
+
+  /* ════════════════════════════════════════
+     PSS TABS (People / Story / Setting)
+  ════════════════════════════════════════ */
+  document.querySelectorAll('.pss-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.pss-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.pss-panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('pss-' + tab.dataset.panel).classList.add('active');
+    });
+  });
+
+  /* ════════════════════════════════════════
+     FIREBASE + MENU SYSTEM
+  ════════════════════════════════════════ */
+  firebase.initializeApp({
+    apiKey: "AIzaSyCMbSp3q-xXuZLkgQtfSs30yySLFODRhhM",
+    authDomain: "little-bones-grill.firebaseapp.com",
+    projectId: "little-bones-grill",
+    storageBucket: "little-bones-grill.firebasestorage.app",
+    messagingSenderId: "222493795367",
+    appId: "1:222493795367:web:9161c138b8a97f96e7da02"
+  });
+  const db = firebase.firestore();
+  const MENU_DOC = db.collection('menu').doc('lb_menu_v2');
+
+  const PW = 'henhouse';
+
+  const DEFAULT = { sections: [
+    { id:'s1', name:'Signature Sandwiches', items:[
+      { id:1, name:'The Henhouse',  desc:'Buttermilk-fried chicken on a bakery kaiser — house BBQ sauce, cabbage slaw, sweet pickles & ranch drizzle', price:'$16' },
+      { id:2, name:'El Dorado',     desc:'Pulled pork, cabbage slaw, fried ham, melted cheese, sweet mustard & pickles on a bakery kaiser', price:'$15' },
+      { id:3, name:'Saskadelphia', desc:"Mat's take on a Philly — BBQ steak strips, fried onions & peppers, BBQ sauce & house aioli. Seasonal availability.", price:'$17' },
+    ]},
+    { id:'s2', name:'Sled Dogs', items:[
+      { id:4, name:'Classic Sled Dog', desc:'Deli-style hot dog with your choice of house toppings', price:'$8' },
+    ]},
+    { id:'s3', name:'Weekly Specials', items:[
+      { id:5, name:'Ask Us!', desc:"Something new every week — fresh ingredients, creative combinations. Follow us on Facebook & Instagram to see this week's feature.", price:'' },
+    ]},
+  ]};
+
+  async function getMenu() {
+    try {
+      const snap = await MENU_DOC.get();
+      if (snap.exists) return snap.data();
+      await MENU_DOC.set(DEFAULT);
+      return DEFAULT;
+    } catch(e) {
+      console.warn('Firestore unavailable, using default:', e);
+      return DEFAULT;
+    }
+  }
+
+  async function setMenu(d) {
+    await MENU_DOC.set(d);
+  }
+
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  async function renderMenu() {
+    const d = await getMenu();
+    document.getElementById('menu-display').innerHTML = d.sections.map(sec => `
+      <div class="menu-section">
+        <div class="menu-section-title">${esc(sec.name)}</div>
+        <div class="menu-items">
+          ${sec.items.map(it => `
+            <div class="menu-item">
+              <div>
+                <div class="menu-item-name">${esc(it.name)}</div>
+                ${it.desc ? `<div class="menu-item-desc">${esc(it.desc)}</div>` : ''}
+              </div>
+              <div class="menu-item-price">${it.price ? esc(it.price) : ''}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+  }
+  renderMenu();
+
+  /* Admin */
+  function openAdmin() {
+    document.getElementById('admin-overlay').classList.add('open');
+    document.getElementById('admin-pw').value = '';
+    document.getElementById('pw-err').style.display = 'none';
+    document.getElementById('admin-password-screen').style.display = 'block';
+    document.getElementById('admin-editor').style.display = 'none';
+  }
+  function closeAdmin() { document.getElementById('admin-overlay').classList.remove('open'); }
+  document.getElementById('admin-overlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeAdmin();
+  });
+  function checkPw() {
+    if (document.getElementById('admin-pw').value === PW) {
+      document.getElementById('admin-password-screen').style.display = 'none';
+      document.getElementById('admin-editor').style.display = 'block';
+      buildEditor();
+    } else {
+      document.getElementById('pw-err').style.display = 'block';
+    }
+  }
+
+  let ed = null; let nid = 200;
+
+  async function buildEditor() { ed = JSON.parse(JSON.stringify(await getMenu())); rebuildEditor(); }
+
+  function rebuildEditor() {
+    const c = document.getElementById('admin-secs');
+    c.innerHTML = '';
+    ed.sections.forEach((sec, si) => {
+      const b = document.createElement('div');
+      b.className = 'admin-sec-block';
+      b.innerHTML = `
+        <div class="admin-sec-hdr">
+          <input class="admin-sec-name ai" type="text" value="${esc(sec.name)}" placeholder="Section name"
+            oninput="ed.sections[${si}].name=this.value" />
+          <button class="admin-rm" onclick="rmSec(${si})">×</button>
+        </div>
+        <div class="admin-items-wrap">
+          <div class="admin-col-labels"><span>Name</span><span>Description</span><span>Price</span><span></span></div>
+          ${sec.items.map((it,ii) => `
+            <div class="admin-item-row">
+              <input class="ai" type="text" value="${esc(it.name)}" placeholder="Item name"
+                oninput="ed.sections[${si}].items[${ii}].name=this.value" />
+              <input class="ai" type="text" value="${esc(it.desc)}" placeholder="Description"
+                oninput="ed.sections[${si}].items[${ii}].desc=this.value" />
+              <input class="ai" type="text" value="${esc(it.price)}" placeholder="$0"
+                oninput="ed.sections[${si}].items[${ii}].price=this.value" />
+              <button class="admin-rm" onclick="rmItem(${si},${ii})">×</button>
+            </div>
+          `).join('')}
+          <button class="add-item-btn" onclick="addItem(${si})">+ Add Item</button>
+        </div>`;
+      c.appendChild(b);
+    });
+  }
+
+  function rmSec(si) { if(confirm('Remove this section?')){ ed.sections.splice(si,1); rebuildEditor(); } }
+  function addSec() { ed.sections.push({id:'s'+Date.now(),name:'New Section',items:[]}); rebuildEditor(); }
+  function addItem(si) { ed.sections[si].items.push({id:nid++,name:'',desc:'',price:''}); rebuildEditor(); }
+  function rmItem(si,ii) { ed.sections[si].items.splice(ii,1); rebuildEditor(); }
+
+  async function saveMenu() {
+    const btn = document.querySelector('.admin-footer-row .admin-btn:last-child');
+    btn.textContent = 'Saving…';
+    btn.disabled = true;
+    try {
+      await setMenu(ed);
+      await renderMenu();
+      closeAdmin();
+    } catch(e) {
+      alert('Save failed — check your connection and try again.');
+      btn.textContent = 'Save & Publish';
+      btn.disabled = false;
+    }
+  }
+  </script>
+</body>
+</html>

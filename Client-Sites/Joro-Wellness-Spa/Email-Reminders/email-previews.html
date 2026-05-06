@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Joro — Re-engagement Email Previews</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --dark: #0e1510; --dark2: #182018; --dark3: #1f2a1f;
+  --green: #2d4a2d; --green-lt: #3d6b3d;
+  --ember: #c8813a; --ember-lt: #e09a52;
+  --cream: #f2ead8; --muted: #8a9485;
+}
+body { font-family: 'Outfit', sans-serif; color: var(--cream); background: var(--dark); padding: 60px 5%; }
+h1, h2, h3 { font-family: 'Cormorant Garamond', serif; line-height: 1.15; }
+
+.wrap { max-width: 1100px; margin: 0 auto; }
+.head { margin-bottom: 60px; }
+.section-tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ember); margin-bottom: 14px; font-family: 'Outfit', sans-serif; }
+h1 { font-size: 42px; font-weight: 300; max-width: 600px; }
+h1 em { font-style: italic; color: var(--ember-lt); }
+.intro-p { font-size: 15px; color: var(--muted); font-weight: 300; line-height: 1.7; max-width: 540px; margin-top: 14px; }
+
+.tabs { display: flex; gap: 8px; margin: 36px 0; flex-wrap: wrap; }
+.tab {
+  background: transparent; border: 1px solid rgba(242,234,216,0.15);
+  color: rgba(242,234,216,0.5); padding: 8px 18px; border-radius: 99px;
+  font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'Outfit', sans-serif;
+  transition: all 0.2s;
+}
+.tab.active { background: var(--ember); color: var(--dark); border-color: var(--ember); font-weight: 600; }
+
+.preview { display: none; }
+.preview.active { display: block; }
+
+.frame {
+  background: #1a1a1a; border-radius: 14px; overflow: hidden;
+  border: 1px solid rgba(242,234,216,0.08); max-width: 600px; margin: 0 auto;
+}
+.chrome {
+  background: #2a2a2a; padding: 12px 16px;
+  display: flex; align-items: center; gap: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.meta { padding: 18px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.meta-row { display: flex; gap: 10px; font-size: 12.5px; margin-bottom: 5px; }
+.meta-row:last-child { margin-bottom: 0; }
+.meta-label { color: rgba(255,255,255,0.3); min-width: 40px; }
+.meta-val { color: rgba(255,255,255,0.7); }
+
+.body { padding: 0; background: #f9f6f0; }
+.body-inner { padding: 40px 36px; font-family: Georgia, serif; color: #2c2c2c; }
+.logo-bar { text-align: center; padding: 28px; background: #0e1510; }
+.logo-bar img { height: 36px; }
+.hero-img { width: 100%; height: 200px; object-fit: cover; display: block; }
+.eh { font-size: 26px; font-weight: 400; color: #1a2a1a; line-height: 1.3; margin: 28px 0 16px; }
+.ep { font-size: 15px; color: #4a4a4a; line-height: 1.75; margin-bottom: 16px; font-family: Arial, sans-serif; font-weight: 400; }
+.cta-wrap { text-align: center; margin: 28px 0; }
+.cta { display: inline-block; background: #c8813a; color: #fff; padding: 13px 28px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600; font-family: Arial, sans-serif; }
+.divider { border: none; border-top: 1px solid #e0d8c8; margin: 28px 0; }
+.footer-txt { font-size: 11.5px; color: #999; text-align: center; font-family: Arial, sans-serif; line-height: 1.6; }
+
+.desc {
+  max-width: 600px; margin: 28px auto 0;
+  background: rgba(200,129,58,0.07); border: 1px solid rgba(200,129,58,0.18);
+  border-radius: 10px; padding: 18px 22px;
+}
+.desc p { font-size: 13px; color: rgba(242,234,216,0.6); line-height: 1.6; font-weight: 300; }
+.desc strong { color: var(--ember); font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <span class="section-tag">Re-engagement Automation — Design Reference</span>
+    <h1>Automated emails that bring<br><em>guests back.</em></h1>
+    <p class="intro-p">Three emails go out automatically to past guests at 30, 60, and 90 days — keeping Joro top of mind and filling sessions that would otherwise go empty.</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchEmail(0, this)">30-Day — We Miss You</button>
+    <button class="tab" onclick="switchEmail(1, this)">60-Day — Package Offer</button>
+    <button class="tab" onclick="switchEmail(2, this)">90-Day — Seasonal Hook</button>
+  </div>
+
+  <div class="preview active" id="email-0">
+    <div class="frame">
+      <div class="chrome">
+        <div class="dot" style="background:#ff5f57;"></div>
+        <div class="dot" style="background:#febc2e;"></div>
+        <div class="dot" style="background:#28c840;"></div>
+        <span style="font-size:11px; color:#888; margin-left:8px; font-family:monospace;">Gmail — Inbox</span>
+      </div>
+      <div class="meta">
+        <div class="meta-row"><span class="meta-label">From</span><span class="meta-val">Jörð Outdoor Spa &lt;joro.wellspa@gmail.com&gt;</span></div>
+        <div class="meta-row"><span class="meta-label">To</span><span class="meta-val">Sarah M.</span></div>
+        <div class="meta-row"><span class="meta-label">Subject</span><span class="meta-val" style="color:#fff;">The fire's still going, Sarah 🔥</span></div>
+      </div>
+      <div class="body">
+        <div class="logo-bar">
+          <img src="https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/dd9cadab-7313-4bbc-a318-d8e93badf2ba/Joro+2-24.png?format=1500w" alt="Joro">
+        </div>
+        <img class="hero-img" src="https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/47ec6f19-9bbf-4036-83f1-dfe80c3ae88d/Joro+Fire+Pit+Girls.jpg" alt="">
+        <div class="body-inner">
+          <h2 class="eh">Hey Sarah — it's been a month. The fire misses you.</h2>
+          <p class="ep">It's been about 30 days since your last visit at Jörð, and we just wanted to check in. The sauna's warm, the plunge is cold, and the fire circle is waiting.</p>
+          <p class="ep">Whether you left feeling recharged, a little rattled by the cold, or both — we'd love to see you back. A lot of guests find that their second visit is where it really clicks.</p>
+          <div class="cta-wrap">
+            <a href="#" class="cta">Book Your Next Session →</a>
+          </div>
+          <hr class="divider">
+          <p class="footer-txt">Jörð Outdoor Spa · 1730 Front Road, Turkey Point, ON · <a href="#" style="color:#c8813a;">Unsubscribe</a></p>
+        </div>
+      </div>
+    </div>
+    <div class="desc">
+      <p><strong>Sent:</strong> 30 days after a guest's last visit · <strong>Goal:</strong> Warm re-engagement, no pressure. Lapsed guests who receive a personal re-engagement email within 30 days are significantly more likely to rebook than those who don't hear from a business at all.</p>
+    </div>
+  </div>
+
+  <div class="preview" id="email-1">
+    <div class="frame">
+      <div class="chrome">
+        <div class="dot" style="background:#ff5f57;"></div>
+        <div class="dot" style="background:#febc2e;"></div>
+        <div class="dot" style="background:#28c840;"></div>
+        <span style="font-size:11px; color:#888; margin-left:8px; font-family:monospace;">Gmail — Inbox</span>
+      </div>
+      <div class="meta">
+        <div class="meta-row"><span class="meta-label">From</span><span class="meta-val">Jörð Outdoor Spa &lt;joro.wellspa@gmail.com&gt;</span></div>
+        <div class="meta-row"><span class="meta-label">To</span><span class="meta-val">Sarah M.</span></div>
+        <div class="meta-row"><span class="meta-label">Subject</span><span class="meta-val" style="color:#fff;">Make it a habit — save 15% with a package 🌊</span></div>
+      </div>
+      <div class="body">
+        <div class="logo-bar">
+          <img src="https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/dd9cadab-7313-4bbc-a318-d8e93badf2ba/Joro+2-24.png?format=1500w" alt="Joro">
+        </div>
+        <img class="hero-img" src="https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/bcab9b6f-0449-4ec5-87ec-3cee69f7ca52/Joro+Men+Cold+Plunge.jpg" alt="">
+        <div class="body-inner">
+          <h2 class="eh">The guests who come back say this changes everything.</h2>
+          <p class="ep">It's been about two months, Sarah. We get it — life gets busy. But we've noticed something: the guests who make contrast therapy a regular habit don't just feel better after each visit. They feel better overall.</p>
+          <p class="ep">If you've been thinking about coming back, our 4-session package gives you 15% off every visit — and you can share it with someone in your household.</p>
+          <div style="background:#f5f0e8; border-radius:8px; padding:18px 20px; margin:20px 0; text-align:center;">
+            <div style="font-size:13px; color:#666; font-family:Arial,sans-serif; margin-bottom:4px;">4-Session Package</div>
+            <div style="font-size:32px; font-weight:300; color:#c8813a; font-family:Georgia,serif;">$211<span style="font-size:18px;">+</span></div>
+            <div style="font-size:12px; color:#888; font-family:Arial,sans-serif;">Save 15% · Shareable with household</div>
+          </div>
+          <div class="cta-wrap">
+            <a href="#" class="cta">Get the Package →</a>
+          </div>
+          <hr class="divider">
+          <p class="footer-txt">Jörð Outdoor Spa · 1730 Front Road, Turkey Point, ON · <a href="#" style="color:#c8813a;">Unsubscribe</a></p>
+        </div>
+      </div>
+    </div>
+    <div class="desc">
+      <p><strong>Sent:</strong> 60 days after last visit · <strong>Goal:</strong> Convert a one-time visitor into a repeat customer with a package offer. The 15% savings is compelling for someone who already enjoyed their first visit.</p>
+    </div>
+  </div>
+
+  <div class="preview" id="email-2">
+    <div class="frame">
+      <div class="chrome">
+        <div class="dot" style="background:#ff5f57;"></div>
+        <div class="dot" style="background:#febc2e;"></div>
+        <div class="dot" style="background:#28c840;"></div>
+        <span style="font-size:11px; color:#888; margin-left:8px; font-family:monospace;">Gmail — Inbox</span>
+      </div>
+      <div class="meta">
+        <div class="meta-row"><span class="meta-label">From</span><span class="meta-val">Jörð Outdoor Spa &lt;joro.wellspa@gmail.com&gt;</span></div>
+        <div class="meta-row"><span class="meta-label">To</span><span class="meta-val">Sarah M.</span></div>
+        <div class="meta-row"><span class="meta-label">Subject</span><span class="meta-val" style="color:#fff;">Summer's coming — and the sauna's getting better 🌿</span></div>
+      </div>
+      <div class="body">
+        <div class="logo-bar">
+          <img src="https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/dd9cadab-7313-4bbc-a318-d8e93badf2ba/Joro+2-24.png?format=1500w" alt="Joro">
+        </div>
+        <img class="hero-img" src="https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/53cd949f-da85-46da-b7db-41f7f37d49f3/Joro+Sauna+Girls.jpg" alt="">
+        <div class="body-inner">
+          <h2 class="eh">Three months out — and Norfolk's calling you back.</h2>
+          <p class="ep">The trails at Long Point are open. Turkey Point beach is warming up. And Jörð Spa is right in the middle of it all, ready for your next visit.</p>
+          <p class="ep">There's something about the seasons here that makes the contrast therapy feel different — cooler air on your skin after the sauna, the fire feeling more earned. Bring someone new and share the experience.</p>
+          <div class="cta-wrap">
+            <a href="#" class="cta">Book a Session for Two →</a>
+          </div>
+          <hr class="divider">
+          <p class="footer-txt">Jörð Outdoor Spa · 1730 Front Road, Turkey Point, ON · <a href="#" style="color:#c8813a;">Unsubscribe</a></p>
+        </div>
+      </div>
+    </div>
+    <div class="desc">
+      <p><strong>Sent:</strong> 90 days after last visit · <strong>Goal:</strong> Seasonal hook tied to Norfolk County's natural draw. Encourages bringing a new guest — growing the customer base organically through word of mouth.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchEmail(idx, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.preview').forEach(w => w.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('email-' + idx).classList.add('active');
+}
+</script>
+</body>
+</html>

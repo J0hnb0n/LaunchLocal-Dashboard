@@ -1,0 +1,6 @@
+.firebase/
+CLAUDE.md
+.DS_Store
+Thumbs.db
+node_modules/
+setup.bat

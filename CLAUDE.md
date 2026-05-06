@@ -119,7 +119,7 @@ Logic in `js/utils/scoring.js`. Score ranges: **0–20 Low, 20–50 Medium, 50�
 - Money in cents; dates as Firestore Timestamps, displayed in Eastern Time
 
 ## Current Status (2026-05-06)
-**Phases 1–5 COMPLETE.** Foundation, prospecting, site generation + QA, sales/projects/billing, expenses, **plus phase 5: cloud sync + online deploy** — auto-upload Stop hook, Firebase Storage as the shared file system, Netlify Functions for Google API proxying + auth-gated previews, server-side session cookies. Multi-PC operator workflow ready.
+**Phases 1–5 COMPLETE.** Foundation, prospecting, site generation + QA, sales/projects/billing, expenses, **plus phase 5: cloud sync + online deploy** — auto-upload Stop hook, Firebase Storage as the shared file system, Netlify Functions for Google API proxying + auth-gated previews, server-side session cookies. Multi-PC operator workflow ready. Roadmap module shipped Apr 26. Hormozi-edition Pitch Brief — 3-tab Pitch Workspace + per-industry 12-step Live Script + smart 3-tier pricing — committed May 4; field-test pending before May 8 sprint close.
 
 **Architecture cleanup (May 2026):** Client sites consolidated into the main repo — no more separate GitHub repos per site. Taylor Optical Firebase Hosting disabled; all client previews go through the dashboard. Woodley Genealogy removed (cancelled). Noko Pool Co retained as archived reference.
 
@@ -137,7 +137,11 @@ _Auto-maintained by the dashboard refresh (daily noon + Claude Code session-end 
 - [ ] "Sync All" button in Sites module — trigger site-upload --all from the dashboard with a live upload progress log
 - [ ] Client preview share link — generate a time-limited public URL to hand a prospect their demo site without requiring login
 - [ ] E-commerce client template — build a dedicated site-gen template for online-only businesses (no physical address) to round out restaurant/tradesperson/salon/retail
-- [ ] Ship the Roadmap module — commit roadmap.js/css + dashboard changes and run `firebase deploy --only firestore:rules` so both partners get the live sprint tracker
+- [ ] Auto-capture site screenshots — trigger a headless screenshot of each approved demo site from the Sites module so pitch decks and share links always have a fresh thumbnail
+- [x] Ship the Pitch Brief upgrade — the 3-tab modal (Brief + Live Script + Comparison) with Hormozi-edition sales-script.js is built in the working tree; commit + field-test with a live prospect
+- [x] Ship the Roadmap module — commit roadmap.js/css + dashboard changes and run `firebase deploy --only firestore:rules` so both partners get the live sprint tracker
+- [ ] Field-test the Hormozi Pitch Brief with a live prospect — run the 12-step Live Script in a real meeting, log objections + win/loss notes, then tune the per-industry scripts before the May 8 sprint close
+- [ ] Capture the business plan artifacts in the repo — the BUSINESS_LAUNCH_ROADMAP.html + Launch-Local-Business-Plan.pdf + business-plan-assets/ in the working tree are untracked; decide what's gitignored vs committed so the partner has a single source of truth
 
 ## Constraints
 - Production tool, not a prototype

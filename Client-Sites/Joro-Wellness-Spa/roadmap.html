@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Joro — Implementation Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --dark: #0e1510; --dark2: #182018; --dark3: #1f2a1f;
+  --green: #2d4a2d; --green-lt: #3d6b3d;
+  --ember: #c8813a; --ember-lt: #e09a52;
+  --cream: #f2ead8; --cream2: #e8dfc8; --muted: #8a9485;
+}
+body { font-family: 'Outfit', sans-serif; color: var(--cream); background: var(--dark); padding: 60px 5% 100px; line-height: 1.6; }
+h1, h2, h3 { font-family: 'Cormorant Garamond', serif; line-height: 1.15; }
+
+.wrap { max-width: 920px; margin: 0 auto; }
+
+.head { margin-bottom: 56px; }
+.tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ember); margin-bottom: 18px; }
+h1 { font-size: 52px; font-weight: 300; max-width: 720px; }
+h1 em { font-style: italic; color: var(--ember-lt); }
+.sub { font-size: 16px; color: var(--muted); font-weight: 300; max-width: 620px; margin-top: 18px; }
+
+.legend {
+  display: flex; gap: 24px; margin: 32px 0 0; flex-wrap: wrap;
+  font-size: 12px; color: rgba(242,234,216,0.5);
+}
+.legend-item { display: flex; align-items: center; gap: 8px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+.legend-dot.priority { background: var(--ember); }
+.legend-dot.upsell { background: var(--green-lt); }
+.legend-dot.support { background: rgba(242,234,216,0.4); }
+
+.timeline { margin-top: 56px; position: relative; }
+.timeline::before {
+  content: ''; position: absolute; left: 22px; top: 12px; bottom: 12px;
+  width: 2px; background: linear-gradient(to bottom, var(--ember) 0%, rgba(200,129,58,0.15) 100%);
+}
+
+.phase { position: relative; padding: 0 0 48px 64px; }
+.phase:last-child { padding-bottom: 0; }
+.phase-num {
+  position: absolute; left: 0; top: 0;
+  width: 46px; height: 46px; border-radius: 50%;
+  background: var(--dark2); border: 2px solid var(--ember);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 500; color: var(--ember);
+  z-index: 2;
+}
+.phase.upsell .phase-num { border-color: var(--green-lt); color: var(--green-lt); }
+.phase.support .phase-num { border-color: rgba(242,234,216,0.4); color: rgba(242,234,216,0.7); }
+
+.phase-card {
+  background: var(--dark2); border: 1px solid rgba(242,234,216,0.07);
+  border-radius: 14px; padding: 28px 32px;
+  transition: border-color 0.2s;
+}
+.phase-card:hover { border-color: rgba(200,129,58,0.25); }
+
+.phase-meta {
+  display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(242,234,216,0.45); margin-bottom: 10px;
+}
+.phase-tag { padding: 3px 10px; border-radius: 99px; background: rgba(200,129,58,0.12); color: var(--ember); border: 1px solid rgba(200,129,58,0.3); }
+.phase.upsell .phase-tag { background: rgba(61,107,61,0.18); color: var(--green-lt); border-color: rgba(61,107,61,0.35); }
+.phase.support .phase-tag { background: rgba(242,234,216,0.06); color: rgba(242,234,216,0.65); border-color: rgba(242,234,216,0.15); }
+
+.phase-title { font-size: 28px; font-weight: 400; color: var(--cream); margin-bottom: 8px; }
+.phase-blurb { font-size: 14.5px; color: var(--muted); font-weight: 300; margin-bottom: 18px; }
+
+.checklist { margin: 0; padding: 0; list-style: none; }
+.checklist li {
+  position: relative; padding: 6px 0 6px 26px; font-size: 14px; color: rgba(242,234,216,0.78); font-weight: 300;
+}
+.checklist li::before {
+  content: ''; position: absolute; left: 0; top: 13px;
+  width: 14px; height: 14px; border-radius: 4px;
+  border: 1.5px solid rgba(200,129,58,0.5);
+}
+
+.deliverable {
+  margin-top: 18px; padding: 12px 16px;
+  background: rgba(200,129,58,0.06); border-left: 2px solid var(--ember);
+  border-radius: 4px; font-size: 13px; color: rgba(242,234,216,0.7); font-weight: 300;
+}
+.deliverable strong { color: var(--ember); font-weight: 600; }
+.phase.upsell .deliverable { background: rgba(61,107,61,0.1); border-left-color: var(--green-lt); }
+.phase.upsell .deliverable strong { color: var(--green-lt); }
+.phase.support .deliverable { background: rgba(242,234,216,0.04); border-left-color: rgba(242,234,216,0.4); }
+.phase.support .deliverable strong { color: var(--cream); }
+
+.foot {
+  margin-top: 64px; padding-top: 32px; border-top: 1px solid rgba(242,234,216,0.08);
+  font-size: 12.5px; color: rgba(242,234,216,0.4); font-weight: 300;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="head">
+    <span class="tag">Post-Sale Implementation</span>
+    <h1>Joro <em>roadmap</em> — order of operations.</h1>
+    <p class="sub">Drew bought in. This is the sequence to get everything live, then layer the paid upsells on top, then settle into ongoing support.</p>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot priority"></div>Core delivery</div>
+      <div class="legend-item"><div class="legend-dot upsell"></div>Paid upsell</div>
+      <div class="legend-item"><div class="legend-dot support"></div>Ongoing</div>
+    </div>
+  </div>
+
+  <div class="timeline">
+
+    <div class="phase">
+      <div class="phase-num">1</div>
+      <div class="phase-card">
+        <div class="phase-meta"><span class="phase-tag">Core</span><span>Phase 1 · pre-transfer prep</span></div>
+        <h2 class="phase-title">Audit Drew's existing Squarespace</h2>
+        <p class="phase-blurb">Before touching anything, get the lay of the land on Drew's current Squarespace site so the transfer has no surprises.</p>
+        <ul class="checklist">
+          <li>Get login / collaborator access to Drew's Squarespace account</li>
+          <li>Catalog what exists today — pages, forms, integrations, FlyBook embed, domain setup, payment processor</li>
+          <li>Confirm Squarespace plan tier supports what we need (custom code, email, forms)</li>
+          <li>Back up current site (export + screenshot key pages) before any edits</li>
+        </ul>
+        <div class="deliverable"><strong>Deliverable:</strong> Short audit doc — what's there, what's missing, what gets replaced.</div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-num">2</div>
+      <div class="phase-card">
+        <div class="phase-meta"><span class="phase-tag">Core</span><span>Phase 2 · the big move</span></div>
+        <h2 class="phase-title">Transfer the new design to Squarespace</h2>
+        <p class="phase-blurb">Port the demo's design + content to Drew's Squarespace. Some sections rebuild as native Squarespace blocks, others go in as code injections.</p>
+        <ul class="checklist">
+          <li>Recreate the hero, experience cycle, and pricing sections using Squarespace blocks</li>
+          <li>Port the Wellness Journal articles into Squarespace's native blog</li>
+          <li>Wire up the private booking form (native Squarespace form → email)</li>
+          <li>Re-embed FlyBook booking widget in the right spots</li>
+          <li>Match fonts (Cormorant Garamond + Outfit) and colour palette in Squarespace site styles</li>
+          <li>Port nav, footer, social links</li>
+          <li>Check responsive layout on mobile / tablet</li>
+          <li>Domain + DNS — point joro's existing domain at the new site, set up redirects from old URLs</li>
+          <li>Verify Google Analytics / search console still pointing at the new site</li>
+        </ul>
+        <div class="deliverable"><strong>Deliverable:</strong> New site live on Drew's Squarespace at the production domain.</div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-num">3</div>
+      <div class="phase-card">
+        <div class="phase-meta"><span class="phase-tag">Core</span><span>Phase 3 · handoff</span></div>
+        <h2 class="phase-title">Drew training + launch checklist</h2>
+        <p class="phase-blurb">Make sure Drew can self-serve the small stuff before we walk away from the core delivery.</p>
+        <ul class="checklist">
+          <li>Walk Drew through editing pages, adding journal posts, swapping images</li>
+          <li>Show him where private booking form submissions land</li>
+          <li>Confirm FlyBook bookings are flowing as expected post-transfer</li>
+          <li>Quick written cheat-sheet for the 5 things Drew is most likely to want to change</li>
+        </ul>
+        <div class="deliverable"><strong>Deliverable:</strong> Drew confident running the site day-to-day. Core engagement complete.</div>
+      </div>
+    </div>
+
+    <div class="phase upsell">
+      <div class="phase-num">4</div>
+      <div class="phase-card">
+        <div class="phase-meta"><span class="phase-tag">Upsell</span><span>Phase 4 · automated re-engagement emails</span></div>
+        <h2 class="phase-title">Automated reminder email setup</h2>
+        <p class="phase-blurb">The 30/60/90-day re-engagement sequence Drew bought as an upsell. Designs are preserved in <code style="background:rgba(255,255,255,0.05); padding:1px 6px; border-radius:4px; font-size:12px;">/Email-Reminders/email-previews.html</code>.</p>
+        <ul class="checklist">
+          <li>Confirm with Drew which email platform he's using or wants (Mailchimp / Squarespace Email / Brevo)</li>
+          <li>Figure out FlyBook → email tool data path (last-visit date is the trigger we need)</li>
+          <li>Build the three email templates as table-based HTML for client compatibility</li>
+          <li>Set up automation rules: 30/60/90 days after last booking</li>
+          <li>Add unsubscribe handling, branded sender domain, test send to Drew + a few real addresses</li>
+          <li>Document the setup so Drew can pause / edit copy himself</li>
+        </ul>
+        <div class="deliverable"><strong>Deliverable:</strong> Live automated email sequence. Past guests start receiving emails on the right schedule.</div>
+      </div>
+    </div>
+
+    <div class="phase upsell">
+      <div class="phase-num">5</div>
+      <div class="phase-card">
+        <div class="phase-meta"><span class="phase-tag">Upsell</span><span>Phase 5 · KPI dashboard</span></div>
+        <h2 class="phase-title">KPI dashboard build</h2>
+        <p class="phase-blurb">The 2025 measurables dashboard Drew bought as an upsell. Source data is in <code style="background:rgba(255,255,255,0.05); padding:1px 6px; border-radius:4px; font-size:12px;">/Dashboard/KPIs - Dashboard - 2025.xlsx</code>.</p>
+        <ul class="checklist">
+          <li>Confirm with Drew where the dashboard lives (private link? embedded in Squarespace? standalone hosted page?)</li>
+          <li>Decide refresh cadence (monthly manual update? automated?) and who owns updates</li>
+          <li>Finish chart polish + ensure the numbers match the Annual Dashboard sheet exactly</li>
+          <li>Add a way for Drew to see year-over-year comparisons once 2026 data starts flowing</li>
+          <li>Hand-off doc: how to update the data, what each chart means</li>
+        </ul>
+        <div class="deliverable"><strong>Deliverable:</strong> Drew has a KPI view he can check anytime to see how the spa is trending.</div>
+      </div>
+    </div>
+
+    <div class="phase support">
+      <div class="phase-num">6</div>
+      <div class="phase-card">
+        <div class="phase-meta"><span class="phase-tag">Ongoing</span><span>Phase 6 · steady-state support</span></div>
+        <h2 class="phase-title">Ongoing support</h2>
+        <p class="phase-blurb">Once everything is live, settle into a rhythm. Whatever cadence Drew and Johnathon agree to.</p>
+        <ul class="checklist">
+          <li>Define support scope — what's included, what's billable</li>
+          <li>Set check-in cadence (monthly review? quarterly?)</li>
+          <li>Track new ideas / future upsells (AI chatbot is parked — Drew passed for now, may revisit)</li>
+          <li>Monitor email deliverability + dashboard freshness</li>
+          <li>Periodic content suggestions for the Wellness Journal (SEO compounding effect)</li>
+        </ul>
+        <div class="deliverable"><strong>Deliverable:</strong> Drew is happy, the site works, the upsells are paying off. Long-term relationship.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="foot">Living document — update as scope or sequence changes. Last revised 2026-04-16.</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jörð Outdoor Spa — 2025 Performance Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --dark:      #0e1510;
+  --dark2:     #182018;
+  --dark3:     #1f2a1f;
+  --panel:     #151d17;
+  --green:     #2d4a2d;
+  --green-lt:  #3d6b3d;
+  --ember:     #c8813a;
+  --ember-lt:  #e09a52;
+  --ember-dim: rgba(200,129,58,0.18);
+  --cream:     #f2ead8;
+  --cream2:    #e8dfc8;
+  --muted:     #8a9485;
+  --line:      rgba(242,234,216,0.08);
+  --line-2:    rgba(242,234,216,0.14);
+  --radius:    14px;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Outfit', sans-serif;
+  color: var(--cream);
+  background: radial-gradient(circle at 20% 0%, #1a2419 0%, var(--dark) 55%) fixed;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  padding: 40px 48px 64px;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+h1, h2, h3, h4 { font-family: 'Cormorant Garamond', serif; font-weight: 500; letter-spacing: -0.01em; }
+
+/* ── HEADER ── */
+.header {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 24px;
+}
+.header-left .eyebrow {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--ember); margin-bottom: 10px;
+}
+.header-left h1 { font-size: 38px; color: var(--cream); line-height: 1.1; }
+.header-left h1 .accent { font-style: italic; color: var(--ember); font-weight: 400; }
+.header-right { text-align: right; color: var(--muted); font-size: 12px; letter-spacing: 0.04em; }
+.header-right .period {
+  color: var(--cream); font-weight: 500; font-size: 13px;
+  margin-bottom: 4px; letter-spacing: 0.08em; text-transform: uppercase;
+}
+
+/* ── TABS ── */
+.tabs {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-bottom: 32px;
+  padding: 6px;
+  background: var(--dark2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  width: fit-content;
+}
+.tab {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--muted);
+  font-family: 'Outfit', sans-serif;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  padding: 9px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.tab:hover { color: var(--cream); background: rgba(242,234,216,0.04); }
+.tab.active {
+  background: var(--ember);
+  color: var(--dark);
+  font-weight: 600;
+}
+.tab.outline {
+  border-color: var(--line-2);
+  color: var(--cream);
+}
+.tab.outline.active {
+  background: var(--ember);
+  border-color: var(--ember);
+  color: var(--dark);
+}
+.tab-panel { display: none; animation: fade 0.25s ease; }
+.tab-panel.active { display: block; }
+@keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+/* ── KPI STRIP ── */
+.kpi-row {
+  display: grid; grid-template-columns: repeat(6, 1fr);
+  gap: 14px; margin-bottom: 32px;
+}
+.kpi {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  position: relative;
+  overflow: hidden;
+}
+.kpi::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--ember), transparent);
+  opacity: 0.55;
+}
+.kpi .label {
+  font-size: 10.5px; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 14px;
+}
+.kpi .value {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 38px; font-weight: 500; color: var(--cream); line-height: 1;
+}
+.kpi .unit { font-size: 14px; color: var(--muted); margin-left: 3px; font-family: 'Outfit', sans-serif; }
+.kpi .delta {
+  margin-top: 10px; font-size: 11.5px; font-weight: 500;
+  color: var(--muted); letter-spacing: 0.02em;
+}
+.kpi .delta .up { color: #7db57d; }
+.kpi .delta .down { color: #c87a5e; }
+
+/* ── SECTION TITLE ── */
+.section-title {
+  display: flex; align-items: baseline; gap: 14px;
+  margin: 8px 0 16px; padding-top: 14px;
+}
+.section-title h2 { font-size: 22px; color: var(--cream); }
+.section-title .tag {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--ember);
+}
+.section-title .rule { flex: 1; height: 1px; background: var(--line); }
+
+/* ── PANEL GRID ── */
+.grid { display: grid; gap: 16px; margin-bottom: 24px; }
+.grid.g-2 { grid-template-columns: 1.4fr 1fr; }
+.grid.g-2-eq { grid-template-columns: 1fr 1fr; }
+.grid.g-3 { grid-template-columns: repeat(3, 1fr); }
+
+/* ── REVENUE BREAKDOWN TABLE ── */
+.revenue-breakdown { padding: 22px 24px; }
+.rev-scroll {
+  max-height: 320px;
+  overflow-y: auto;
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.rev-scroll::-webkit-scrollbar { width: 10px; }
+.rev-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.25); border-radius: 8px; }
+.rev-scroll::-webkit-scrollbar-thumb { background: rgba(200,129,58,0.35); border-radius: 8px; }
+.rev-scroll::-webkit-scrollbar-thumb:hover { background: rgba(200,129,58,0.55); }
+.rev-scroll { scrollbar-color: rgba(200,129,58,0.4) rgba(0,0,0,0.25); scrollbar-width: thin; }
+.rev-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+}
+.rev-table thead th {
+  position: sticky; top: 0;
+  background: #141a14;
+  color: var(--muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 10.5px;
+  text-align: right;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+}
+.rev-table thead th:first-child { text-align: left; }
+.rev-table tbody td {
+  padding: 16px 20px;
+  text-align: right;
+  color: var(--cream);
+  border-bottom: 1px solid rgba(242,234,216,0.05);
+}
+.rev-table tbody tr:last-child td { border-bottom: none; }
+.rev-table tbody tr:hover td { background: rgba(200,129,58,0.04); }
+.rev-table td.m {
+  text-align: left;
+  color: var(--ember);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px;
+  letter-spacing: 0.02em;
+}
+.rev-table td.rev { color: #8fbf8f; font-variant-numeric: tabular-nums; }
+.rev-table td.net { color: #8fbf8f; font-variant-numeric: tabular-nums; font-weight: 500; }
+.rev-table td.spend { color: #d98a8a; font-variant-numeric: tabular-nums; }
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  display: flex; flex-direction: column;
+}
+.panel h3 { font-size: 18px; color: var(--cream); margin-bottom: 4px; }
+.panel .sub {
+  font-size: 11.5px; color: var(--muted); letter-spacing: 0.02em;
+  margin-bottom: 18px;
+}
+.chart-wrap { position: relative; flex: 1; min-height: 240px; }
+.chart-wrap.tall { min-height: 300px; }
+.chart-wrap.short { min-height: 180px; }
+
+/* ── STATS LIST ── */
+.stats-list { display: flex; flex-direction: column; gap: 14px; }
+.stats-list .row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--line);
+}
+.stats-list .row:last-child { border-bottom: none; }
+.stats-list .row .k { font-size: 12.5px; color: var(--muted); letter-spacing: 0.02em; }
+.stats-list .row .v {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px; color: var(--cream); font-weight: 500;
+}
+.stats-list .row .v.gold { color: var(--ember); }
+
+/* ── RANK BADGE ── */
+.rank-current {
+  display: flex; align-items: baseline; gap: 12px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(200,129,58,0.12), rgba(45,74,45,0.18));
+  border: 1px solid var(--ember-dim);
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+.rank-current .big {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 42px; color: var(--ember); line-height: 1; font-weight: 500;
+}
+.rank-current .ctx { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.rank-current .ctx strong { color: var(--cream); font-weight: 500; }
+
+/* ── STAR ROW ── */
+.rating-block { display: flex; gap: 28px; align-items: center; padding: 8px 0 18px; }
+.rating-block .num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 56px; color: var(--ember); line-height: 1; font-weight: 500;
+}
+.rating-block .stars { color: var(--ember); letter-spacing: 4px; font-size: 18px; }
+.rating-block .meta { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+/* ── INSIGHTS ── */
+.insight-intro {
+  background: linear-gradient(135deg, rgba(200,129,58,0.08), rgba(45,74,45,0.12));
+  border: 1px solid var(--ember-dim);
+  border-radius: var(--radius);
+  padding: 22px 26px;
+  margin-bottom: 24px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--cream2);
+}
+.insight-intro strong { color: var(--ember); font-weight: 600; }
+
+.insight-col-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  color: var(--cream);
+  margin-bottom: 4px;
+}
+.insight-col-title .accent { color: var(--ember); font-style: italic; font-weight: 400; }
+.insight-col-sub {
+  font-size: 11.5px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+.insight-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--green-lt);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  transition: border-color 0.2s;
+}
+.insight-card.win      { border-left-color: #7db57d; }
+.insight-card.opp      { border-left-color: var(--ember); }
+.insight-card.rec      { border-left-color: var(--ember-lt); }
+.insight-card:hover    { border-color: var(--line-2); }
+.insight-card h4 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cream);
+  margin-bottom: 6px;
+  letter-spacing: 0.01em;
+}
+.insight-card p {
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.insight-card .metric {
+  display: inline-block;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px;
+  color: var(--ember);
+  margin-right: 6px;
+  font-weight: 500;
+}
+
+/* ── DATA INPUT ── */
+.data-head {
+  margin-bottom: 6px;
+}
+.data-head h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  color: var(--ember);
+  font-style: italic;
+  font-weight: 500;
+}
+.data-head .sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+  letter-spacing: 0.02em;
+}
+.data-divider {
+  height: 1px;
+  background: var(--line);
+  margin: 18px 0 22px;
+}
+.dropzone {
+  border: 2px dashed rgba(242,234,216,0.18);
+  border-radius: var(--radius);
+  background: rgba(21,29,23,0.6);
+  padding: 64px 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 40px;
+}
+.dropzone:hover {
+  border-color: var(--ember-dim);
+  background: rgba(200,129,58,0.04);
+}
+.dropzone .icon {
+  width: 52px; height: 52px;
+  margin: 0 auto 16px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 12px;
+  background: rgba(242,234,216,0.06);
+  color: var(--cream2);
+}
+.dropzone .icon svg { width: 26px; height: 26px; stroke-width: 1.4; }
+.dropzone .title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--cream);
+  margin-bottom: 4px;
+}
+.dropzone .hint { font-size: 12px; color: var(--muted); }
+
+.roadmap {
+  display: flex; flex-direction: column;
+  gap: 12px;
+}
+.phase {
+  display: flex; align-items: center; gap: 20px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px 22px;
+  transition: border-color 0.2s;
+}
+.phase:hover { border-color: var(--ember-dim); }
+.phase .phase-icon {
+  flex-shrink: 0;
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 10px;
+  background: rgba(200,129,58,0.1);
+  color: var(--ember);
+}
+.phase .phase-icon svg { width: 22px; height: 22px; stroke-width: 1.6; }
+.phase .phase-body { flex: 1; }
+.phase .phase-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ember);
+  margin-bottom: 3px;
+}
+.phase .phase-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--cream);
+  margin-bottom: 4px;
+}
+.phase .phase-desc { font-size: 12px; color: var(--muted); line-height: 1.55; }
+.phase .effort {
+  flex-shrink: 0;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 5px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: 6px;
+  color: var(--cream2);
+}
+
+/* ── FOOTER ── */
+.footer {
+  margin-top: 40px; padding-top: 20px;
+  border-top: 1px solid var(--line);
+  display: flex; justify-content: space-between;
+  color: var(--muted); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+}
+
+@media (max-width: 1200px) {
+  .kpi-row { grid-template-columns: repeat(3, 1fr); }
+  .grid.g-2, .grid.g-2-eq, .grid.g-3 { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  body { padding: 24px 18px; }
+  .header { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .header-right { text-align: left; }
+  .kpi-row { grid-template-columns: 1fr 1fr; }
+  .header-left h1 { font-size: 28px; }
+  .tabs { width: 100%; overflow-x: auto; }
+  .phase { flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <div class="eyebrow">Jörð Outdoor Spa</div>
+    <h1>2025 Performance <span class="accent">Dashboard</span></h1>
+  </div>
+  <div class="header-right">
+    <div class="period">June — December 2025</div>
+    <div>Source: KPIs Dashboard 2025 · Annual View</div>
+  </div>
+</header>
+
+<!-- TAB NAV -->
+<nav class="tabs" role="tablist">
+  <button class="tab outline active" data-tab="overview">Overview</button>
+  <button class="tab outline" data-tab="marketing">Marketing</button>
+  <button class="tab outline" data-tab="revenue">Revenue</button>
+  <button class="tab outline" data-tab="social">Social &amp; SEO</button>
+  <button class="tab outline" data-tab="insights">Insights</button>
+  <button class="tab outline" data-tab="data">Data Input</button>
+</nav>
+
+<!-- ─────────────── OVERVIEW ─────────────── -->
+<section class="tab-panel active" id="overview">
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="label">Total Guests</div>
+      <div class="value">499</div>
+      <div class="delta"><span class="up">▲ 98%</span> vs. prior year</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Total Bookings</div>
+      <div class="value">247</div>
+      <div class="delta">205 sessions filled</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Web Sessions</div>
+      <div class="value">7,303</div>
+      <div class="delta">avg. 12.2% conversion</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Avg. Occupancy</div>
+      <div class="value">14.6<span class="unit">%</span></div>
+      <div class="delta">of total availability</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Google Rating</div>
+      <div class="value">5.0</div>
+      <div class="delta">29 verified reviews</div>
+    </div>
+    <div class="kpi">
+      <div class="label">IG Community</div>
+      <div class="value">2,230</div>
+      <div class="delta"><span class="up">▲ 22.7%</span> since July</div>
+    </div>
+  </div>
+
+  <div class="section-title">
+    <span class="tag">01</span><h2>Year at a Glance</h2><span class="rule"></span>
+  </div>
+
+  <section class="grid g-2">
+    <div class="panel">
+      <h3>Guests — 2025 vs. 2024</h3>
+      <div class="sub">Month-over-month guest volume benchmarked against the prior year.</div>
+      <div class="chart-wrap tall"><canvas id="guestsYoY"></canvas></div>
+    </div>
+    <div class="panel">
+      <h3>Campaign Performance</h3>
+      <div class="sub">Two paid pushes ran in August and September.</div>
+      <div class="stats-list">
+        <div class="row"><span class="k">Total ad spend</span><span class="v">$530.90</span></div>
+        <div class="row"><span class="k">Campaign revenue</span><span class="v gold">$3,988.79</span></div>
+        <div class="row"><span class="k">Blended ROAS</span><span class="v gold">11.1×</span></div>
+        <div class="row"><span class="k">Campaign bookings</span><span class="v">76</span></div>
+        <div class="row"><span class="k">Cost per new customer</span><span class="v">$4.85</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid g-2-eq">
+    <div class="panel">
+      <h3>Occupancy Rate</h3>
+      <div class="sub">Share of the available 217–248 monthly sessions that were filled.</div>
+      <div class="chart-wrap"><canvas id="occupancy"></canvas></div>
+    </div>
+    <div class="panel" style="display:flex;flex-direction:column;justify-content:center;">
+      <h3>Capacity Headroom</h3>
+      <div class="sub">Average occupancy at 14.6% leaves significant unfilled capacity — the primary growth lever.</div>
+      <div class="stats-list" style="margin-top:12px;">
+        <div class="row"><span class="k">Peak month (Sep)</span><span class="v gold">30.9%</span></div>
+        <div class="row"><span class="k">Low month (Dec)</span><span class="v">4.8%</span></div>
+        <div class="row"><span class="k">Sessions available / mo</span><span class="v">217–248</span></div>
+        <div class="row"><span class="k">Avg sessions filled</span><span class="v">34</span></div>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ─────────────── MARKETING ─────────────── -->
+<section class="tab-panel" id="marketing">
+  <div class="section-title">
+    <span class="tag">01</span><h2>Web Funnel</h2><span class="rule"></span>
+  </div>
+  <section class="grid g-2">
+    <div class="panel">
+      <h3>Top-of-Funnel — Web Sessions</h3>
+      <div class="sub">Traffic to the site with overlaid booking-click conversion rate.</div>
+      <div class="chart-wrap tall"><canvas id="webFunnel"></canvas></div>
+    </div>
+    <div class="panel">
+      <h3>Conversion Rates</h3>
+      <div class="sub">Visitor → click and click → booking, side by side.</div>
+      <div class="chart-wrap tall"><canvas id="convRates"></canvas></div>
+    </div>
+  </section>
+
+  <div class="section-title">
+    <span class="tag">02</span><h2>Paid Campaigns</h2><span class="rule"></span>
+  </div>
+  <section class="grid g-2">
+    <div class="panel">
+      <h3>Campaign Performance</h3>
+      <div class="sub">Two paid pushes ran in August and September.</div>
+      <div class="stats-list">
+        <div class="row"><span class="k">Total ad spend</span><span class="v">$530.90</span></div>
+        <div class="row"><span class="k">Campaign revenue</span><span class="v gold">$3,988.79</span></div>
+        <div class="row"><span class="k">Blended ROAS</span><span class="v gold">11.1×</span></div>
+        <div class="row"><span class="k">Campaign bookings</span><span class="v">76</span></div>
+        <div class="row"><span class="k">Cost per new customer</span><span class="v">$4.85</span></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Monthly ROAS</h3>
+      <div class="sub">Revenue generated per dollar of ad spend, by campaign month.</div>
+      <div class="chart-wrap tall"><canvas id="roas"></canvas></div>
+    </div>
+  </section>
+</section>
+
+<!-- ─────────────── REVENUE ─────────────── -->
+<section class="tab-panel" id="revenue">
+  <div class="section-title">
+    <span class="tag">01</span><h2>Sales &amp; Sessions</h2><span class="rule"></span>
+  </div>
+  <section class="grid g-2-eq">
+    <div class="panel">
+      <h3>Bookings, Sessions &amp; Guests</h3>
+      <div class="sub">Bookings generate sessions; sessions host multiple guests.</div>
+      <div class="chart-wrap tall"><canvas id="bookingsComposition"></canvas></div>
+    </div>
+    <div class="panel">
+      <h3>Average Booking Value</h3>
+      <div class="sub">Revenue per booking across tracked months.</div>
+      <div class="chart-wrap tall"><canvas id="aov"></canvas></div>
+    </div>
+  </section>
+
+  <div class="section-title">
+    <span class="tag">02</span><h2>Monthly Revenue Breakdown</h2><span class="rule"></span>
+  </div>
+  <div class="panel revenue-breakdown">
+    <div class="sub">Bookings × average value, net of ad spend. Estimated from 2025 tracked months.</div>
+    <div class="rev-scroll">
+      <table class="rev-table">
+        <thead>
+          <tr>
+            <th>Month</th><th>Bookings</th><th>Guests</th><th>Avg Value</th>
+            <th>Est. Revenue</th><th>Ad Spend</th><th>Net</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="m">July</td><td>34</td><td>71</td><td>$51.74</td><td class="rev">$1,759.05</td><td>$0.00</td><td class="net">$1,759.05</td></tr>
+          <tr><td class="m">August</td><td>52</td><td>98</td><td>$54.95</td><td class="rev">$2,857.40</td><td class="spend">$191.03</td><td class="net">$2,666.37</td></tr>
+          <tr><td class="m">September</td><td>61</td><td>124</td><td>$50.49</td><td class="rev">$3,079.89</td><td class="spend">$171.36</td><td class="net">$2,908.53</td></tr>
+          <tr><td class="m">October</td><td>48</td><td>125</td><td>$51.74</td><td class="rev">$2,483.36</td><td>$0.00</td><td class="net">$2,483.36</td></tr>
+          <tr><td class="m">November</td><td>19</td><td>53</td><td>$49.77</td><td class="rev">$945.63</td><td class="spend">$168.51</td><td class="net">$777.12</td></tr>
+          <tr><td class="m">December</td><td>33</td><td>28</td><td>$51.74</td><td class="rev">$1,707.31</td><td>$0.00</td><td class="net">$1,707.31</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── SOCIAL & SEO ─────────────── -->
+<section class="tab-panel" id="social">
+  <div class="section-title">
+    <span class="tag">01</span><h2>Community &amp; Brand</h2><span class="rule"></span>
+  </div>
+  <section class="grid g-3">
+    <div class="panel">
+      <h3>Social Following</h3>
+      <div class="sub">Instagram &amp; Facebook audience growth.</div>
+      <div class="chart-wrap"><canvas id="socialChart"></canvas></div>
+    </div>
+    <div class="panel">
+      <h3>Brand Search Lift</h3>
+      <div class="sub">Monthly uplift in direct "Joro Spa" search traffic.</div>
+      <div class="chart-wrap"><canvas id="brandLift"></canvas></div>
+    </div>
+    <div class="panel">
+      <h3>Newsletter Subscribers</h3>
+      <div class="sub">Opt-in list growth across the year.</div>
+      <div class="chart-wrap"><canvas id="newsletter"></canvas></div>
+    </div>
+  </section>
+
+  <div class="section-title">
+    <span class="tag">02</span><h2>SEO &amp; Reputation</h2><span class="rule"></span>
+  </div>
+  <section class="grid g-2">
+    <div class="panel">
+      <h3>Google Ranking — "Outdoor Spa Ontario"</h3>
+      <div class="sub">Lower is better. A position of 1 is the top of the page.</div>
+      <div class="rank-current">
+        <div class="big">10.7</div>
+        <div class="ctx">
+          <strong>Current position</strong> (December)<br>
+          Up from position 66 in July — a 55-position climb.
+        </div>
+      </div>
+      <div class="chart-wrap short"><canvas id="seoRank"></canvas></div>
+    </div>
+    <div class="panel">
+      <h3>Customer Experience</h3>
+      <div class="sub">Google reviews are the primary reputation signal.</div>
+      <div class="rating-block">
+        <div>
+          <div class="num">5.0</div>
+          <div class="stars">★★★★★</div>
+        </div>
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--cream);">29 reviews</div>
+          <div class="meta">+13 new reviews since July · 0 below 5 stars</div>
+        </div>
+      </div>
+      <div class="chart-wrap short"><canvas id="reviews"></canvas></div>
+    </div>
+  </section>
+</section>
+
+<!-- ─────────────── INSIGHTS ─────────────── -->
+<section class="tab-panel" id="insights">
+  <div class="insight-intro">
+    <strong>Headline:</strong> 2025 was a breakout growth year. Guests nearly doubled year-over-year
+    (499 vs. 252, +98%), paid ads returned <strong>11.1× blended ROAS</strong>, SEO climbed 55 positions,
+    and the 5.0★ reputation held across 29 reviews. The core unlock now is <strong>occupancy</strong>
+    — at 14.6% on average, the product is working but the room is mostly empty. The margin lives in
+    filling sessions that already exist, not in building new supply.
+  </div>
+
+  <section class="grid g-3">
+    <div>
+      <div class="insight-col-title">What <span class="accent">worked</span></div>
+      <div class="insight-col-sub">Wins to repeat</div>
+
+      <div class="insight-card win">
+        <h4>Paid media printed money</h4>
+        <p><span class="metric">11.1×</span>blended ROAS on $530.90 spend produced $3,988.79 in revenue.
+        Cost per new customer was <strong>$4.85</strong> — well below the $55 drop-in price, so every
+        first visit was profitable on session one.</p>
+      </div>
+
+      <div class="insight-card win">
+        <h4>September was the peak system test</h4>
+        <p><span class="metric">30.9%</span>occupancy, 124 guests, 67 sessions, and the highest click-to-book
+        rate of the year (40.9%). This proves the funnel can fill capacity when awareness, intent, and
+        season align.</p>
+      </div>
+
+      <div class="insight-card win">
+        <h4>SEO went from invisible to page-one-adjacent</h4>
+        <p><span class="metric">#66 → #10.7</span>for "Outdoor Spa Ontario" in six months. That's the
+        difference between zero and meaningful organic discovery — and it happened without paid SEO effort.</p>
+      </div>
+
+      <div class="insight-card win">
+        <h4>Reputation is bulletproof</h4>
+        <p><span class="metric">5.0★</span>across 29 Google reviews, zero below 5 stars. Social grew
+        +22.7% on IG and +70% on Facebook. Brand search lift peaked at 106 in September — ads were also
+        priming direct intent.</p>
+      </div>
+    </div>
+
+    <div>
+      <div class="insight-col-title">Where we're <span class="accent">leaving money</span></div>
+      <div class="insight-col-sub">Opportunities</div>
+
+      <div class="insight-card opp">
+        <h4>Occupancy is the ceiling, not demand</h4>
+        <p><span class="metric">14.6%</span>average fill against 217–248 available monthly sessions. Even
+        a lift to 25% roughly doubles annual guests without any new infrastructure.</p>
+      </div>
+
+      <div class="insight-card opp">
+        <h4>Shoulder season collapses</h4>
+        <p><span class="metric">Nov: 8.8%</span>occupancy, <span class="metric">Dec: 4.8%</span>.
+        Guests fell from 125 in October to 28 in December. Paid spend was also off in both months —
+        the two worst months were the two unspent months.</p>
+      </div>
+
+      <div class="insight-card opp">
+        <h4>Newsletter list has stalled</h4>
+        <p><span class="metric">31 subs</span>and flat since September. With 499 guests this year, the
+        capture rate on-site is effectively a rounding error. Every visit should produce an email.</p>
+      </div>
+
+      <div class="insight-card opp">
+        <h4>Average booking value is drifting down</h4>
+        <p><span class="metric">$54.95 → $49.77</span>from August to November. Mix is shifting toward
+        discounted 4-pack and 8-pack redemptions — good for retention, but private bookings (starting
+        at $249.95) are under-represented in the revenue mix.</p>
+      </div>
+    </div>
+
+    <div>
+      <div class="insight-col-title">What to <span class="accent">do next</span></div>
+      <div class="insight-col-sub">Recommendations</div>
+
+      <div class="insight-card rec">
+        <h4>Run a winter "sauna season" campaign</h4>
+        <p>Hot sauna + cold plunge is intuitively <em>more</em> compelling in winter, not less. Match
+        Aug/Sept spend levels ($200–300/mo) with creative built around the contrast experience in snow.
+        Target: lift Nov–Feb occupancy from ~7% to 15%.</p>
+      </div>
+
+      <div class="insight-card rec">
+        <h4>Gift cards as the December product</h4>
+        <p>December had 28 guests but brand search was still active. Push a 2-week gift-card campaign
+        mid-November. Revenue books now, sessions redeem in Q1 — exactly when occupancy needs it.</p>
+      </div>
+
+      <div class="insight-card rec">
+        <h4>Fix newsletter capture at two points</h4>
+        <p>1) Post-booking confirmation opt-in, 2) post-visit review request also offers newsletter.
+        Goal: 300+ subscribers by mid-2026. A 15%-off first-return offer on subscribe pays for itself.</p>
+      </div>
+
+      <div class="insight-card rec">
+        <h4>Push private bookings deliberately</h4>
+        <p>A single private booking ($249.95+) equals 5 drop-ins in revenue and fills an otherwise-empty
+        weekday session. Build a private-focused ad creative and a dedicated landing block on the site.</p>
+      </div>
+
+      <div class="insight-card rec">
+        <h4>Automate the review flywheel</h4>
+        <p>29 reviews from 499 guests is a 5.8% review rate. An SMS/email request 48 hours post-visit
+        could triple that. Target: 75+ reviews by end of 2026 while holding 4.9★+.</p>
+      </div>
+
+      <div class="insight-card rec">
+        <h4>Climb from #10 to top 5</h4>
+        <p>SEO trajectory is strong but will plateau without content. Publish the "Science of Contrast
+        Therapy" journal series (already drafted on the site) and internally link from every service
+        page. Target: top-3 for "outdoor spa Ontario" by Q3.</p>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ─────────────── DATA INPUT ─────────────── -->
+<section class="tab-panel" id="data">
+  <div class="data-head">
+    <h2>Monthly Data Entry</h2>
+    <div class="sub">Drop a CSV or enter data manually to update the dashboard</div>
+  </div>
+  <div class="data-divider"></div>
+
+  <div class="dropzone" id="dropzone">
+    <div class="icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="12" y1="18" x2="12" y2="12"/>
+        <polyline points="9 15 12 12 15 15"/>
+      </svg>
+    </div>
+    <div class="title">Drop a CSV or spreadsheet here</div>
+    <div class="hint">or click to browse files</div>
+  </div>
+
+  <div class="data-head">
+    <h2>Automation Roadmap</h2>
+    <div class="sub">How to make this dashboard self-updating</div>
+  </div>
+  <div class="data-divider"></div>
+
+  <div class="roadmap">
+    <div class="phase">
+      <div class="phase-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+      </div>
+      <div class="phase-body">
+        <div class="phase-label">Phase 1</div>
+        <div class="phase-title">Google Analytics API</div>
+        <div class="phase-desc">Auto-pull web sessions, conversion rates, and traffic sources. Requires GA4 property ID + service account credentials.</div>
+      </div>
+      <div class="effort">Medium</div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="5" width="18" height="14" rx="2"/>
+          <circle cx="12" cy="12" r="3.5"/>
+          <path d="M17 5l-1.5-2h-7L7 5"/>
+        </svg>
+      </div>
+      <div class="phase-body">
+        <div class="phase-label">Phase 2</div>
+        <div class="phase-title">Meta Business API</div>
+        <div class="phase-desc">Auto-pull Instagram and Facebook follower counts, engagement, and ad spend/ROAS directly from Meta Business Suite.</div>
+      </div>
+      <div class="effort">Medium</div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+      </div>
+      <div class="phase-body">
+        <div class="phase-label">Phase 3</div>
+        <div class="phase-title">Booking Platform API</div>
+        <div class="phase-desc">Auto-pull total bookings, guest counts, session fill rates, and revenue. Depends on which booking system Joro uses.</div>
+      </div>
+      <div class="effort">Low-Med</div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+      </div>
+      <div class="phase-body">
+        <div class="phase-label">Phase 4</div>
+        <div class="phase-title">Google Business Profile API</div>
+        <div class="phase-desc">Auto-pull review count, rating, and search ranking data.</div>
+      </div>
+      <div class="effort">Low</div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="5" width="18" height="14" rx="2"/>
+          <polyline points="3 7 12 13 21 7"/>
+        </svg>
+      </div>
+      <div class="phase-body">
+        <div class="phase-label">Phase 5</div>
+        <div class="phase-title">Mailchimp/Newsletter API</div>
+        <div class="phase-desc">Auto-pull subscriber count, open rates, and click rates.</div>
+      </div>
+      <div class="effort">Low</div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <span>Jörð Outdoor Spa · Turkey Point, Ontario</span>
+  <span>Dashboard generated from internal KPI workbook</span>
+</footer>
+
+<script>
+/* ── DATA (Annual Dashboard sheet, Jun–Dec 2025) ── */
+const MONTHS = ['Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+const DATA = {
+  webSessions:   [211, 750, 2600, 1100, 655, 1274, 713],
+  webConv:       [3.79, 20.27, 10.23, 13.55, 14.05, 8.48, 15.43],
+  bookingClicks: [null, 152, 266, 149, 92, 108, 110],
+  clickToBook:   [null, 22.37, 19.55, 40.94, 52.17, 17.59, 30.00],
+
+  bookings:      [null, 34, 52, 61, 48, 19, 33],
+  sessions:      [null, 24, 41, 67, 42, 19, 12],
+  guests:        [null, 71, 98, 124, 125, 53, 28],
+  guestsPrior:   [null, 37, 76, 51, 50, 28, 10],
+  occupancy:     [null, 9.68, 16.53, 30.88, 16.94, 8.76, 4.84],
+  aov:           [null, null, 54.95, 50.49, null, 49.77, null],
+
+  igFollowers:   [null, 1818, 1890, 1949, 1986, 1995, 2230],
+  fbFollowers:   [null, 158, 179, 201, 207, 209, 269],
+  newsletter:    [22, 24, 29, 30, 31, 31, 31],
+  brandLift:     [null, null, 96, 106, 59, 63, 60],
+
+  seoRank:       [null, 66, 36, 22.7, 16.2, 12.3, 10.7],
+  reviews:       [null, 16, 19, 20, null, 29, 29],
+
+  roas:          [null, null, 9.78, 12.37, null, null, null]
+};
+
+/* ── CHART DEFAULTS ── */
+const C = {
+  dark:    '#0e1510',
+  green:   '#2d4a2d',
+  greenLt: '#3d6b3d',
+  ember:   '#c8813a',
+  emberLt: '#e09a52',
+  cream:   '#f2ead8',
+  muted:   '#8a9485',
+  grid:    'rgba(242,234,216,0.06)',
+  gridLt:  'rgba(242,234,216,0.12)'
+};
+
+Chart.defaults.font.family = "'Outfit', sans-serif";
+Chart.defaults.font.size = 11.5;
+Chart.defaults.color = C.muted;
+Chart.defaults.borderColor = C.grid;
+Chart.defaults.plugins.legend.labels.color = C.cream;
+Chart.defaults.plugins.legend.labels.usePointStyle = true;
+Chart.defaults.plugins.legend.labels.boxWidth = 8;
+Chart.defaults.plugins.legend.labels.boxHeight = 8;
+Chart.defaults.plugins.legend.labels.padding = 16;
+Chart.defaults.plugins.tooltip.backgroundColor = '#0e1510';
+Chart.defaults.plugins.tooltip.borderColor = 'rgba(200,129,58,0.3)';
+Chart.defaults.plugins.tooltip.borderWidth = 1;
+Chart.defaults.plugins.tooltip.titleColor = C.ember;
+Chart.defaults.plugins.tooltip.bodyColor = C.cream;
+Chart.defaults.plugins.tooltip.padding = 12;
+Chart.defaults.plugins.tooltip.cornerRadius = 6;
+Chart.defaults.plugins.tooltip.titleFont = { family: "'Outfit', sans-serif", weight: '600', size: 11 };
+Chart.defaults.plugins.tooltip.bodyFont = { family: "'Outfit', sans-serif", size: 12 };
+
+const axisBase = {
+  grid: { color: C.grid, drawBorder: false },
+  ticks: { color: C.muted, padding: 8 },
+  border: { display: false }
+};
+
+function gradient(ctx, area, top, bottom) {
+  if (!area) return top;
+  const g = ctx.createLinearGradient(0, area.top, 0, area.bottom);
+  g.addColorStop(0, top);
+  g.addColorStop(1, bottom);
+  return g;
+}
+
+/* ── CHART BUILDERS (lazy-init per tab) ── */
+function buildGuestsYoY(id) {
+  return new Chart(document.getElementById(id), {
+    type: 'bar',
+    data: {
+      labels: MONTHS,
+      datasets: [
+        { label: '2024 (prior year)', data: DATA.guestsPrior,
+          backgroundColor: 'rgba(61,107,61,0.55)', borderColor: C.greenLt,
+          borderWidth: 1, borderRadius: 4, barPercentage: 0.85, categoryPercentage: 0.72 },
+        { label: '2025', data: DATA.guests,
+          backgroundColor: C.ember, borderColor: C.emberLt,
+          borderWidth: 0, borderRadius: 4, barPercentage: 0.85, categoryPercentage: 0.72 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom' } },
+      scales: {
+        x: { ...axisBase, grid: { display: false } },
+        y: { ...axisBase, beginAtZero: true, ticks: { ...axisBase.ticks, stepSize: 25 } }
+      }
+    }
+  });
+}
+
+const builders = {
+  guestsYoY:  () => buildGuestsYoY('guestsYoY'),
+  guestsYoY2: () => buildGuestsYoY('guestsYoY2'),
+
+  bookingsComposition: () => new Chart(document.getElementById('bookingsComposition'), {
+    type: 'bar',
+    data: {
+      labels: MONTHS,
+      datasets: [
+        { label: 'Bookings', data: DATA.bookings, backgroundColor: C.green, borderRadius: 3 },
+        { label: 'Sessions', data: DATA.sessions, backgroundColor: C.greenLt, borderRadius: 3 },
+        { label: 'Guests',   data: DATA.guests,   backgroundColor: C.ember,   borderRadius: 3 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom' } },
+      scales: { x: { ...axisBase, grid: { display: false } }, y: { ...axisBase, beginAtZero: true } }
+    }
+  }),
+
+  occupancy: () => new Chart(document.getElementById('occupancy'), {
+    type: 'bar',
+    data: { labels: MONTHS, datasets: [{
+      label: 'Occupancy %', data: DATA.occupancy,
+      backgroundColor: (ctx) => gradient(ctx.chart.ctx, ctx.chart.chartArea, C.ember, 'rgba(200,129,58,0.15)'),
+      borderRadius: 6, barPercentage: 0.6
+    }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false },
+        tooltip: { callbacks: { label: (t) => ` ${t.parsed.y.toFixed(1)}% of capacity` } } },
+      scales: {
+        x: { ...axisBase, grid: { display: false } },
+        y: { ...axisBase, beginAtZero: true, max: 35, ticks: { ...axisBase.ticks, callback: v => v + '%' } }
+      }
+    }
+  }),
+
+  aov: () => new Chart(document.getElementById('aov'), {
+    type: 'line',
+    data: { labels: MONTHS, datasets: [{
+      label: 'Avg. Booking Value', data: DATA.aov,
+      borderColor: C.ember,
+      backgroundColor: (ctx) => gradient(ctx.chart.ctx, ctx.chart.chartArea, 'rgba(200,129,58,0.35)', 'rgba(200,129,58,0)'),
+      tension: 0.35, fill: true, spanGaps: true,
+      pointRadius: 5, pointBackgroundColor: C.ember,
+      pointBorderColor: C.dark, pointBorderWidth: 2, borderWidth: 2
+    }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false },
+        tooltip: { callbacks: { label: (t) => ' $' + t.parsed.y.toFixed(2) } } },
+      scales: {
+        x: { ...axisBase, grid: { display: false } },
+        y: { ...axisBase, min: 45, max: 60, ticks: { ...axisBase.ticks, callback: v => '$' + v } }
+      }
+    }
+  }),
+
+  webFunnel: () => new Chart(document.getElementById('webFunnel'), {
+    data: { labels: MONTHS, datasets: [
+      { type: 'bar', label: 'Web Sessions', data: DATA.webSessions,
+        backgroundColor: 'rgba(45,74,45,0.8)', borderColor: C.greenLt,
+        borderWidth: 1, borderRadius: 4, yAxisID: 'y', order: 2 },
+      { type: 'line', label: 'Click-Through Conv. %', data: DATA.webConv,
+        borderColor: C.ember, backgroundColor: C.ember,
+        tension: 0.35, pointRadius: 4,
+        pointBackgroundColor: C.ember, pointBorderColor: C.dark,
+        pointBorderWidth: 2, borderWidth: 2, yAxisID: 'y1', order: 1 }
+    ] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom' } },
+      scales: {
+        x: { ...axisBase, grid: { display: false } },
+        y: { ...axisBase, beginAtZero: true,
+             title: { display: true, text: 'Sessions', color: C.muted, font: { size: 10.5 } } },
+        y1: { position: 'right', grid: { display: false },
+              ticks: { color: C.ember, padding: 8, callback: v => v + '%' },
+              border: { display: false }, beginAtZero: true, max: 25 }
+      }
+    }
+  }),
+
+  convRates: () => new Chart(document.getElementById('convRates'), {
+    type: 'line',
+    data: { labels: MONTHS, datasets: [
+      { label: 'Visitor → Booking Click', data: DATA.webConv,
+        borderColor: C.greenLt, backgroundColor: 'rgba(61,107,61,0.15)',
+        tension: 0.35, fill: true, spanGaps: true,
+        borderWidth: 2, pointRadius: 3, pointBackgroundColor: C.greenLt },
+      { label: 'Click → Booking', data: DATA.clickToBook,
+        borderColor: C.ember, backgroundColor: 'rgba(200,129,58,0.12)',
+        tension: 0.35, fill: true, spanGaps: true,
+        borderWidth: 2, pointRadius: 3, pointBackgroundColor: C.ember }
+    ] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom' },
+        tooltip: { callbacks: { label: (t) => ' ' + t.dataset.label + ': ' + t.parsed.y.toFixed(1) + '%' } } },
+      scales: {
+        x: { ...axisBase, grid: { display: false } },
+        y: { ...axisBase, beginAtZero: true, ticks: { ...axisBase.ticks, callback: v => v + '%' } }
+      }
+    }
+  }),
+
+  socialChart: () => new Chart(document.getElementById('socialChart'), {
+    type: 'line',
+    data: { labels: MONTHS, datasets: [
+      { label: 'Instagram', data: DATA.igFollowers,
+        borderColor: C.ember, backgroundColor: 'rgba(200,129,58,0.12)',
+        tension: 0.35, fill: true, spanGaps: true,
+        borderWidth: 2, pointRadius: 3, pointBackgroundColor: C.ember, yAxisID: 'y' },
+      { label: 'Facebook', data: DATA.fbFollowers,
+        borderColor: C.greenLt, backgroundColor: 'rgba(61,107,61,0.18)',
+        tension: 0.35, fill: true, spanGaps: true,
+        borderWidth: 2, pointRadius: 3, pointBackgroundColor: C.greenLt, yAxisID: 'y1' }
+    ] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom' } },
+      scales: {
+        x: { ...axisBase, grid: { display: false } },
+        y: { ...axisBase, position: 'left', beginAtZero: false, ticks: { ...axisBase.ticks, color: C.ember } },
+        y1: { position: 'right', grid: { display: false }, border: { display: false },
+              ticks: { color: C.greenLt, padding: 8 }, beginAtZero: false }
+      }
+    }
+  }),
+
+  brandLift: () => new Chart(document.getElementById('brandLift'), {
+    type: 'bar',
+    data: { labels: MONTHS, datasets: [{
+      label: 'Brand search lift', data: DATA.brandLift,
+      backgroundColor: C.greenLt, borderRadius: 4, barPercentage: 0.7
+    }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { x: { ...axisBase, grid: { display: false } }, y: { ...axisBase, beginAtZero: true } }
+    }
+  }),
+
+  newsletter: () => new Chart(document.getElementById('newsletter'), {
+    type: 'line',
+    data: { labels: MONTHS, datasets: [{
+      label: 'Subscribers', data: DATA.newsletter,
+      borderColor: C.ember,
+      backgroundColor: (ctx) => gradient(ctx.chart.ctx, ctx.chart.chartArea, 'rgba(200,129,58,0.4)', 'rgba(200,129,58,0)'),
+      tension: 0.3, fill: true, borderWidth: 2,
+      pointRadius: 4, pointBackgroundColor: C.ember,
+      pointBorderColor: C.dark, pointBorderWidth: 2
+    }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { x: { ...axisBase, grid: { display: false } }, y: { ...axisBase, beginAtZero: false, min: 18, max: 35 } }
+    }
+  }),
+
+  seoRank: () => new Chart(document.getElementById('seoRank'), {
+    type: 'line',
+    data: { labels: MONTHS, datasets: [{
+      label: 'Search Position', data: DATA.seoRank,
+      borderColor: C.ember, backgroundColor: 'rgba(200,129,58,0.1)',
+      tension: 0.3, fill: true, spanGaps: true,
+      borderWidth: 2, pointRadius: 4, pointBackgroundColor: C.ember,
+      pointBorderColor: C.dark, pointBorderWidth: 2
+    }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false },
+        tooltip: { callbacks: { label: (t) => ' Position #' + t.parsed.y } } },
+      scales: {
+        x: { ...axisBase, grid: { display: false } },
+        y: { ...axisBase, reverse: true, beginAtZero: false, min: 0, max: 70,
+             ticks: { ...axisBase.ticks, callback: v => '#' + v } }
+      }
+    }
+  }),
+
+  reviews: () => new Chart(document.getElementById('reviews'), {
+    type: 'bar',
+    data: { labels: MONTHS, datasets: [{
+      label: 'Google reviews', data: DATA.reviews,
+      backgroundColor: C.green, borderColor: C.greenLt,
+      borderWidth: 1, borderRadius: 4, barPercentage: 0.55
+    }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { x: { ...axisBase, grid: { display: false } }, y: { ...axisBase, beginAtZero: true, max: 35 } }
+    }
+  }),
+
+  roas: () => new Chart(document.getElementById('roas'), {
+    type: 'bar',
+    data: { labels: MONTHS, datasets: [{
+      label: 'Return on ad spend (×)', data: DATA.roas,
+      backgroundColor: (ctx) => gradient(ctx.chart.ctx, ctx.chart.chartArea, C.ember, 'rgba(200,129,58,0.15)'),
+      borderRadius: 6, barPercentage: 0.5
+    }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false },
+        tooltip: { callbacks: { label: (t) => ' ' + t.parsed.y.toFixed(2) + '× return' } } },
+      scales: {
+        x: { ...axisBase, grid: { display: false } },
+        y: { ...axisBase, beginAtZero: true, ticks: { ...axisBase.ticks, callback: v => v + '×' } }
+      }
+    }
+  })
+};
+
+const instances = {};
+function initChartsFor(panelId) {
+  const panel = document.getElementById(panelId);
+  if (!panel) return;
+  panel.querySelectorAll('canvas').forEach(canvas => {
+    if (!instances[canvas.id] && builders[canvas.id]) {
+      instances[canvas.id] = builders[canvas.id]();
+    } else if (instances[canvas.id]) {
+      instances[canvas.id].resize();
+    }
+  });
+}
+
+/* ── TAB SWITCHING ── */
+const tabs = document.querySelectorAll('.tab');
+const panels = document.querySelectorAll('.tab-panel');
+tabs.forEach(t => t.addEventListener('click', () => {
+  const target = t.dataset.tab;
+  tabs.forEach(x => x.classList.toggle('active', x === t));
+  panels.forEach(p => p.classList.toggle('active', p.id === target));
+  initChartsFor(target);
+}));
+
+/* init default tab */
+initChartsFor('overview');
+</script>
+
+</body>
+</html>

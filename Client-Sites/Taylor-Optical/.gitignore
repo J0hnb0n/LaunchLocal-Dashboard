@@ -1,0 +1,14 @@
+# Firebase
+.firebase/
+.firebaserc
+
+# GitHub
+.github/
+
+# Dev
+.DS_Store
+Thumbs.db
+node_modules/
+
+# Docs
+CLAUDE.md

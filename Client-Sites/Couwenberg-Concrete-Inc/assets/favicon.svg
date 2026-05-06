@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Couwenberg Concrete">
+  <rect width="64" height="64" rx="10" fill="#1F2933"/>
+  <rect x="6" y="48" width="52" height="6" fill="#E87722"/>
+  <text x="32" y="38" text-anchor="middle" font-family="Archivo, Arial, sans-serif" font-weight="900" font-size="28" fill="#FFFFFF" letter-spacing="-1">CC</text>
+</svg>
