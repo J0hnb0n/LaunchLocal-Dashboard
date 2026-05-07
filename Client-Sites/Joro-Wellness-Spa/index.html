@@ -35,11 +35,11 @@ nav {
   backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(242,234,216,0.08);
   padding: 0 5%;
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; align-items: center; gap: 20px;
   height: 72px;
 }
 .nav-logo img { height: 44px; object-fit: contain; }
-.nav-links { display: flex; align-items: center; gap: 28px; }
+.nav-links { display: flex; align-items: center; gap: 28px; margin-left: auto; }
 .nav-links a {
   color: rgba(242,234,216,0.65); text-decoration: none;
   font-size: 13.5px; font-weight: 500; letter-spacing: 0.04em;
@@ -53,6 +53,11 @@ nav {
   transition: background 0.2s, transform 0.15s !important;
 }
 .nav-book:hover { background: var(--ember-lt) !important; transform: translateY(-1px); }
+.nav-toggle {
+  display: none; background: none; border: none;
+  color: var(--cream); font-size: 24px; cursor: pointer;
+  padding: 8px; line-height: 1;
+}
 
 /* ── HERO ── */
 .hero {
@@ -406,13 +411,12 @@ footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(
 .reviews-google-badge svg { width: 14px; height: 14px; }
 
 .reviews-track-wrap { position: relative; }
-.reviews-section::before,
-.reviews-section::after {
+.reviews-track-wrap::before,
+.reviews-track-wrap::after {
   content: ''; position: absolute; top: 0; bottom: 0; width: 180px; z-index: 2; pointer-events: none;
 }
-.reviews-section::before { left: 0; background: linear-gradient(to right, var(--dark3) 40%, transparent 100%); }
-.reviews-section::after  { right: 0; background: linear-gradient(to left, var(--dark3) 40%, transparent 100%); }
-.reviews-section { position: relative; }
+.reviews-track-wrap::before { left: 0; background: linear-gradient(to right, var(--dark3) 40%, transparent 100%); }
+.reviews-track-wrap::after  { right: 0; background: linear-gradient(to left, var(--dark3) 40%, transparent 100%); }
 
 .reviews-track { display: flex; gap: 20px; width: max-content; animation: reviews-scroll 36s linear infinite; }
 .reviews-track:hover { animation-play-state: paused; }
@@ -442,6 +446,78 @@ footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(
 .reviews-cta { text-align: center; margin-top: 48px; }
 .reviews-cta a { font-size: 14px; color: var(--ember); text-decoration: none; font-weight: 500; border-bottom: 1px solid rgba(200,129,58,0.3); padding-bottom: 2px; transition: border-color 0.2s; }
 .reviews-cta a:hover { border-color: var(--ember); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  /* NAV */
+  nav { height: 60px; }
+  .nav-toggle { display: flex; align-items: center; }
+  .nav-links {
+    display: none; position: fixed;
+    top: 60px; left: 0; right: 0; bottom: 0;
+    height: calc(100vh - 60px);
+    flex-direction: column; align-items: center; justify-content: center;
+    gap: 32px; background: rgba(14,21,16,0.98);
+    backdrop-filter: blur(16px); z-index: 199; margin-left: 0;
+  }
+  .nav-links.open { display: flex; }
+  .nav-links a { font-size: 18px; color: var(--cream); }
+  .nav-book { margin-left: auto; font-size: 12px !important; padding: 8px 14px !important; }
+  .nav-book-full { display: none; }
+
+  /* HERO */
+  .hero { min-height: 85vh; }
+  .hero-inner { padding: 0 6% 60px; }
+  .hero-sub { font-size: 16px; }
+
+  /* PILLARS */
+  .pillars { padding: 60px 5%; }
+  .pillars-head { margin-bottom: 40px; }
+  .pillars-grid { grid-template-columns: 1fr; gap: 16px; }
+  .pillar { aspect-ratio: 4/3; }
+
+  /* ABOUT */
+  .about { padding: 60px 5%; }
+  .about-inner { grid-template-columns: 1fr; gap: 40px; }
+  .about-img img { height: 300px; }
+
+  /* RATES */
+  .rates { padding: 60px 5%; }
+  .rates-grid { grid-template-columns: 1fr; max-width: 400px; margin-left: auto; margin-right: auto; }
+
+  /* PRIVATE BOOKING */
+  .private-booking { padding: 60px 5%; }
+  .private-inner { grid-template-columns: 1fr; gap: 40px; }
+  .form-row { grid-template-columns: 1fr; }
+
+  /* NEWSLETTER */
+  .newsletter { padding: 50px 5%; }
+  .nl-form { flex-direction: column; }
+
+  /* JOURNAL */
+  .journal { padding: 60px 5%; }
+  .journal-grid { grid-template-columns: 1fr; }
+
+  /* REVIEWS */
+  .reviews-section { padding: 60px 0; }
+  .reviews-big-score { font-size: 48px; }
+  .reviews-track-wrap::before, .reviews-track-wrap::after { width: 60px; }
+  .review-card { width: 280px; }
+
+  /* FAQ */
+  .faq-section { padding: 60px 5%; }
+
+  /* FOOTER */
+  footer { padding: 40px 5% 28px; }
+  .footer-top { grid-template-columns: 1fr; gap: 32px; }
+  .footer-bottom { flex-direction: column; text-align: center; }
+
+  /* ARTICLE MODAL */
+  .article-modal { padding: 20px 4%; }
+  .article-modal-img { height: 200px; }
+  .article-modal-body { padding: 28px; }
+  .article-modal-title { font-size: 28px; }
+}
 </style>
 </head>
 <body>
@@ -451,14 +527,15 @@ footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(
   <a href="#" style="text-decoration:none;">
     <img src="https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/dd9cadab-7313-4bbc-a318-d8e93badf2ba/Joro+2-24.png?format=1500w" alt="Jörð Outdoor Spa" style="height:44px; object-fit:contain;">
   </a>
-  <div class="nav-links">
-    <a href="#experience">The Experience</a>
-    <a href="#rates">Session Rates</a>
-    <a href="#private">Private Events</a>
-    <a href="#journal">Wellness Journal</a>
-    <a href="#faq">FAQ</a>
-    <a href="https://go.theflybook.com/book/374/EntityConfig/33213" target="_blank" class="nav-book">Book a Session</a>
+  <div class="nav-links" id="navLinks">
+    <a href="#experience" onclick="closeNav()">The Experience</a>
+    <a href="#rates" onclick="closeNav()">Session Rates</a>
+    <a href="#private" onclick="closeNav()">Private Events</a>
+    <a href="#journal" onclick="closeNav()">Wellness Journal</a>
+    <a href="#faq" onclick="closeNav()">FAQ</a>
   </div>
+  <a href="https://go.theflybook.com/book/374/EntityConfig/33213" target="_blank" class="nav-book">Book<span class="nav-book-full"> a Session</span></a>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu">&#9776;</button>
 </nav>
 
 <!-- HERO -->
@@ -849,6 +926,10 @@ footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(
 </footer>
 
 <script>
+// ── MOBILE NAV ──
+function toggleNav() { document.getElementById('navLinks').classList.toggle('open'); }
+function closeNav() { document.getElementById('navLinks').classList.remove('open'); }
+
 // ── GOOGLE REVIEWS ──
 const reviewsData = [
   { name: 'Sarah M.', initial: 'S', color: '#c8813a', date: 'March 2025', text: 'Absolutely incredible experience. The sauna was perfectly heated and the cold plunge was exactly as bracing as advertised. The fire circle at the end felt like the most natural thing in the world. Already booked our next visit.' },
