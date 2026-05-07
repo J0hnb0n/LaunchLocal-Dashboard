@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Lily's Tacos — Authentic Mexican Restaurant & Patio in Simcoe, ON</title>
+  <meta name="description" content="Family-run Mexican kitchen in downtown Simcoe. Hand-pressed tortillas, al pastor, carnitas and quesabirria served on a sun-dappled patio with live Mexican music. 4.9 stars on Google.">
+  <meta name="theme-color" content="#B8472A">
+  <link rel="canonical" href="https://lilystacos.com/">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Lily's Tacos — Authentic Mexican Restaurant & Patio in Simcoe">
+  <meta property="og:description" content="Hand-pressed tortillas, sizzling al pastor and the warmth of Henry and Lily's family table — just off Robinson Street in downtown Simcoe.">
+  <meta property="og:url" content="https://lilystacos.com/">
+  <meta property="og:image" content="https://lilystacos.com/assets/og-image.jpg">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="Lily's Tacos">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Lily's Tacos — Authentic Mexican in Simcoe, ON">
+  <meta name="twitter:description" content="Family-run Mexican kitchen and patio. 4.9 stars, 830+ reviews. Hand-pressed tortillas, al pastor, quesabirria and more.">
+  <meta name="twitter:image" content="https://lilystacos.com/assets/og-image.jpg">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/favicon.svg">
+
+  <!-- Theme bootstrap (synchronous, prevents flash of wrong theme) -->
+  <script>
+    (function () {
+      try {
+        var stored = localStorage.getItem('theme');
+        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var theme = stored ? stored : (prefersDark ? 'dark' : 'light');
+        document.documentElement.dataset.theme = theme;
+      } catch (e) { document.documentElement.dataset.theme = 'light'; }
+    })();
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Restaurant structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    "name": "Lily's Tacos ( Restaurant and Patio )",
+    "image": "https://lilystacos.com/assets/og-image.jpg",
+    "url": "https://lilystacos.com/",
+    "telephone": "+1-519-428-3097",
+    "servesCuisine": ["Mexican", "Latin American"],
+    "priceRange": "$$",
+    "acceptsReservations": "True",
+    "menu": "https://lilystacos.com/menu.html",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "29 Robinson St",
+      "addressLocality": "Simcoe",
+      "addressRegion": "ON",
+      "postalCode": "N3Y 1W3",
+      "addressCountry": "CA"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "reviewCount": "830",
+      "bestRating": "5"
+    },
+    "openingHoursSpecification": [
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": "Monday", "opens": "09:00", "closes": "17:00" },
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": "Tuesday", "opens": "09:00", "closes": "17:00" },
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": "Wednesday", "opens": "09:00", "closes": "17:00" },
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": "Thursday", "opens": "09:00", "closes": "17:00" },
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": "Friday", "opens": "09:00", "closes": "17:00" },
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "09:00", "closes": "17:00" },
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": "Sunday", "opens": "09:00", "closes": "17:00" }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a href="index.html" class="brand" aria-label="Lily's Tacos — Home">
+        <span class="brand__mark" aria-hidden="true">L</span>
+        <span class="brand__name">Lily's Tacos</span>
+        <span class="brand__tag">Restaurant &amp; Patio</span>
+      </a>
+
+      <nav class="site-nav" aria-label="Primary">
+        <a href="index.html" aria-current="page">Home</a>
+        <a href="menu.html">Menu</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="reviews.html">Reviews</a>
+        <a href="contact.html">Visit</a>
+      </nav>
+
+      <div class="header-actions">
+        <a class="btn btn-primary header-cta" href="tel:+15194283097">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          Call (519) 428-3097
+        </a>
+
+        <button class="theme-toggle" type="button" aria-label="Switch to dark mode">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        </button>
+
+        <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="mobile-nav" id="mobile-nav" aria-label="Mobile">
+      <ul>
+        <li><a href="index.html" aria-current="page">Home</a></li>
+        <li><a href="menu.html">Menu</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="reviews.html">Reviews</a></li>
+        <li><a href="contact.html">Visit</a></li>
+      </ul>
+      <a class="btn btn-primary" href="tel:+15194283097">Call (519) 428-3097</a>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ==================== HERO ==================== -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container">
+
+        <svg class="hero__papel" viewBox="0 0 800 90" preserveAspectRatio="none" aria-hidden="true">
+          <line x1="0" y1="6" x2="800" y2="6" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+          <g fill="currentColor" fill-opacity="0.85">
+            <path d="M20 6 L20 70 Q80 80 140 70 L140 6 Z"/>
+            <path d="M170 6 L170 70 Q230 80 290 70 L290 6 Z"/>
+            <path d="M320 6 L320 70 Q380 80 440 70 L440 6 Z"/>
+            <path d="M470 6 L470 70 Q530 80 590 70 L590 6 Z"/>
+            <path d="M620 6 L620 70 Q680 80 740 70 L740 6 Z"/>
+          </g>
+          <g fill="#FAF3E8" fill-opacity="1">
+            <circle cx="80" cy="28" r="6"/><circle cx="55" cy="48" r="4"/><circle cx="105" cy="48" r="4"/><path d="M70 55 L80 65 L90 55 L80 50 Z"/>
+            <path d="M230 22 L240 38 L257 38 L243 48 L248 65 L230 55 L212 65 L217 48 L203 38 L220 38 Z"/>
+            <circle cx="380" cy="38" r="10"/><circle cx="380" cy="38" r="4" fill="#B8472A"/><rect x="345" y="55" width="70" height="3"/>
+            <path d="M530 20 Q510 30 510 45 Q510 60 530 65 Q550 60 550 45 Q550 30 530 20 Z" fill="none" stroke="#FAF3E8" stroke-width="3"/><circle cx="530" cy="42" r="4"/>
+            <circle cx="680" cy="28" r="5"/><circle cx="660" cy="46" r="5"/><circle cx="700" cy="46" r="5"/><circle cx="680" cy="60" r="4"/>
+          </g>
+        </svg>
+
+        <div class="hero__inner">
+          <div>
+            <span class="hero__eyebrow"><span class="dot" aria-hidden="true"></span> Authentic Mexican &middot; Downtown Simcoe</span>
+
+            <!-- PLACEHOLDER: client to confirm hero angle copy -->
+            <h1 class="hero__title" id="hero-title">
+              Hand-pressed tortillas, sizzling <em>al pastor</em>, and the warmth of <em>Henry &amp; Lily's</em> family table.
+            </h1>
+            <p class="hero__lede">
+              Tucked just off Robinson Street under string lights and the patter of Mexican music — a small kitchen serving the dishes Henry and Lily grew up with, plate by plate.
+            </p>
+
+            <div class="hero__actions">
+              <a class="btn btn-primary" href="menu.html">View the menu</a>
+              <a class="btn btn-secondary" href="tel:+15194283097">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                Call to reserve
+              </a>
+            </div>
+
+            <div class="hero__trust">
+              <span class="hero__stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+              <span><strong>4.9</strong> on Google &middot; <strong>830+</strong> reviews</span>
+              <span aria-hidden="true">&middot;</span>
+              <span>Ranked <strong>#3</strong> of 60 in Simcoe</span>
+            </div>
+          </div>
+
+          <!-- Decorative information collage. CSS-only — no stock photography. -->
+          <div class="hero__media" aria-hidden="true">
+            <div class="hero__card hero__card--rating">
+              <div class="num">4.9</div>
+              <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+              <div class="label">830+ Google reviews from neighbours and travellers</div>
+            </div>
+            <div class="hero__card hero__card--dish">
+              <div class="icon">&#127790;</div>
+              <div class="name">Quesabirria</div>
+              <div class="desc">Slow-braised, dipped, griddled crisp.</div>
+            </div>
+            <div class="hero__card hero__card--patio">
+              <div class="label">The patio</div>
+              <div class="desc">Sun-and-shade seating, flowers, and live Mexican music.</div>
+            </div>
+            <div class="hero__card hero__card--hours">
+              <div class="label">Today</div>
+              <div class="hours">9:00 AM – 5:00 PM</div>
+              <div class="open-now" data-open-now>Open now</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== STORY ==================== -->
+    <section class="story section" aria-labelledby="story-title">
+      <div class="container story__inner">
+        <div>
+          <span class="section-eyebrow">Our story</span>
+          <h2 class="section-title" id="story-title">A small kitchen, a big family table.</h2>
+          <p>
+            Lily's Tacos began as a love letter from <strong>Henry and Lily</strong> to the home cooking they grew up with — the markets, the music, the families gathered around late-afternoon tables. Today the dining room and patio at 29 Robinson Street are an extension of their kitchen, and every guest is folded in like family.
+          </p>
+          <blockquote class="story__quote">
+            &ldquo;The staff makes us feel like family — and that is the best feeling of all.&rdquo;
+            <span class="story__quote-attr">— Recent Google review, March 2025</span>
+          </blockquote>
+          <p>
+            Tortillas are pressed by hand. Salsas are blended in small batches. The carnitas simmer until they fall apart with a fork. Nothing rushed, nothing pre-bagged.
+          </p>
+        </div>
+
+        <div class="story__pillars">
+          <div class="pillar">
+            <div class="pillar__icon" aria-hidden="true">&#127837;</div>
+            <h3>Made by hand, every day</h3>
+            <p>Hand-pressed tortillas, slow-braised meats and salsas blended in small batches each morning.</p>
+          </div>
+          <div class="pillar">
+            <div class="pillar__icon" aria-hidden="true">&#127876;</div>
+            <h3>A patio that feels like Oaxaca</h3>
+            <p>String lights, flower boxes and Mexican music — sun-and-shade seating just steps from downtown.</p>
+          </div>
+          <div class="pillar">
+            <div class="pillar__icon" aria-hidden="true">&#10084;</div>
+            <h3>Owners on the floor</h3>
+            <p>Henry and Lily greet most guests themselves. Regulars get hugs; first-timers leave as friends.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== FEATURED DISHES ==================== -->
+    <section class="dishes section" aria-labelledby="dishes-title">
+      <div class="container">
+        <div class="text-center">
+          <span class="section-eyebrow">Guest favourites</span>
+          <h2 class="section-title" id="dishes-title">A few of the dishes people drive in for.</h2>
+          <p class="section-lede" style="margin-left:auto; margin-right:auto;">
+            Pulled from years of regulars' orders and Google reviews. <a href="menu.html">See the full menu &rarr;</a>
+          </p>
+        </div>
+
+        <!-- PLACEHOLDER: client to confirm featured dishes & current pricing -->
+        <div class="dishes__grid">
+          <article class="dish-card">
+            <span class="dish-card__badge">Most ordered</span>
+            <div class="dish-card__visual" aria-hidden="true">&#127790;</div>
+            <h3>Tacos al Pastor</h3>
+            <p>Marinated pork shaved off the trompo, sweet pineapple, white onion, fresh cilantro on a hand-pressed tortilla.</p>
+            <div class="dish-card__price">3 for $14.99</div>
+          </article>
+
+          <article class="dish-card">
+            <span class="dish-card__badge">Signature</span>
+            <div class="dish-card__visual" aria-hidden="true">&#129365;</div>
+            <h3>Quesabirria</h3>
+            <p>Slow-braised beef and melted cheese in tortillas dipped in consomé and crisped on the plancha. Served with broth for dipping.</p>
+            <div class="dish-card__price">3 for $16.99</div>
+          </article>
+
+          <article class="dish-card">
+            <span class="dish-card__badge">Patio classic</span>
+            <div class="dish-card__visual" aria-hidden="true">&#129382;</div>
+            <h3>Camarones a la Diabla</h3>
+            <p>Plump shrimp simmered in a smoky guajillo-chile sauce. Served with rice, beans and warm tortillas.</p>
+            <div class="dish-card__price">$22.99</div>
+          </article>
+
+          <article class="dish-card">
+            <span class="dish-card__badge">Family-size</span>
+            <div class="dish-card__visual" aria-hidden="true">&#129368;</div>
+            <h3>Carne Asada Plate</h3>
+            <p>Charred skirt steak with grilled onions, guacamole, charro beans, rice and a stack of fresh tortillas.</p>
+            <div class="dish-card__price">$24.99</div>
+          </article>
+        </div>
+
+        <div class="text-center mt-md">
+          <a class="btn btn-ghost" href="menu.html">View the full menu</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== REVIEWS ==================== -->
+    <section class="reviews section" aria-labelledby="reviews-title">
+      <div class="container">
+        <div class="reviews__header">
+          <div>
+            <span class="section-eyebrow">What guests are saying</span>
+            <h2 class="section-title" id="reviews-title">Loved by Norfolk County, and a few road-trippers too.</h2>
+          </div>
+          <div class="reviews__rating">
+            <div class="num">4.9</div>
+            <div>
+              <div class="stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+              <div class="meta">830+ Google reviews</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="reviews__grid">
+          <article class="review-card">
+            <div class="review-card__stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <p class="review-card__quote">&ldquo;Hands down the best tacos I've ever had!&rdquo;</p>
+            <div class="review-card__author"><strong>Christina D.</strong></div>
+            <div class="review-card__source">Tripadvisor &middot; Nov 2024</div>
+          </article>
+          <article class="review-card">
+            <div class="review-card__stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <p class="review-card__quote">&ldquo;Fresh food done just perfect — and the outside area is just stunning.&rdquo;</p>
+            <div class="review-card__author"><strong>Brenda L.</strong></div>
+            <div class="review-card__source">Tripadvisor &middot; Sep 2024</div>
+          </article>
+          <article class="review-card">
+            <div class="review-card__stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <p class="review-card__quote">&ldquo;Henry and his wife are delightful. Welcoming and helpful.&rdquo;</p>
+            <div class="review-card__author"><strong>Phil E.</strong></div>
+            <div class="review-card__source">Tripadvisor &middot; Mar 2023</div>
+          </article>
+        </div>
+
+        <div class="text-center mt-md">
+          <a class="btn btn-ghost" href="reviews.html">Read more reviews</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VISIT ==================== -->
+    <section class="visit section" aria-labelledby="visit-title">
+      <div class="container visit__inner">
+        <div>
+          <span class="section-eyebrow" style="color:#FAF3E8;">Come hungry</span>
+          <h2 class="visit__title" id="visit-title">Come for the food. Stay for the patio.</h2>
+          <p class="visit__lede">
+            Walk-ins welcome. Larger parties (6+), reservations and takeout — give us a quick call so we can have your table or order ready when you arrive.
+          </p>
+          <div class="visit__actions">
+            <a class="btn btn-primary" href="tel:+15194283097">Call (519) 428-3097</a>
+            <a class="btn btn-ghost" href="contact.html">Get directions</a>
+          </div>
+        </div>
+
+        <div class="visit__details">
+          <h3>Find us</h3>
+          <dl>
+            <dt>Address</dt><dd>29 Robinson St, Simcoe, ON N3Y 1W3</dd>
+            <dt>Phone</dt><dd><a href="tel:+15194283097">(519) 428-3097</a></dd>
+            <dt>Hours</dt><dd>Mon&ndash;Sun, 9:00 AM – 5:00 PM</dd>
+            <dt>Payment</dt><dd>Cash &middot; Debit &middot; Credit <!-- PLACEHOLDER: client to confirm — some online listings indicate cash only --></dd>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="site-footer__grid">
+        <div class="footer-brand">
+          <a href="index.html" class="brand">
+            <span class="brand__mark" aria-hidden="true">L</span>
+            <span class="brand__name">Lily's Tacos</span>
+          </a>
+          <p>A small family kitchen serving authentic Mexican food and a warm welcome on Robinson Street since opening day.</p>
+        </div>
+
+        <div>
+          <h4>Visit</h4>
+          <ul>
+            <li>29 Robinson St</li>
+            <li>Simcoe, ON N3Y 1W3</li>
+            <li><a href="https://maps.google.com/?q=29+Robinson+St+Simcoe+ON" target="_blank" rel="noopener">Get directions &rarr;</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="tel:+15194283097">(519) 428-3097</a></li>
+            <!-- PLACEHOLDER: client to provide email -->
+            <li><a href="contact.html">Reservations &amp; inquiries</a></li>
+            <!-- PLACEHOLDER: client to provide social URLs -->
+            <!-- <li><a href="#">Facebook</a></li> -->
+            <!-- <li><a href="#">Instagram</a></li> -->
+          </ul>
+        </div>
+
+        <div>
+          <h4>Hours</h4>
+          <ul>
+            <li>Mon&ndash;Sun</li>
+            <li>9:00 AM – 5:00 PM</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="site-footer__bottom">
+        <span>&copy; <span id="footer-year">2026</span> Lily's Tacos. All rights reserved.</span>
+        <span>Website by <a href="#">LaunchLocal</a></span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('footer-year').textContent = new Date().getFullYear();
+  </script>
+  <script src="script.js" defer></script>
+</body>
+</html>

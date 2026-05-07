@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 90" preserveAspectRatio="none">
+  <!-- Papel picado banner — five flags on a string. Hand-cut paper aesthetic. -->
+  <line x1="0" y1="6" x2="800" y2="6" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <g fill="currentColor" fill-opacity="0.85">
+    <!-- Flag 1 -->
+    <path d="M20 6 L20 70 Q80 80 140 70 L140 6 Z"/>
+    <g fill="#FAF3E8" fill-opacity="1">
+      <circle cx="80" cy="28" r="6"/>
+      <circle cx="55" cy="48" r="4"/>
+      <circle cx="105" cy="48" r="4"/>
+      <path d="M70 55 L80 65 L90 55 L80 50 Z"/>
+    </g>
+    <!-- Flag 2 -->
+    <path d="M170 6 L170 70 Q230 80 290 70 L290 6 Z"/>
+    <g fill="#FAF3E8">
+      <path d="M230 22 L240 38 L257 38 L243 48 L248 65 L230 55 L212 65 L217 48 L203 38 L220 38 Z"/>
+    </g>
+    <!-- Flag 3 -->
+    <path d="M320 6 L320 70 Q380 80 440 70 L440 6 Z"/>
+    <g fill="#FAF3E8">
+      <circle cx="380" cy="38" r="10"/>
+      <circle cx="380" cy="38" r="4" fill="#B8472A"/>
+      <rect x="345" y="55" width="70" height="3"/>
+    </g>
+    <!-- Flag 4 -->
+    <path d="M470 6 L470 70 Q530 80 590 70 L590 6 Z"/>
+    <g fill="#FAF3E8">
+      <path d="M530 20 Q510 30 510 45 Q510 60 530 65 Q550 60 550 45 Q550 30 530 20 Z" fill="none" stroke="#FAF3E8" stroke-width="3"/>
+      <circle cx="530" cy="42" r="4"/>
+    </g>
+    <!-- Flag 5 -->
+    <path d="M620 6 L620 70 Q680 80 740 70 L740 6 Z"/>
+    <g fill="#FAF3E8">
+      <circle cx="680" cy="28" r="5"/>
+      <circle cx="660" cy="46" r="5"/>
+      <circle cx="700" cy="46" r="5"/>
+      <circle cx="680" cy="60" r="4"/>
+    </g>
+  </g>
+</svg>
