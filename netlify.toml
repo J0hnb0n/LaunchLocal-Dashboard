@@ -21,6 +21,18 @@
   # No build step — vanilla HTML/CSS/JS. Netlify still needs a value.
   command    = "echo 'No build step — static publish from Pipeline/'"
 
+[build.environment]
+  # Skip Netlify's secret scanner on files that legitimately contain
+  # public Firebase web API keys. Per Firebase docs the apiKey field
+  # is a public client identifier (NOT a secret) — Firebase Security
+  # Rules are the actual access boundary. The scanner pattern-matches
+  # AIzaSy* and would otherwise fail every build.
+  #
+  #   - Pipeline/js/app.js     → dashboard's Firebase config
+  #   - Client-Sites/**        → each client site has its own Firebase
+  #                              config with its own public apiKey
+  SECRETS_SCAN_OMIT_PATHS = "Pipeline/js/app.js,Client-Sites/**"
+
 [functions]
   node_bundler = "esbuild"
   # Keep the _shared helpers off the function-name registry.

@@ -33,6 +33,7 @@ service-account*.json
 .claude/settings.local.json
 .claude/cache/
 .claude/file-history/
+.claude/worktrees/
 
 # Private business documents — not part of the codebase
 LaunchLocal_Business_Plan.docx
