@@ -518,7 +518,7 @@ const SalesModule = {
                 revisions: [],
                 automationFlags: []
             });
-            await DB.logActivity('project_created', 'projects',
+            await DB.logActivity('project_created', 'active-projects',
                 `created project for new client ${p.businessName}`,
                 { prospectId: p.id }, projectId);
         } catch (err) {

@@ -79,7 +79,7 @@ const ProjectDetailModule = {
             <div class="empty-state">
                 <div class="empty-state-icon">${icon}</div>
                 <h3 class="empty-state-title">${LaunchLocal.escapeHtml(message)}</h3>
-                <p class="empty-state-desc"><a href="#projects">Back to projects</a></p>
+                <p class="empty-state-desc"><a href="#prelim">Back to Prelim Site Works</a></p>
             </div>
         `;
     },
@@ -97,7 +97,7 @@ const ProjectDetailModule = {
         return `
             <div class="page-header">
                 <div>
-                    <div class="eyebrow"><a href="#projects">← All Projects</a></div>
+                    <div class="eyebrow"><a href="${isSold ? '#active-projects' : '#prelim'}">← ${isSold ? 'All Active Projects' : 'All Prelim Site Works'}</a></div>
                     <h2 class="page-title">${LaunchLocal.escapeHtml(proj?.clientName || p.businessName || 'Project')}</h2>
                     <p class="page-subtitle">${LaunchLocal.escapeHtml(p.address || 'No address on file')}</p>
                 </div>
@@ -421,7 +421,8 @@ const ProjectDetailModule = {
         btn?.classList.add('btn-loading');
         try {
             await DB.updateDoc('prospects', p.id, updates);
-            await DB.logActivity('prospect_edited', 'prospects',
+            const editModule = p.status === 'sold' ? 'active-projects' : (p.status === 'new' || p.status === 'archived' ? 'scanner' : 'prelim');
+            await DB.logActivity('prospect_edited', editModule,
                 `updated ${p.businessName || 'prospect'}: ${Object.keys(updates).join(', ')}`,
                 updates, p.id);
 
@@ -847,7 +848,7 @@ const ProjectDetailModule = {
 
             await DB.logActivity(
                 'project_rolled_back',
-                'projects',
+                'prelim',
                 `Reset ${p.businessName} from client back to prospect (site-ready)`,
                 { prospectId: p.id, projectId: proj ? proj.id : null, invoicesDeleted: invs.length },
                 proj ? proj.id : p.id
@@ -861,7 +862,7 @@ const ProjectDetailModule = {
             );
 
             // Send the operator to the prospect's pre-sale view
-            setTimeout(() => { window.location.hash = '#prospects'; }, 1200);
+            setTimeout(() => { window.location.hash = '#prelim'; }, 1200);
         } catch (err) {
             console.error('rollbackToProspect failed:', err);
             LaunchLocal.toast('Failed to roll back. Check console for details.', 'error');
@@ -1217,7 +1218,8 @@ const ProjectDetailModule = {
 
         try {
             await DB.updateDoc('projects', proj.id, updates);
-            await DB.logActivity('project_updated', 'projects',
+            const projModule = this.prospect?.status === 'sold' ? 'active-projects' : 'prelim';
+            await DB.logActivity('project_updated', projModule,
                 `updated ${proj.clientName}: ${Object.keys(updates).join(', ')}`, updates, proj.id);
             Object.assign(proj, updates);
             LaunchLocal.toast('Project updated.', 'success');
@@ -1241,7 +1243,7 @@ const ProjectDetailModule = {
             await DB.updateDoc('projects', proj.id, { revisions });
             proj.revisions = revisions;
             input.value = '';
-            await DB.logActivity('revision_requested', 'projects', `new revision on ${proj.clientName}`, { description: desc.slice(0, 60) }, proj.id);
+            await DB.logActivity('revision_requested', this.prospect?.status === 'sold' ? 'active-projects' : 'prelim', `new revision on ${proj.clientName}`, { description: desc.slice(0, 60) }, proj.id);
             LaunchLocal.toast('Revision added.', 'success', 2000);
             this.renderActiveTab();
         } catch (e) {
@@ -1258,7 +1260,7 @@ const ProjectDetailModule = {
         try {
             await DB.updateDoc('projects', proj.id, { revisions });
             proj.revisions = revisions;
-            await DB.logActivity('revision_completed', 'projects', `completed revision on ${proj.clientName}`, {}, proj.id);
+            await DB.logActivity('revision_completed', this.prospect?.status === 'sold' ? 'active-projects' : 'prelim', `completed revision on ${proj.clientName}`, {}, proj.id);
             LaunchLocal.toast('Revision marked complete.', 'success', 2000);
             this.renderActiveTab();
         } catch (e) {
@@ -1281,7 +1283,7 @@ const ProjectDetailModule = {
             proj.communicationLog = log;
             proj.lastContactDate = today;
             input.value = '';
-            await DB.logActivity('project_note_added', 'projects', `logged note on ${proj.clientName}`, { note: note.slice(0, 60) }, proj.id);
+            await DB.logActivity('project_note_added', this.prospect?.status === 'sold' ? 'active-projects' : 'prelim', `logged note on ${proj.clientName}`, { note: note.slice(0, 60) }, proj.id);
             LaunchLocal.toast('Note added.', 'success', 2000);
             this.renderActiveTab();
         } catch (e) {

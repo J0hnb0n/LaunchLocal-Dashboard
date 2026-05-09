@@ -47,7 +47,7 @@ Launch Local/
     ├── css/                    theme, motion, main, components, modules
     ├── js/
     │   ├── app.js, auth.js, db.js, router.js
-    │   ├── modules/            dashboard, scouting, prospects, sites, sales, projects, billing, expenses
+    │   ├── modules/            dashboard, scouting, prospects (Scanner), sites, sales, projects (Prelim Site Works), active-projects, billing, expenses, metrics
     │   └── utils/              api, scoring, prompt-generator, slug, sampledata
     ├── templates/site-generation/
     └── firebase/               firestore.rules, storage.rules
@@ -57,20 +57,22 @@ Launch Local/
 1. **Dashboard** (all) — KPIs, funnel, activity feed
 2. **Scouting** (admin, sales) — Map pin + radius, Places search, import to prospects
 3. **Roadmap** (admin) — Sprint Gantt + checklist, shared via `roadmap/sprint` doc
-4. **Prospects** (admin, sales) — Pipeline tabs, scoring, contact log, follow-ups
+4. **Scanner** (admin, sales) — `#scanner` — New leads awaiting approval, scoring, contact log, follow-ups (file: `js/modules/prospects.js`)
 5. **Sites** (admin, dev) — Prompt gen, preview probe, QA workflow
 6. **Sales** (admin, sales) — Pitch queue, follow-up queue, visit logger
-7. **Projects** (admin, dev) — Post-sale mgmt, revisions, maintenance, renewals
-8. **Billing** (admin) — Invoices, commissions
-9. **Expenses** (admin) — Categorized, HST 13%, ITC flag
+7. **Prelim Site Works** (admin, dev) — `#prelim` — Pre-sale jobs in flight (approved → pitched). Cards open `project-detail.js` (file: `js/modules/projects.js`)
+8. **Active Projects** (admin, dev) — `#active-projects` — Live clients (status `sold`). Lifecycle, MRR, renewals, revisions (file: `js/modules/active-projects.js`)
+9. **Billing** (admin) — Invoices, commissions
+10. **Expenses** (admin) — Categorized, HST 13%, ITC flag
+11. **Metrics** (all) — Funnel + win-rate + P&L charts, renewal forecast
 
 ## Roles
 `users/{uid}`: `admin` (full) | `sales` (own prospects/sales/commissions) | `developer` (sites/projects/QA)
 
 ## Firestore
-- **prospects** — `new→reviewed→approved→site-queued→site-ready→pitched→sold|archived`. `nextFollowUp`: `yyyy-mm-dd` America/Toronto
+- **prospects** — `new→approved→site-queued→site-ready→pitched→sold|archived`. `nextFollowUp`: `yyyy-mm-dd` America/Toronto
 - **sites** — qaStatus: `pending|approved|revision-needed`
-- **projects** — `onboarding|active|maintenance|renewal-due|renewed|churned`
+- **projects** — `onboarding|active|maintenance|renewal-due|churned`
 - **invoices** — type: `project|maintenance|automation|other`. status: `draft|sent|paid|overdue|void`
 - **expenses** — category: `software|api|advertising|domain-hosting|equipment|contractor|travel|other`
 - **activityLog** — immutable append-only

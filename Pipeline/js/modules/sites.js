@@ -294,7 +294,7 @@ const SitesModule = {
                 <div class="empty-state">
                     <div class="empty-state-icon">&#128187;</div>
                     <h3 class="empty-state-title">No sites yet</h3>
-                    <p class="empty-state-desc">Approve a prospect in the Prospects module and it will appear here, ready for site generation.</p>
+                    <p class="empty-state-desc">Approve a prospect in the Scanner module and it will appear here, ready for site generation.</p>
                 </div>
             `;
             return;

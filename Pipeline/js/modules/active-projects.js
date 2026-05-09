@@ -1,19 +1,20 @@
 /* ============================================
-   LaunchLocal — Prelim Site Works Module (was Projects)
+   LaunchLocal — Active Projects Module
    ============================================
 
-   Shows pre-sale jobs: prospects whose status is approved, site-queued,
-   site-ready, or pitched. Once a prospect is sold, the job graduates to
-   the Active Projects module. Clicking a card opens project-detail.js
-   with Site / Sales / Clients / Billing tabs.
+   Shows live clients only — prospects whose status is `sold`. Joins each
+   prospect with its project record so cards can surface lifecycle status
+   (onboarding | active | maintenance | renewal-due | churned), MRR,
+   renewal date, and pending revisions. Clicking a card opens
+   project-detail.js (Site / Sales / Clients / Billing tabs).
    ============================================ */
 
-const ProjectsModule = {
+const ActiveProjectsModule = {
     prospects: [],
     projects: [],
     searchQuery: '',
-    stageFilter: 'all',
-    sortBy: 'oldest', // 'oldest' | 'newest' | 'stage' | 'name'
+    statusFilter: 'all',
+    sortBy: 'renewal', // 'renewal' | 'mrr' | 'name' | 'status'
 
     async render(container) {
         container.innerHTML = this.getShellHTML();
@@ -24,8 +25,8 @@ const ProjectsModule = {
             this.prospects = [];
             this.projects = [];
             this.searchQuery = '';
-            this.stageFilter = 'all';
-            this.sortBy = 'oldest';
+            this.statusFilter = 'all';
+            this.sortBy = 'renewal';
         };
     },
 
@@ -33,35 +34,36 @@ const ProjectsModule = {
         return `
             <div class="page-header">
                 <div>
-                    <div class="eyebrow">Pre-sale Jobs</div>
-                    <h2 class="page-title">Prelim Site Works</h2>
-                    <p class="page-subtitle">Pre-sale jobs in flight — from approved prospects through pitched leads. Sold deals graduate to Active Projects.</p>
+                    <div class="eyebrow">Live Clients</div>
+                    <h2 class="page-title">Active Projects</h2>
+                    <p class="page-subtitle">Sold deals — track lifecycle, MRR, renewals, and revisions.</p>
                 </div>
             </div>
 
             <div class="filter-bar">
-                <input type="text" class="form-input filter-search" id="projects-search"
+                <input type="text" class="form-input filter-search" id="active-projects-search"
                     placeholder="Search by client, domain, or location…">
                 <div class="stage-select-wrap">
-                    <select class="form-input" id="projects-stage-filter" style="max-width:200px;">
-                        <option value="all">All pre-sale</option>
-                        <option value="approved">Approved (awaiting site)</option>
-                        <option value="site-queued">Site in progress</option>
-                        <option value="site-ready">Site ready to pitch</option>
-                        <option value="pitched">Pitched</option>
+                    <select class="form-input" id="active-projects-status-filter" style="max-width:200px;">
+                        <option value="all">All lifecycle</option>
+                        <option value="onboarding">Onboarding</option>
+                        <option value="active">Active</option>
+                        <option value="maintenance">Maintenance</option>
+                        <option value="renewal-due">Renewal due</option>
+                        <option value="churned">Churned</option>
                     </select>
                 </div>
                 <div class="stage-select-wrap">
-                    <select class="form-input" id="projects-sort" style="max-width:180px;" title="Sort order">
-                        <option value="oldest">Oldest first</option>
-                        <option value="newest">Newest first</option>
-                        <option value="stage">By stage</option>
+                    <select class="form-input" id="active-projects-sort" style="max-width:200px;" title="Sort order">
+                        <option value="renewal">Renewal date (soonest)</option>
+                        <option value="mrr">MRR (highest)</option>
                         <option value="name">By name (A–Z)</option>
+                        <option value="status">By lifecycle status</option>
                     </select>
                 </div>
             </div>
 
-            <div id="projects-list">
+            <div id="active-projects-list">
                 <div class="loading-screen"><div class="spinner spinner-lg"></div></div>
             </div>
         `;
@@ -77,14 +79,14 @@ const ProjectsModule = {
             this.projects = projects;
             this.renderList();
         } catch (err) {
-            console.error('Projects load:', err);
-            const list = document.getElementById('projects-list');
+            console.error('Active Projects load:', err);
+            const list = document.getElementById('active-projects-list');
             if (list) {
                 list.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">&#9888;</div>
                         <h3 class="empty-state-title">Failed to load</h3>
-                        <p class="empty-state-desc">Could not fetch projects. Try refreshing.</p>
+                        <p class="empty-state-desc">Could not fetch active projects. Try refreshing.</p>
                     </div>
                 `;
             }
@@ -92,19 +94,17 @@ const ProjectsModule = {
     },
 
     /**
-     * A "prelim job" = any prospect whose status is past `new` but not yet
-     * sold or archived (approved → pitched). Each one is joined with its
-     * project record (if one exists) so cards can show domain etc.
-     * Sold jobs graduate to the Active Projects module.
+     * An "active project" = any prospect whose status is `sold`. Joined
+     * with its project record so the card surfaces lifecycle status, MRR,
+     * domain, etc.
      */
     activeJobs() {
         const projectByProspect = new Map();
         for (const proj of this.projects) {
             if (proj.prospectId) projectByProspect.set(proj.prospectId, proj);
         }
-        const PRESALE = new Set(['approved', 'site-queued', 'site-ready', 'pitched']);
         return this.prospects
-            .filter((p) => PRESALE.has(p.status))
+            .filter((p) => p.status === 'sold')
             .map((p) => ({
                 prospect: p,
                 project: projectByProspect.get(p.id) || null
@@ -112,12 +112,13 @@ const ProjectsModule = {
     },
 
     renderList() {
-        const list = document.getElementById('projects-list');
+        const list = document.getElementById('active-projects-list');
         if (!list) return;
 
         let jobs = this.activeJobs();
-        if (this.stageFilter !== 'all') {
-            jobs = jobs.filter((j) => j.prospect.status === this.stageFilter);
+
+        if (this.statusFilter !== 'all') {
+            jobs = jobs.filter((j) => (j.project?.status || 'onboarding') === this.statusFilter);
         }
         if (this.searchQuery) {
             const q = this.searchQuery.toLowerCase();
@@ -134,9 +135,9 @@ const ProjectsModule = {
         if (jobs.length === 0) {
             list.innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-state-icon">${Icons.get('folder', 22)}</div>
-                    <h3 class="empty-state-title">No prelim jobs in flight</h3>
-                    <p class="empty-state-desc">Approve a prospect in the Scanner tab to kick one off.</p>
+                    <div class="empty-state-icon">${Icons.get('activity', 22)}</div>
+                    <h3 class="empty-state-title">No active projects yet</h3>
+                    <p class="empty-state-desc">Close a deal in Sales — sold prospects show up here as live clients.</p>
                 </div>
             `;
             Icons.inject(list);
@@ -157,71 +158,58 @@ const ProjectsModule = {
     },
 
     sortComparator() {
-        const createdMs = (j) => {
-            const c = j.project?.createdAt || j.prospect?.createdAt;
-            if (!c) return 0;
-            if (typeof c.toMillis === 'function') return c.toMillis();
-            const t = new Date(c).getTime();
-            return isNaN(t) ? 0 : t;
+        const renewalMs = (j) => {
+            const r = j.project?.renewalDate;
+            if (!r) return Number.POSITIVE_INFINITY;
+            const t = new Date(r).getTime();
+            return isNaN(t) ? Number.POSITIVE_INFINITY : t;
         };
-        const stageRank = { approved: 0, 'site-queued': 1, 'site-ready': 2, pitched: 3 };
+        const mrr = (j) => j.project?.monthlyFee || 0;
         const name = (j) => (j.project?.clientName || j.prospect?.businessName || '').toLowerCase();
+        const statusRank = { onboarding: 0, active: 1, maintenance: 2, 'renewal-due': 3, churned: 4 };
+        const statusOf = (j) => statusRank[j.project?.status] ?? 9;
 
         switch (this.sortBy) {
-            case 'newest': return (a, b) => createdMs(b) - createdMs(a);
-            case 'stage':  return (a, b) => {
-                const r = (stageRank[a.prospect.status] ?? 9) - (stageRank[b.prospect.status] ?? 9);
+            case 'mrr':    return (a, b) => mrr(b) - mrr(a);
+            case 'name':   return (a, b) => name(a).localeCompare(name(b));
+            case 'status': return (a, b) => {
+                const r = statusOf(a) - statusOf(b);
                 return r !== 0 ? r : name(a).localeCompare(name(b));
             };
-            case 'name':   return (a, b) => name(a).localeCompare(name(b));
-            case 'oldest':
-            default:       return (a, b) => createdMs(a) - createdMs(b);
+            case 'renewal':
+            default:       return (a, b) => renewalMs(a) - renewalMs(b);
         }
     },
 
     renderJobCard(job) {
         const p = job.prospect;
         const proj = job.project;
-
-        const stageBadge = this.stageBadge(p.status);
-        const isSold = p.status === 'sold';
+        const lifecycleBadge = this.lifecycleBadge(proj?.status || 'onboarding');
         const pendingRevisions = (proj?.revisions || []).filter((r) => r.status === 'pending').length;
-        const imminentRenewal = this.isRenewalImminent(proj);
+        const renewalInfo = this.renewalInfo(proj);
         const clientName = proj?.clientName || p.businessName || 'Unnamed';
 
-        // Meta chips mirror the Prospects card style. Sold clients show
-        // domain/MRR/revisions; pre-sale jobs show industry/score so sales
-        // can prioritize.
         const domainChip = proj?.domainName
             ? `<span class="meta-chip"><a href="https://${proj.domainName}" target="_blank" rel="noopener" onclick="event.stopPropagation();">${LaunchLocal.escapeHtml(proj.domainName)}</a></span>`
             : '';
-        const tierChip = isSold && proj?.maintenanceTier
+        const tierChip = proj?.maintenanceTier
             ? `<span class="badge badge-${proj.maintenanceTier}">${proj.maintenanceTier}</span>`
             : '';
-        const mrrChip = isSold && proj?.monthlyFee
+        const mrrChip = proj?.monthlyFee
             ? `<span class="meta-chip">${LaunchLocal.formatCurrency(proj.monthlyFee)}/mo</span>`
             : '';
-        const revisionsChip = isSold && pendingRevisions > 0
+        const revisionsChip = pendingRevisions > 0
             ? `<span class="meta-chip chip-warn">${pendingRevisions} pending revision${pendingRevisions === 1 ? '' : 's'}</span>`
             : '';
-        const renewalChip = imminentRenewal
-            ? `<span class="meta-chip chip-warn">Renewal ${proj.renewalDate}</span>`
-            : '';
-        const industryChip = !isSold
-            ? `<span class="industry-tag">${LaunchLocal.escapeHtml(p.industry || 'other')}</span>`
-            : '';
-        const scorePill = !isSold
-            ? `<div class="score-pill ${this.scoreClass(p.prospectScore)}">${p.prospectScore}</div>`
-            : '';
+        const renewalChip = renewalInfo.chipHtml;
 
         return `
-            <div class="prospect-card ${imminentRenewal ? 'renewal-imminent' : ''}" data-prospect-id="${p.id}">
+            <div class="prospect-card ${renewalInfo.imminent ? 'renewal-imminent' : ''}" data-prospect-id="${p.id}">
                 <div class="prospect-card-body">
                     <div class="prospect-card-info">
                         <div class="prospect-card-name">${LaunchLocal.escapeHtml(clientName)}</div>
                         <div class="prospect-card-address">${LaunchLocal.escapeHtml(p.address || 'E-commerce')}</div>
                         <div class="prospect-card-meta">
-                            ${industryChip}
                             ${domainChip}
                             ${mrrChip}
                             ${tierChip}
@@ -230,55 +218,66 @@ const ProjectsModule = {
                         </div>
                     </div>
                     <div class="prospect-card-right">
-                        ${scorePill}
-                        ${stageBadge}
+                        ${lifecycleBadge}
                     </div>
                 </div>
             </div>
         `;
     },
 
-    stageBadge(status) {
+    lifecycleBadge(status) {
         const map = {
-            approved: { cls: 'badge-approved', label: 'Approved' },
-            'site-queued': { cls: 'badge-queued', label: 'Site Queued' },
-            'site-ready': { cls: 'badge-ready', label: 'Site Ready' },
-            pitched: { cls: 'badge-pitched', label: 'Pitched' },
-            sold: { cls: 'badge-sold', label: 'Sold' }
+            onboarding:    { cls: 'badge-queued',   label: 'Onboarding' },
+            active:        { cls: 'badge-sold',     label: 'Active' },
+            maintenance:   { cls: 'badge-approved', label: 'Maintenance' },
+            'renewal-due': { cls: 'badge-pitched',  label: 'Renewal due' },
+            churned:       { cls: 'badge-neutral',  label: 'Churned' }
         };
         const cfg = map[status] || { cls: 'badge-neutral', label: status || 'unknown' };
         return `<span class="badge ${cfg.cls}">${cfg.label}</span>`;
     },
 
-    isRenewalImminent(proj) {
-        if (!proj || !proj.renewalDate || proj.status === 'churned') return false;
+    /**
+     * Compute renewal label + days-to-renewal styling. Returns
+     * { imminent: bool, chipHtml: string }.
+     */
+    renewalInfo(proj) {
+        if (!proj || !proj.renewalDate || proj.status === 'churned') {
+            return { imminent: false, chipHtml: '' };
+        }
         const ts = new Date(proj.renewalDate).getTime();
-        if (isNaN(ts)) return false;
-        const days = (ts - Date.now()) / (1000 * 60 * 60 * 24);
-        return days < 30 && days > -1;
-    },
+        if (isNaN(ts)) return { imminent: false, chipHtml: '' };
 
-    scoreClass(score) {
-        if (score >= 80) return 'score-hot';
-        if (score >= 50) return 'score-high';
-        if (score >= 20) return 'score-medium';
-        return 'score-low';
+        const days = Math.ceil((ts - Date.now()) / (1000 * 60 * 60 * 24));
+        const imminent = days < 30 && days > -1;
+        const cls = days < 0 ? 'chip-danger' : days < 30 ? 'chip-warn' : '';
+        const label = days < 0
+            ? `Overdue: ${proj.renewalDate}`
+            : days === 0
+                ? 'Renews today'
+                : days < 30
+                    ? `Renews in ${days}d (${proj.renewalDate})`
+                    : `Renews ${proj.renewalDate}`;
+        return {
+            imminent,
+            chipHtml: `<span class="meta-chip ${cls}">${label}</span>`
+        };
     },
 
     bindEvents(container) {
-        const search = container.querySelector('#projects-search');
+        const search = container.querySelector('#active-projects-search');
         search?.addEventListener('input', (e) => {
             this.searchQuery = e.target.value.trim();
             this.renderList();
         });
 
-        const stage = container.querySelector('#projects-stage-filter');
-        stage?.addEventListener('change', (e) => {
-            this.stageFilter = e.target.value;
+        const status = container.querySelector('#active-projects-status-filter');
+        status?.addEventListener('change', (e) => {
+            this.statusFilter = e.target.value;
             this.renderList();
         });
 
-        const sort = container.querySelector('#projects-sort');
+        const sort = container.querySelector('#active-projects-sort');
         sort?.addEventListener('change', (e) => {
             this.sortBy = e.target.value;
             this.renderList();
@@ -286,4 +285,4 @@ const ProjectsModule = {
     }
 };
 
-Router.register('prelim', ProjectsModule, 'Prelim Site Works', ['admin', 'developer']);
+Router.register('active-projects', ActiveProjectsModule, 'Active Projects', ['admin', 'developer']);

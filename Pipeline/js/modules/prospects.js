@@ -1,11 +1,12 @@
 /* ============================================
-   LaunchLocal — Prospects Module
+   LaunchLocal — Scanner Module (was Prospects)
    ============================================
 
    Shows only `new` prospects. As soon as one is approved, it leaves this
-   list and shows up in the Projects module as an active job. Archive is
-   accessible via the header toggle — archived records never re-enter the
-   pipeline (Scouting dedups against the full prospects collection).
+   list and shows up in the Prelim Site Works module as an active job.
+   Archive is accessible via the header toggle — archived records never
+   re-enter the pipeline (Scouting dedups against the full prospects
+   collection).
    ============================================ */
 
 const ProspectsModule = {
@@ -36,8 +37,8 @@ const ProspectsModule = {
         return `
             <div class="page-header">
                 <div>
-                    <h2 class="page-title">Prospects</h2>
-                    <p class="page-subtitle">New leads awaiting approval. Approved prospects move to Projects.</p>
+                    <h2 class="page-title">Scanner</h2>
+                    <p class="page-subtitle">New leads awaiting approval. Approved prospects move to Prelim Site Works.</p>
                 </div>
                 <div class="page-actions">
                     <button class="btn btn-ghost btn-sm" id="archive-toggle-btn" title="View archived prospects">
@@ -255,7 +256,7 @@ const ProspectsModule = {
         const actionButtons = isArchived
             ? `<button class="btn btn-sm btn-secondary restore-btn" data-action="restore" data-id="${p.id}">Restore to New</button>`
             : `
-                <button class="btn btn-sm btn-primary approve-btn" data-action="approve" data-id="${p.id}" title="Approve and move to Projects">
+                <button class="btn btn-sm btn-primary approve-btn" data-action="approve" data-id="${p.id}" title="Approve and move to Prelim Site Works">
                     Approve &rarr;
                 </button>
                 <button class="btn btn-sm btn-ghost archive-btn" data-action="archive" data-id="${p.id}">Archive</button>
@@ -456,7 +457,7 @@ const ProspectsModule = {
                 scoreBreakdown: breakdown,
                 hotLead: Scoring.isHotLead(score)
             });
-            await DB.logActivity('prospect_created_manual', 'prospects',
+            await DB.logActivity('prospect_created_manual', 'scanner',
                 `manually added ${businessName} to the pipeline`,
                 { industry, source: 'manual' }, id);
 
@@ -478,13 +479,13 @@ const ProspectsModule = {
             if (!p) return;
             const oldStatus = p.status;
             await DB.updateDoc('prospects', id, { status: newStatus });
-            await DB.logActivity('status_changed', 'prospects',
+            await DB.logActivity('status_changed', 'scanner',
                 `changed ${p.businessName} from ${oldStatus} to ${newStatus}`,
                 { oldStatus, newStatus }, id);
             p.status = newStatus;
 
             // Create the project record at approval time — from here forward
-            // the job lives in the Projects module, not in Prospects.
+            // the job lives in the Prelim Site Works module, not in Scanner.
             if (newStatus === 'approved' && oldStatus !== 'approved') {
                 await this.ensureProjectForProspect(p);
             }
@@ -493,7 +494,7 @@ const ProspectsModule = {
             this.renderList();
 
             const msg = newStatus === 'approved'
-                ? `${p.businessName} approved — moved to Projects.`
+                ? `${p.businessName} approved — moved to Prelim Site Works.`
                 : newStatus === 'archived'
                     ? `${p.businessName} archived.`
                     : `${p.businessName} restored.`;
@@ -527,7 +528,7 @@ const ProspectsModule = {
                 revisions: [],
                 automationFlags: []
             });
-            await DB.logActivity('project_created', 'projects',
+            await DB.logActivity('project_created', 'prelim',
                 `created project for approved prospect ${p.businessName}`,
                 { prospectId: p.id }, projectId);
         } catch (err) {
@@ -541,7 +542,7 @@ const ProspectsModule = {
             if (!p) return;
             const newVal = !current;
             await DB.updateDoc('prospects', id, { hotLead: newVal });
-            await DB.logActivity('hot_lead_toggled', 'prospects',
+            await DB.logActivity('hot_lead_toggled', 'scanner',
                 `${newVal ? 'flagged' : 'unflagged'} ${p.businessName} as hot lead`, {}, id);
             p.hotLead = newVal;
             this.renderList();
@@ -586,4 +587,4 @@ const ProspectsModule = {
     }
 };
 
-Router.register('prospects', ProspectsModule, 'Prospects', ['admin', 'sales']);
+Router.register('scanner', ProspectsModule, 'Scanner', ['admin', 'sales']);

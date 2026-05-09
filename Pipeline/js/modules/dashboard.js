@@ -121,7 +121,7 @@ const DashboardModule = {
             <section class="kpi-grid" aria-label="Key metrics" aria-live="polite">
                 <article class="kpi-card" id="kpi-prospects">
                     <div class="kpi-card-header">
-                        <span class="kpi-card-label">Prospects</span>
+                        <span class="kpi-card-label">Scanner</span>
                         <div class="kpi-card-icon blue" data-icon="search" aria-hidden="true"></div>
                     </div>
                     <div class="kpi-card-value"><div class="skeleton skeleton-heading" style="width:60px;height:32px;"></div></div>
@@ -137,8 +137,8 @@ const DashboardModule = {
                 </article>
                 <article class="kpi-card" id="kpi-projects">
                     <div class="kpi-card-header">
-                        <span class="kpi-card-label">Projects</span>
-                        <div class="kpi-card-icon amber" data-icon="folder" aria-hidden="true"></div>
+                        <span class="kpi-card-label">Active Projects</span>
+                        <div class="kpi-card-icon amber" data-icon="activity" aria-hidden="true"></div>
                     </div>
                     <div class="kpi-card-value"><div class="skeleton skeleton-heading" style="width:60px;height:32px;"></div></div>
                     <div class="kpi-card-change"><div class="skeleton skeleton-text" style="width:80px;"></div></div>
@@ -382,11 +382,16 @@ const DashboardModule = {
 
     getActivityDotColor(module) {
         const colors = {
+            // legacy keys (kept so historical activityLog entries still color correctly)
             prospects: '',
+            projects: 'green',
+            // current module keys
+            scanner: '',
+            prelim: 'green',
+            'active-projects': 'green',
             sites: 'green',
             sales: 'amber',
             billing: 'red',
-            projects: 'green',
             expenses: 'amber'
         };
         return colors[module] || '';

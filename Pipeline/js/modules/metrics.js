@@ -585,7 +585,7 @@ const MetricsModule = {
                 ${upcoming.slice(0, 12).map((p) => {
                     const days = Math.max(0, Math.ceil((new Date(p.renewalDate) - new Date()) / (1000 * 60 * 60 * 24)));
                     const dotClass = days <= 7 ? 'red' : days <= 30 ? 'amber' : '';
-                    const link = p.prospectId ? `#project-detail?prospect=${p.prospectId}&tab=clients` : '#projects';
+                    const link = p.prospectId ? `#project-detail?prospect=${p.prospectId}&tab=clients` : '#active-projects';
                     return `
                         <li class="activity-item">
                             <div class="activity-dot ${dotClass}"></div>
