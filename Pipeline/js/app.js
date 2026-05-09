@@ -381,6 +381,12 @@ const LaunchLocal = {
     }
 };
 
+// Expose the namespace on window so utility scripts (StatusPill / EmptyState / FilterBar / NavBadge / Pipeline)
+// that write to window.LaunchLocal.X end up on the same object the modules access by bare `LaunchLocal.X`.
+// Without this, bare-identifier resolution finds the script-level const while utility writes go to a separate
+// window.LaunchLocal object, splitting the namespace and silently breaking calls like LaunchLocal.FilterBar.mount().
+window.LaunchLocal = LaunchLocal;
+
 // Auto-bootstrap a11y modal helpers once DOM is ready
 if (typeof document !== 'undefined') {
     if (document.readyState === 'loading') {
