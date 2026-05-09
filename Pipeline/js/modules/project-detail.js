@@ -813,7 +813,9 @@ const ProjectDetailModule = {
             return;
         }
 
-        // Quick count of invoices we'd delete, for a clearer confirm prompt
+        // Quick count of invoices we'd delete, for a clearer confirm prompt.
+        // The Phase-1 fix ensured invoices carry `prospectId`, so this query
+        // is the right one to count what gets deleted on rollback.
         let invoiceCount = 0;
         try {
             const invs = await DB.getDocs('invoices', { where: [['prospectId', '==', p.id]] });
@@ -836,16 +838,24 @@ const ProjectDetailModule = {
                 await DB.deleteDoc('projects', proj.id);
             }
 
+            // Delete invoices linked to this prospect (Phase 1 Q5 answer).
             const invs = await DB.getDocs('invoices', { where: [['prospectId', '==', p.id]] });
             for (const inv of invs) {
                 await DB.deleteDoc('invoices', inv.id);
             }
 
-            await DB.updateDoc('prospects', p.id, { status: 'site-ready' });
+            // Status flip routes through the centralized pipeline so the
+            // sold → site-ready transition is validated + logged uniformly.
+            await LaunchLocal.Pipeline.advanceProspect(
+                p.id, 'sold', 'site-ready',
+                { reason: 'admin-rollback', silent: true }
+            );
 
+            // Rollback-specific record (project + invoice deletion context).
+            // Pipeline already logged the status flip itself.
             await DB.logActivity(
                 'project_rolled_back',
-                'prelim',
+                'active-projects',
                 `Reset ${p.businessName} from client back to prospect (site-ready)`,
                 { prospectId: p.id, projectId: proj ? proj.id : null, invoicesDeleted: invs.length },
                 proj ? proj.id : p.id
@@ -868,48 +878,47 @@ const ProjectDetailModule = {
 
     async advanceStatus(newStatus) {
         const p = this.prospect;
-        try {
-            const wasSold = p.status === 'sold';
-            await DB.updateDoc('prospects', p.id, { status: newStatus });
-            await DB.logActivity(
-                newStatus === 'sold' ? 'deal_closed' : 'status_changed',
-                'sales',
-                newStatus === 'sold' ? `SOLD — ${p.businessName}` : `moved ${p.businessName} to ${newStatus}`,
-                { status: newStatus }, p.id
-            );
-            p.status = newStatus;
+        if (!p) return;
 
-            // ensureProjectForProspect guards against dupes so this is safe.
-            if (newStatus === 'sold' && !wasSold && ProspectsModule.ensureProjectForProspect) {
-                await ProspectsModule.ensureProjectForProspect(p);
-            }
+        // Centralized transition handles validation, write, side effects
+        // (project creation on sold via ProspectsModule.ensureProjectForProspect),
+        // logging (module: 'pipeline'), and toast.
+        const result = await LaunchLocal.Pipeline.advanceProspect(
+            p.id, p.status, newStatus, { reason: 'project-detail-button' }
+        );
+        if (!result.ok) return;
 
-            await this.loadData(p.id);
-            // Refresh shell + header since stage badge moved
-            document.getElementById('module-content').innerHTML = this.getShellHTML();
-            Icons.inject(document.getElementById('module-content'));
-            this.bindShellEvents(document.getElementById('module-content'));
-            if (newStatus === 'sold') this.activeTab = 'clients';
-            this.renderActiveTab();
-            LaunchLocal.toast(
-                newStatus === 'sold'
-                    ? `Deal closed! ${p.businessName} is now a client.`
-                    : `${p.businessName} marked ${newStatus}.`,
-                newStatus === 'sold' ? 'success' : 'info'
-            );
-        } catch {
-            LaunchLocal.toast('Failed to update status.', 'error');
-        }
+        p.status = newStatus;
+
+        await this.loadData(p.id);
+        // Refresh shell + header since stage badge moved
+        document.getElementById('module-content').innerHTML = this.getShellHTML();
+        Icons.inject(document.getElementById('module-content'));
+        this.bindShellEvents(document.getElementById('module-content'));
+        if (newStatus === 'sold') this.activeTab = 'clients';
+        this.renderActiveTab();
     },
 
+    /**
+     * Adapter — getSmartPricing returns dollars-not-strings; sales-tab
+     * markup expects pre-formatted $-strings + an `upsells` array. We
+     * adapt here rather than reintroducing a duplicate pricing function.
+     */
     getPricing(p) {
-        const build = p.prospectScore >= 70 ? '$2,500' : '$1,800';
-        const maintenance = '$150/mo';
+        const sp = LaunchLocal.SalesScript.getSmartPricing(p);
+        return {
+            build: sp.buildDisplay,
+            maintenance: sp.maintenanceDisplay,
+            upsells: this.getUpsells(p)
+        };
+    },
+
+    getUpsells(p) {
         const upsells = [];
         if (['salon', 'restaurant'].includes(p.industry)) upsells.push('Online booking ($50/mo)');
         upsells.push('Google Ads setup ($300 one-time)');
         if (!p.facebookUrl) upsells.push('Facebook page setup ($200)');
-        return { build, maintenance, upsells };
+        return upsells;
     },
 
     /**
@@ -1199,7 +1208,7 @@ const ProjectDetailModule = {
         const updates = {};
 
         const newStatus = statusEl?.value;
-        if (newStatus && newStatus !== proj.status) updates.status = newStatus;
+        const stageChanged = newStatus && newStatus !== proj.status;
 
         if (isAdmin) {
             const newDomain = document.getElementById('pd-edit-domain').value.trim();
@@ -1210,17 +1219,34 @@ const ProjectDetailModule = {
             if (newRenewal !== (proj.renewalDate || '')) updates.renewalDate = newRenewal || null;
         }
 
-        if (Object.keys(updates).length === 0) {
+        if (!stageChanged && Object.keys(updates).length === 0) {
             LaunchLocal.toast('No changes to save.', 'info', 2000);
             return;
         }
 
         try {
-            await DB.updateDoc('projects', proj.id, updates);
-            const projModule = this.prospect?.status === 'sold' ? 'active-projects' : 'prelim';
-            await DB.logActivity('project_updated', projModule,
-                `updated ${proj.clientName}: ${Object.keys(updates).join(', ')}`, updates, proj.id);
-            Object.assign(proj, updates);
+            // Project lifecycle stage routes through the centralized pipeline
+            // for validation + uniform logging (module: 'pipeline'). Other
+            // field updates stay as a direct write — they're not transitions.
+            if (stageChanged) {
+                const r = await LaunchLocal.Pipeline.setProjectStage(
+                    proj.id, proj.status, newStatus, { reason: 'project-detail-edit', silent: true }
+                );
+                if (!r.ok) {
+                    LaunchLocal.toast(`Cannot move project to ${newStatus}.`, 'warning');
+                    return;
+                }
+                proj.status = newStatus;
+            }
+
+            if (Object.keys(updates).length > 0) {
+                await DB.updateDoc('projects', proj.id, updates);
+                const projModule = this.prospect?.status === 'sold' ? 'active-projects' : 'prelim';
+                await DB.logActivity('project_updated', projModule,
+                    `updated ${proj.clientName}: ${Object.keys(updates).join(', ')}`, updates, proj.id);
+                Object.assign(proj, updates);
+            }
+
             LaunchLocal.toast('Project updated.', 'success');
             this.renderActiveTab();
         } catch (e) {

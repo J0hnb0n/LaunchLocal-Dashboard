@@ -516,6 +516,8 @@ const SitesModule = {
             const s = this.sites.find(x => x.id === id);
             if (!s) return;
 
+            // QA write itself stays here (sites-collection mutation; not a
+            // prospect transition).
             await DB.updateDoc('sites', id, {
                 qaStatus: status,
                 qaFeedback: feedback,
@@ -523,13 +525,26 @@ const SitesModule = {
                 qaDate: firebase.firestore.FieldValue.serverTimestamp()
             });
 
-            await DB.logActivity('qa_updated', 'sites',
+            await DB.logActivity(
+                status === 'approved' ? 'qa_approved' : 'qa_revision_requested',
+                'sites',
                 `${status === 'approved' ? 'approved' : 'requested revision for'} ${s.businessName}`,
                 { status, feedback }, id);
 
-            // Auto-update prospect to site-ready when approved
+            // Auto-advance prospect to site-ready when QA approves. Routes
+            // through Pipeline so the prospect transition is validated +
+            // logged uniformly. Best-effort: a stale prospect status (e.g.
+            // already pitched) will be silently rejected by the validator.
             if (status === 'approved' && s.prospectId) {
-                try { await DB.updateDoc('prospects', s.prospectId, { status: 'site-ready' }); } catch {}
+                try {
+                    const prospect = await DB.getDoc('prospects', s.prospectId);
+                    if (prospect && prospect.status === 'site-queued') {
+                        await LaunchLocal.Pipeline.advanceProspect(
+                            s.prospectId, 'site-queued', 'site-ready',
+                            { reason: 'qa-approved', silent: true }
+                        );
+                    }
+                } catch { /* non-blocking */ }
             }
 
             // Pull pitch-ready prospect back out of the sales queue if a
@@ -541,11 +556,11 @@ const SitesModule = {
                 try {
                     const prospect = await DB.getDoc('prospects', s.prospectId);
                     if (prospect && prospect.status === 'site-ready') {
-                        await DB.updateDoc('prospects', s.prospectId, { status: 'site-queued' });
-                        await DB.logActivity('site_reverted_to_queue', 'sites',
-                            `${s.businessName}: site reverted to queue — revision needed before pitching`,
-                            { siteId: id, fromStatus: 'site-ready', toStatus: 'site-queued' }, s.prospectId);
-                        revertedProspect = true;
+                        const r = await LaunchLocal.Pipeline.advanceProspect(
+                            s.prospectId, 'site-ready', 'site-queued',
+                            { reason: 'qa-revision-needed', silent: true }
+                        );
+                        if (r.ok) revertedProspect = true;
                     }
                 } catch { /* non-blocking — QA save already succeeded */ }
             }
@@ -1358,10 +1373,20 @@ const SitesModule = {
                 });
             }
 
-            // Bump prospect back to site-queued on fresh and regen runs
+            // Bump prospect to site-queued on fresh and regen runs. Routes
+            // through Pipeline (validates approved→site-queued forward, or
+            // site-ready→site-queued regen-revert; site-queued→site-queued
+            // is a no-op which Pipeline rejects silently).
             if (prospect.id) {
                 try {
-                    await DB.updateDoc('prospects', prospect.id, { status: 'site-queued' });
+                    const fresh = await DB.getDoc('prospects', prospect.id);
+                    const fromStatus = fresh?.status || prospect.status;
+                    if (fromStatus && fromStatus !== 'site-queued') {
+                        await LaunchLocal.Pipeline.advanceProspect(
+                            prospect.id, fromStatus, 'site-queued',
+                            { reason: isRegen ? 'prompt-regenerated' : 'prompt-generated', silent: true }
+                        );
+                    }
                 } catch (err) {
                     window.log?.warn('Failed to update prospect status:', err);
                 }

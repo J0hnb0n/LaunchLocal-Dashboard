@@ -11,21 +11,22 @@
 const ProjectsModule = {
     prospects: [],
     projects: [],
-    searchQuery: '',
-    stageFilter: 'all',
-    sortBy: 'oldest', // 'oldest' | 'newest' | 'stage' | 'name'
+    sites: [],
+    filterState: null,
+    _filterBar: null,
 
     async render(container) {
         container.innerHTML = this.getShellHTML();
         Icons.inject(container);
-        this.bindEvents(container);
         await this.loadData();
+        this.mountFilterBar(container);
         return () => {
+            try { this._filterBar?.destroy(); } catch (_) {}
+            this._filterBar = null;
             this.prospects = [];
             this.projects = [];
-            this.searchQuery = '';
-            this.stageFilter = 'all';
-            this.sortBy = 'oldest';
+            this.sites = [];
+            this.filterState = null;
         };
     },
 
@@ -39,27 +40,7 @@ const ProjectsModule = {
                 </div>
             </div>
 
-            <div class="filter-bar">
-                <input type="text" class="form-input filter-search" id="projects-search"
-                    placeholder="Search by client, domain, or location…">
-                <div class="stage-select-wrap">
-                    <select class="form-input" id="projects-stage-filter" style="max-width:200px;">
-                        <option value="all">All pre-sale</option>
-                        <option value="approved">Approved (awaiting site)</option>
-                        <option value="site-queued">Site in progress</option>
-                        <option value="site-ready">Site ready to pitch</option>
-                        <option value="pitched">Pitched</option>
-                    </select>
-                </div>
-                <div class="stage-select-wrap">
-                    <select class="form-input" id="projects-sort" style="max-width:180px;" title="Sort order">
-                        <option value="oldest">Oldest first</option>
-                        <option value="newest">Newest first</option>
-                        <option value="stage">By stage</option>
-                        <option value="name">By name (A–Z)</option>
-                    </select>
-                </div>
-            </div>
+            <div id="projects-filter-bar"></div>
 
             <div id="projects-list">
                 <div class="loading-screen"><div class="spinner spinner-lg"></div></div>
@@ -69,12 +50,14 @@ const ProjectsModule = {
 
     async loadData() {
         try {
-            const [prospects, projects] = await Promise.all([
+            const [prospects, projects, sites] = await Promise.all([
                 DB.getDocs('prospects'),
-                DB.getDocs('projects')
+                DB.getDocs('projects'),
+                DB.getDocs('sites').catch(() => [])
             ]);
             this.prospects = prospects;
             this.projects = projects;
+            this.sites = sites || [];
             this.renderList();
         } catch (err) {
             console.error('Projects load:', err);
@@ -88,6 +71,12 @@ const ProjectsModule = {
                 });
             }
         }
+    },
+
+    /** FilterBar entry point. */
+    applyFilter(state) {
+        this.filterState = state;
+        this.renderList();
     },
 
     /**
@@ -114,12 +103,43 @@ const ProjectsModule = {
         const list = document.getElementById('projects-list');
         if (!list) return;
 
+        const fs = this.filterState || {
+            search: '',
+            pills: { stage: 'all' },
+            selects: { industry: 'all', tier: 'all' },
+            quickFilters: {},
+            sort: 'stage'
+        };
+
+        const stageFilter = (fs.pills && fs.pills.stage) || 'all';
+        const industry    = (fs.selects && fs.selects.industry) || 'all';
+        const tier        = (fs.selects && fs.selects.tier) || 'all';
+        const q           = (fs.search || '').toLowerCase().trim();
+        const qf          = fs.quickFilters || {};
+
+        // Build qa-pending site set for the qaPending quick filter
+        const qaPendingProspectIds = new Set(
+            (this.sites || [])
+                .filter(s => s.qaStatus === 'pending')
+                .map(s => s.prospectId)
+                .filter(Boolean)
+        );
+
         let jobs = this.activeJobs();
-        if (this.stageFilter !== 'all') {
-            jobs = jobs.filter((j) => j.prospect.status === this.stageFilter);
+
+        if (stageFilter !== 'all') {
+            jobs = jobs.filter((j) => j.prospect.status === stageFilter);
         }
-        if (this.searchQuery) {
-            const q = this.searchQuery.toLowerCase();
+
+        if (industry !== 'all') {
+            jobs = jobs.filter(j => (j.prospect.industry || '') === industry);
+        }
+
+        if (tier !== 'all') {
+            jobs = jobs.filter(j => (j.project?.maintenanceTier || '') === tier);
+        }
+
+        if (q) {
             jobs = jobs.filter((j) => {
                 const name = (j.project?.clientName || j.prospect.businessName || '').toLowerCase();
                 const domain = (j.project?.domainName || '').toLowerCase();
@@ -128,13 +148,21 @@ const ProjectsModule = {
             });
         }
 
-        jobs.sort(this.sortComparator());
+        if (qf.hotLead) jobs = jobs.filter(j => j.prospect.hotLead);
+        if (qf.pendingRevisions) {
+            jobs = jobs.filter(j => (j.project?.revisions || []).some(r => r.status === 'pending'));
+        }
+        if (qf.qaPending) {
+            jobs = jobs.filter(j => qaPendingProspectIds.has(j.prospect.id));
+        }
+
+        jobs.sort(this.sortComparator(fs.sort));
 
         if (jobs.length === 0) {
             list.innerHTML = LaunchLocal.EmptyState.render({
                 icon: 'folder',
-                title: 'No prelim jobs in flight',
-                desc: 'Approve a prospect in the Scanner tab to kick one off.',
+                title: 'No prelim jobs match',
+                desc: 'Try clearing filters, or approve a prospect in Scanner to kick one off.',
                 ctaLabel: 'Open Scanner',
                 ctaHref: '#scanner'
             });
@@ -155,7 +183,7 @@ const ProjectsModule = {
         Icons.inject(list);
     },
 
-    sortComparator() {
+    sortComparator(sortBy) {
         const createdMs = (j) => {
             const c = j.project?.createdAt || j.prospect?.createdAt;
             if (!c) return 0;
@@ -165,17 +193,77 @@ const ProjectsModule = {
         };
         const stageRank = { approved: 0, 'site-queued': 1, 'site-ready': 2, pitched: 3 };
         const name = (j) => (j.project?.clientName || j.prospect?.businessName || '').toLowerCase();
+        const score = (j) => j.prospect?.prospectScore || 0;
 
-        switch (this.sortBy) {
-            case 'newest': return (a, b) => createdMs(b) - createdMs(a);
-            case 'stage':  return (a, b) => {
+        switch (sortBy) {
+            case 'newest':     return (a, b) => createdMs(b) - createdMs(a);
+            case 'oldest':     return (a, b) => createdMs(a) - createdMs(b);
+            case 'name':       return (a, b) => name(a).localeCompare(name(b));
+            case 'score-desc': return (a, b) => score(b) - score(a);
+            case 'stage':
+            default:           return (a, b) => {
                 const r = (stageRank[a.prospect.status] ?? 9) - (stageRank[b.prospect.status] ?? 9);
                 return r !== 0 ? r : name(a).localeCompare(name(b));
             };
-            case 'name':   return (a, b) => name(a).localeCompare(name(b));
-            case 'oldest':
-            default:       return (a, b) => createdMs(a) - createdMs(b);
         }
+    },
+
+    industryOptions() {
+        const set = new Set();
+        for (const j of this.activeJobs()) {
+            if (j.prospect.industry) set.add(j.prospect.industry);
+        }
+        return [{ value: 'all', label: 'All industries' }]
+            .concat([...set].sort().map(i => ({ value: i, label: i })));
+    },
+
+    tierOptions() {
+        const set = new Set();
+        for (const j of this.activeJobs()) {
+            if (j.project?.maintenanceTier) set.add(j.project.maintenanceTier);
+        }
+        return [{ value: 'all', label: 'All tiers' }]
+            .concat([...set].sort().map(t => ({ value: t, label: t })));
+    },
+
+    mountFilterBar(container) {
+        const host = container.querySelector('#projects-filter-bar');
+        if (!host || !LaunchLocal.FilterBar) return;
+        try { this._filterBar?.destroy(); } catch (_) {}
+        this._filterBar = LaunchLocal.FilterBar.mount(host, {
+            search: { placeholder: 'Search prelim work…', fields: ['businessName', 'address', 'domainName'] },
+            pills: {
+                key: 'stage',
+                options: [
+                    { key: 'all',         label: 'All' },
+                    { key: 'approved',    label: 'Approved' },
+                    { key: 'site-queued', label: 'Site Queued' },
+                    { key: 'site-ready',  label: 'Site Ready' },
+                    { key: 'pitched',     label: 'Pitched' }
+                ]
+            },
+            selects: [
+                { key: 'industry', label: 'Industry', options: this.industryOptions() },
+                { key: 'tier',     label: 'Tier',     options: this.tierOptions() }
+            ],
+            quickFilters: [
+                { key: 'hotLead',          label: 'Hot leads only' },
+                { key: 'pendingRevisions', label: 'Has pending revisions' },
+                { key: 'qaPending',        label: 'QA pending' }
+            ],
+            sort: {
+                options: [
+                    { value: 'stage',      label: 'By stage' },
+                    { value: 'score-desc', label: 'Score (high to low)' },
+                    { value: 'name',       label: 'Name (A to Z)' },
+                    { value: 'newest',     label: 'Newest first' },
+                    { value: 'oldest',     label: 'Oldest first' }
+                ],
+                default: 'stage'
+            },
+            urlState: true,
+            onChange: (state) => this.applyFilter(state)
+        });
     },
 
     renderJobCard(job) {
@@ -261,25 +349,7 @@ const ProjectsModule = {
         return 'score-low';
     },
 
-    bindEvents(container) {
-        const search = container.querySelector('#projects-search');
-        search?.addEventListener('input', (e) => {
-            this.searchQuery = e.target.value.trim();
-            this.renderList();
-        });
-
-        const stage = container.querySelector('#projects-stage-filter');
-        stage?.addEventListener('change', (e) => {
-            this.stageFilter = e.target.value;
-            this.renderList();
-        });
-
-        const sort = container.querySelector('#projects-sort');
-        sort?.addEventListener('change', (e) => {
-            this.sortBy = e.target.value;
-            this.renderList();
-        });
-    }
+    // Search / stage / sort UI is owned by FilterBar (see mountFilterBar).
 };
 
 Router.register('prelim', ProjectsModule, 'Prelim Site Works', ['admin', 'developer']);

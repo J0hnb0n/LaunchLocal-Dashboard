@@ -5,13 +5,26 @@
 const SalesModule = {
     prospects: [],
     sites: [],
+    filterState: null,
+    _filterBar: null,
+    pitchQueue: [],
+    followupQueue: [],
 
     async render(container) {
         container.innerHTML = this.getShellHTML();
         await this.loadData();
         this.bindEvents(container);
         this.bindQueueDelegation(container);
-        return () => { this.prospects = []; this.sites = []; };
+        this.mountFilterBar(container);
+        return () => {
+            try { this._filterBar?.destroy(); } catch (_) {}
+            this._filterBar = null;
+            this.prospects = [];
+            this.sites = [];
+            this.filterState = null;
+            this.pitchQueue = [];
+            this.followupQueue = [];
+        };
     },
 
     getShellHTML() {
@@ -22,6 +35,8 @@ const SalesModule = {
                     <p class="page-subtitle">Pitch queue, brief + live script, and visit logging.</p>
                 </div>
             </div>
+
+            <div id="sales-filter-bar"></div>
 
             <div class="section-header">
                 <h3 class="section-title">
@@ -92,15 +107,145 @@ const SalesModule = {
         }
     },
 
+    /**
+     * FilterBar entry point — funnels through the same renderQueues path.
+     */
+    applyFilter(state) {
+        this.filterState = state;
+        this.renderQueues();
+    },
+
+    /** Apply current filter state to a queue list. */
+    _applyFilterToList(list) {
+        const fs = this.filterState;
+        if (!fs) return list;
+        const q = (fs.search || '').toLowerCase().trim();
+        const industry = (fs.selects && fs.selects.industry) || 'all';
+        const qf = fs.quickFilters || {};
+        const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Toronto' });
+
+        return list.filter(p => {
+            if (q) {
+                const hay = `${p.businessName || ''} ${p.address || ''}`.toLowerCase();
+                if (!hay.includes(q)) return false;
+            }
+            if (industry !== 'all' && (p.industry || '') !== industry) return false;
+            if (qf.hasPhone && !p.phone) return false;
+            if (qf.hasEmail && !p.email) return false;
+            if (qf.overdueFollowup) {
+                if (!p.nextFollowUp || p.nextFollowUp >= today) return false;
+            }
+            return true;
+        });
+    },
+
+    _sortList(list) {
+        const fs = this.filterState;
+        const sortBy = (fs && fs.sort) || 'score-desc';
+        const lastDate = (p) => {
+            const log = p.contactLog || [];
+            return log.length ? (log[log.length - 1].date || '') : '';
+        };
+        const arr = list.slice();
+        switch (sortBy) {
+            case 'name':
+                arr.sort((a, b) => (a.businessName || '').localeCompare(b.businessName || ''));
+                break;
+            case 'days-since':
+                // Oldest last-touch first (i.e., longest since pitch)
+                arr.sort((a, b) => (lastDate(a) || '').localeCompare(lastDate(b) || ''));
+                break;
+            case 'score-desc':
+            default:
+                arr.sort((a, b) => (b.prospectScore || 0) - (a.prospectScore || 0));
+                break;
+        }
+        return arr;
+    },
+
     renderQueues() {
-        const pitchable = this.prospects.filter(p => p.status === 'site-ready');
-        const followup = this.prospects.filter(p => p.status === 'pitched');
+        const fs = this.filterState || { pills: { queueType: 'all' } };
+        const queueType = (fs.pills && fs.pills.queueType) || 'all';
 
-        document.getElementById('pitch-count').textContent = pitchable.length;
-        document.getElementById('followup-count').textContent = followup.length;
+        const pitchableAll = this.prospects.filter(p => p.status === 'site-ready');
+        const followupAll  = this.prospects.filter(p => p.status === 'pitched');
 
-        this.renderQueue('pitch-queue', pitchable, true);
-        this.renderQueue('followup-queue', followup, false);
+        // Stash full lists for the pill count callbacks
+        this.pitchQueue = pitchableAll;
+        this.followupQueue = followupAll;
+
+        const pitchable = this._sortList(this._applyFilterToList(pitchableAll));
+        const followup  = this._sortList(this._applyFilterToList(followupAll));
+
+        const pitchCount = document.getElementById('pitch-count');
+        const followCount = document.getElementById('followup-count');
+        if (pitchCount) pitchCount.textContent = pitchable.length;
+        if (followCount) followCount.textContent = followup.length;
+
+        // Hide entire queue blocks when the queueType pill restricts to one
+        const pitchSection  = document.getElementById('pitch-queue')?.previousElementSibling;
+        const followSection = document.getElementById('followup-queue')?.previousElementSibling;
+        const pitchEl       = document.getElementById('pitch-queue');
+        const followEl      = document.getElementById('followup-queue');
+
+        const showPitch    = queueType === 'all' || queueType === 'pitch';
+        const showFollowup = queueType === 'all' || queueType === 'followup';
+
+        if (pitchEl) pitchEl.style.display = showPitch ? '' : 'none';
+        if (pitchSection && pitchSection.classList.contains('section-header')) {
+            pitchSection.style.display = showPitch ? '' : 'none';
+        }
+        if (followEl) followEl.style.display = showFollowup ? '' : 'none';
+        if (followSection && followSection.classList.contains('section-header')) {
+            followSection.style.display = showFollowup ? '' : 'none';
+        }
+
+        if (showPitch) this.renderQueue('pitch-queue', pitchable, true);
+        if (showFollowup) this.renderQueue('followup-queue', followup, false);
+    },
+
+    industryOptions() {
+        const set = new Set();
+        for (const p of this.prospects) {
+            if (['site-ready', 'pitched'].includes(p.status) && p.industry) set.add(p.industry);
+        }
+        return [{ value: 'all', label: 'All industries' }]
+            .concat([...set].sort().map(i => ({ value: i, label: i })));
+    },
+
+    mountFilterBar(container) {
+        const host = container.querySelector('#sales-filter-bar');
+        if (!host || !LaunchLocal.FilterBar) return;
+        try { this._filterBar?.destroy(); } catch (_) {}
+        this._filterBar = LaunchLocal.FilterBar.mount(host, {
+            search: { placeholder: 'Search sales pipeline…', fields: ['businessName', 'address'] },
+            pills: {
+                key: 'queueType',
+                options: [
+                    { key: 'all',      label: 'All' },
+                    { key: 'pitch',    label: 'Pitch queue', count: () => (this.pitchQueue || []).length },
+                    { key: 'followup', label: 'Follow-up',   count: () => (this.followupQueue || []).length }
+                ]
+            },
+            selects: [
+                { key: 'industry', label: 'Industry', options: this.industryOptions() }
+            ],
+            quickFilters: [
+                { key: 'hasPhone',        label: 'Has phone' },
+                { key: 'hasEmail',        label: 'Has email' },
+                { key: 'overdueFollowup', label: 'Overdue follow-up' }
+            ],
+            sort: {
+                options: [
+                    { value: 'score-desc', label: 'Score (high to low)' },
+                    { value: 'days-since', label: 'Days since pitch' },
+                    { value: 'name',       label: 'Name (A to Z)' }
+                ],
+                default: 'score-desc'
+            },
+            urlState: true,
+            onChange: (state) => this.applyFilter(state)
+        });
     },
 
     renderQueue(containerId, prospects, isPitch) {
@@ -453,20 +598,25 @@ const SalesModule = {
             const p = this.prospects.find(x => x.id === id);
             if (!p) return;
 
+            // Always update the contact log + outcome — that's the
+            // module-specific side effect that stays here.
             const contactLog = [...(p.contactLog || []), { date, note: notes, outcome }];
-            const updates = { contactLog };
-            const wasSold = p.status === 'sold';
-            if (outcome === 'sold') updates.status = 'sold';
-            if (outcome === 'no') updates.status = 'archived';
-
-            await DB.updateDoc('prospects', id, updates);
-            await DB.logActivity('visit_logged', 'sales', `logged visit to ${p.businessName} — ${outcome}`, { date, outcome }, id);
-
+            await DB.updateDoc('prospects', id, { contactLog });
+            await DB.logActivity('visit_logged', 'sales',
+                `logged visit to ${p.businessName} — ${outcome}`,
+                { date, outcome }, id);
             p.contactLog = contactLog;
-            if (updates.status) p.status = updates.status;
 
-            if (updates.status === 'sold' && !wasSold) {
-                await this.ensureProjectForProspect(p);
+            // Outcome-driven status changes route through the centralized
+            // pipeline so validation + project creation happen uniformly.
+            const targetStatus = outcome === 'sold' ? 'sold'
+                                : outcome === 'no'   ? 'archived'
+                                : null;
+            if (targetStatus && targetStatus !== p.status) {
+                const r = await LaunchLocal.Pipeline.advanceProspect(
+                    id, p.status, targetStatus, { reason: `visit-outcome:${outcome}`, silent: true }
+                );
+                if (r.ok) p.status = targetStatus;
             }
 
             this.renderQueues();
@@ -477,79 +627,47 @@ const SalesModule = {
     },
 
     async moveStatus(id, status) {
-        try {
-            const p = this.prospects.find(x => x.id === id);
-            if (!p) return;
-            const wasSold = p.status === 'sold';
-            await DB.updateDoc('prospects', id, { status });
-            await DB.logActivity(status === 'sold' ? 'deal_closed' : 'status_changed', 'sales',
-                status === 'sold' ? `SOLD — ${p.businessName}` : `moved ${p.businessName} to ${status}`,
-                { status }, id);
+        const p = this.prospects.find(x => x.id === id);
+        if (!p) return;
+        const result = await LaunchLocal.Pipeline.advanceProspect(
+            id, p.status, status, { reason: 'sales-button' }
+        );
+        if (result.ok) {
             p.status = status;
-
-            if (status === 'sold' && !wasSold) {
-                await this.ensureProjectForProspect(p);
-            }
-
             this.renderQueues();
-            LaunchLocal.toast(
-                status === 'sold' ? `Deal closed! ${p.businessName} is now a client.` : `${p.businessName} marked as ${status}.`,
-                status === 'sold' ? 'success' : 'info'
-            );
-        } catch {
-            LaunchLocal.toast('Failed to update status.', 'error');
         }
     },
 
     /**
      * Soft-revert a pitched prospect back into the pitch queue. Used when a
      * deal has cooled off but isn't dead — keeps it visible on Sales without
-     * forcing an archive. Only valid from `pitched`; no-op otherwise.
+     * forcing an archive. Only valid from `pitched`; the centralized
+     * pipeline rejects other transitions.
      */
     async coolOff(id) {
-        try {
-            const p = this.prospects.find(x => x.id === id);
-            if (!p) return;
-            if (p.status !== 'pitched') {
-                LaunchLocal.toast('Cool Off only applies to pitched prospects.', 'warning');
-                return;
-            }
-            await DB.updateDoc('prospects', id, { status: 'site-ready' });
-            await DB.logActivity('cooled_off', 'sales',
-                `cooled off ${p.businessName} — moved back to pitch queue`,
-                { fromStatus: 'pitched', toStatus: 'site-ready' }, id);
+        const p = this.prospects.find(x => x.id === id);
+        if (!p) return;
+        if (p.status !== 'pitched') {
+            LaunchLocal.toast('Cool Off only applies to pitched prospects.', 'warning');
+            return;
+        }
+        const result = await LaunchLocal.Pipeline.advanceProspect(
+            id, 'pitched', 'site-ready', { reason: 'cool-off' }
+        );
+        if (result.ok) {
             p.status = 'site-ready';
             this.renderQueues();
-            LaunchLocal.toast('Moved back to pitch queue', 'info');
-        } catch {
-            LaunchLocal.toast('Failed to move prospect back.', 'error');
         }
     },
 
+    /**
+     * Project-creation side effect now lives inside Pipeline.advanceProspect
+     * (which calls ProspectsModule.ensureProjectForProspect — the canonical
+     * implementation). Kept as a thin shim for any external caller.
+     */
     async ensureProjectForProspect(p) {
-        try {
-            const existing = await DB.getDocs('projects', { where: [['prospectId', '==', p.id]] });
-            if (existing.length > 0) return;
-
-            const today = new Date().toISOString().slice(0, 10);
-            const projectId = await DB.addDoc('projects', {
-                prospectId: p.id,
-                clientName: p.businessName,
-                domainName: null,
-                status: 'onboarding',
-                maintenanceTier: 'basic',
-                monthlyFee: 15000,
-                startDate: today,
-                renewalDate: null,
-                communicationLog: [],
-                revisions: [],
-                automationFlags: []
-            });
-            await DB.logActivity('project_created', 'active-projects',
-                `created project for new client ${p.businessName}`,
-                { prospectId: p.id }, projectId);
-        } catch (err) {
-            window.log?.warn('ensureProjectForProspect failed:', err);
+        if (window.ProspectsModule?.ensureProjectForProspect) {
+            return ProspectsModule.ensureProjectForProspect(p);
         }
     },
 

@@ -392,7 +392,8 @@ const DashboardModule = {
             sites: 'green',
             sales: 'amber',
             billing: 'red',
-            expenses: 'amber'
+            expenses: 'amber',
+            pipeline: 'amber'
         };
         return colors[module] || '';
     },

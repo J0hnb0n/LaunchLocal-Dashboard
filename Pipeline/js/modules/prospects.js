@@ -11,9 +11,9 @@
 
 const ProspectsModule = {
     prospects: [],
-    searchQuery: '',
-    viewMode: 'new', // 'new' | 'archived'
     expandedId: null,
+    filterState: null, // populated by FilterBar.onChange
+    _filterBar: null,
 
     async render(container) {
         container.innerHTML = this.getShellHTML();
@@ -21,10 +21,13 @@ const ProspectsModule = {
         this.bindEvents(container);
         this.bindListDelegation(container);
         await this.loadProspects();
+        // Mount FilterBar AFTER prospects load so industry options reflect data
+        this.mountFilterBar(container);
         return () => {
+            try { this._filterBar?.destroy(); } catch (_) {}
+            this._filterBar = null;
             this.prospects = [];
-            this.searchQuery = '';
-            this.viewMode = 'new';
+            this.filterState = null;
             this.expandedId = null;
         };
     },
@@ -41,18 +44,11 @@ const ProspectsModule = {
                     <p class="page-subtitle">New leads awaiting approval. Approved prospects move to Prelim Site Works.</p>
                 </div>
                 <div class="page-actions">
-                    <button class="btn btn-ghost btn-sm" id="archive-toggle-btn" title="View archived prospects">
-                        <span data-icon="trash"></span>
-                        <span class="btn-text" id="archive-toggle-label">View Archived</span>
-                    </button>
+                    ${newBtn}
                 </div>
             </div>
 
-            <div class="filter-bar">
-                <input type="text" class="form-input filter-search" id="prospect-search"
-                    placeholder="Search by business name or location…">
-                ${newBtn}
-            </div>
+            <div id="prospect-filter-bar"></div>
 
             <div id="prospect-list">
                 <div class="loading-screen"><div class="spinner spinner-lg"></div></div>
@@ -150,29 +146,111 @@ const ProspectsModule = {
         }
     },
 
+    /**
+     * FilterBar entry point. State shape lives in filter-bar.js docs.
+     * The Scanner cares about: search, status (select), industry (select),
+     * scoreBand (pill), quickFilters (hotLead/hasWebsite/noWebsite/
+     * followupDue/noContact14), and sort.
+     */
+    applyFilter(state) {
+        this.filterState = state;
+        this.expandedId = null;
+        this.renderList();
+    },
+
     renderList() {
         const list = document.getElementById('prospect-list');
         if (!list) return;
 
-        const targetStatus = this.viewMode === 'archived' ? 'archived' : 'new';
-        let filtered = this.prospects.filter((p) => p.status === targetStatus);
+        // Defaults — useful before FilterBar has emitted its first state
+        const fs = this.filterState || {
+            search: '',
+            pills: { scoreBand: 'all' },
+            selects: { status: 'all', industry: 'all' },
+            quickFilters: {},
+            sort: 'score-desc'
+        };
 
-        if (this.searchQuery) {
-            const q = this.searchQuery.toLowerCase();
-            filtered = filtered.filter((p) =>
-                (p.businessName || '').toLowerCase().includes(q) ||
-                (p.address || '').toLowerCase().includes(q)
-            );
+        const statusFilter = (fs.selects && fs.selects.status) || 'all';
+        const industry = (fs.selects && fs.selects.industry) || 'all';
+        const scoreBand = (fs.pills && fs.pills.scoreBand) || 'all';
+        const q = (fs.search || '').toLowerCase().trim();
+        const qf = fs.quickFilters || {};
+
+        const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Toronto' });
+        const fourteenDaysAgo = (() => {
+            const d = new Date(); d.setDate(d.getDate() - 14);
+            return d.toLocaleDateString('en-CA', { timeZone: 'America/Toronto' });
+        })();
+
+        let filtered = this.prospects.filter((p) => {
+            // Status select — default behavior matches the old viewMode='new'
+            if (statusFilter === 'all') {
+                // "All" still excludes the post-Scanner pipeline statuses
+                if (!['new', 'approved', 'archived'].includes(p.status)) return false;
+            } else if (p.status !== statusFilter) {
+                return false;
+            }
+
+            if (industry && industry !== 'all' && p.industry !== industry) return false;
+
+            const s = p.prospectScore || 0;
+            if (scoreBand === 'hot' && s < 80) return false;
+            if (scoreBand === 'high' && (s < 50 || s >= 80)) return false;
+            if (scoreBand === 'med' && (s < 20 || s >= 50)) return false;
+            if (scoreBand === 'low' && s >= 20) return false;
+
+            if (q) {
+                const hay = `${p.businessName || ''} ${p.address || ''}`.toLowerCase();
+                if (!hay.includes(q)) return false;
+            }
+
+            if (qf.hotLead && !p.hotLead) return false;
+            if (qf.hasWebsite && !p.website) return false;
+            if (qf.noWebsite && p.website) return false;
+            if (qf.followupDue) {
+                if (!p.nextFollowUp || p.nextFollowUp > today) return false;
+            }
+            if (qf.noContact14) {
+                const log = p.contactLog || [];
+                const last = log.length ? (log[log.length - 1].date || '') : '';
+                if (last && last >= fourteenDaysAgo) return false;
+            }
+            return true;
+        });
+
+        // Sort
+        const cmpName = (a, b) => (a.businessName || '').localeCompare(b.businessName || '');
+        const cmpFollowup = (a, b) => {
+            const av = a.nextFollowUp || '￿';
+            const bv = b.nextFollowUp || '￿';
+            return av.localeCompare(bv);
+        };
+        const createdMs = (p) => {
+            const c = p.createdAt;
+            if (!c) return 0;
+            if (typeof c.toMillis === 'function') return c.toMillis();
+            const t = new Date(c).getTime();
+            return isNaN(t) ? 0 : t;
+        };
+        switch (fs.sort) {
+            case 'score-asc':    filtered.sort((a, b) => (a.prospectScore || 0) - (b.prospectScore || 0)); break;
+            case 'name':         filtered.sort(cmpName); break;
+            case 'followup':     filtered.sort(cmpFollowup); break;
+            case 'created-desc': filtered.sort((a, b) => createdMs(b) - createdMs(a)); break;
+            case 'created-asc':  filtered.sort((a, b) => createdMs(a) - createdMs(b)); break;
+            case 'score-desc':
+            default:             filtered.sort((a, b) => (b.prospectScore || 0) - (a.prospectScore || 0)); break;
         }
 
         if (filtered.length === 0) {
-            const isArchivedView = this.viewMode === 'archived';
+            const isArchivedView = statusFilter === 'archived';
             list.innerHTML = LaunchLocal.EmptyState.render({
                 icon: 'search',
-                title: isArchivedView ? 'No archived prospects' : 'No new prospects',
+                title: isArchivedView ? 'No archived prospects' : 'No matching prospects',
                 desc: isArchivedView
                     ? 'Archived prospects will appear here and can be restored.'
-                    : 'Use Scouting to import nearby businesses, or click + New Prospect to add one manually.',
+                    : 'Try clearing filters, or use Scouting to import nearby businesses.',
                 ctaLabel: isArchivedView ? null : 'Open Scouting',
                 ctaHref: isArchivedView ? null : '#scouting'
             });
@@ -185,6 +263,70 @@ const ProspectsModule = {
         // Delegated listener installed once per render() in bindListDelegation.
         // Card-level click toggles expansion (handled in delegate).
         Icons.inject(list);
+    },
+
+    /**
+     * Build the unique-industry list from currently-loaded prospects so the
+     * Industry select reflects what's actually scannable.
+     */
+    industryOptions() {
+        const set = new Set();
+        for (const p of this.prospects) {
+            if (p.industry) set.add(p.industry);
+        }
+        const sorted = [...set].sort();
+        return [{ value: 'all', label: 'All industries' }]
+            .concat(sorted.map(i => ({ value: i, label: i })));
+    },
+
+    mountFilterBar(container) {
+        const host = container.querySelector('#prospect-filter-bar');
+        if (!host || !LaunchLocal.FilterBar) return;
+        try { this._filterBar?.destroy(); } catch (_) {}
+        this._filterBar = LaunchLocal.FilterBar.mount(host, {
+            search: { placeholder: 'Search prospects…', fields: ['businessName', 'address'] },
+            pills: {
+                key: 'scoreBand',
+                options: [
+                    { key: 'all',  label: 'All' },
+                    { key: 'hot',  label: 'Hot 80+' },
+                    { key: 'high', label: 'High 50-79' },
+                    { key: 'med',  label: 'Med 20-49' },
+                    { key: 'low',  label: 'Low <20' }
+                ]
+            },
+            selects: [
+                { key: 'industry', label: 'Industry', options: this.industryOptions() },
+                {
+                    key: 'status', label: 'Status', options: [
+                        { value: 'all',      label: 'All' },
+                        { value: 'new',      label: 'New' },
+                        { value: 'approved', label: 'Approved' },
+                        { value: 'archived', label: 'Archived' }
+                    ]
+                }
+            ],
+            quickFilters: [
+                { key: 'hotLead',     label: 'Hot leads only' },
+                { key: 'hasWebsite',  label: 'Has website' },
+                { key: 'noWebsite',   label: 'No website' },
+                { key: 'followupDue', label: 'Follow-up due' },
+                { key: 'noContact14', label: 'No contact 14d+' }
+            ],
+            sort: {
+                options: [
+                    { value: 'score-desc',   label: 'Score (high to low)' },
+                    { value: 'score-asc',    label: 'Score (low to high)' },
+                    { value: 'name',         label: 'Name (A to Z)' },
+                    { value: 'followup',     label: 'Follow-up date' },
+                    { value: 'created-desc', label: 'Newest first' },
+                    { value: 'created-asc',  label: 'Oldest first' }
+                ],
+                default: 'score-desc'
+            },
+            urlState: true,
+            onChange: (state) => this.applyFilter(state)
+        });
     },
 
     renderCard(p) {
@@ -368,23 +510,7 @@ const ProspectsModule = {
     },
 
     bindEvents(container) {
-        const searchInput = container.querySelector('#prospect-search');
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                this.searchQuery = e.target.value.trim();
-                this.expandedId = null;
-                this.renderList();
-            });
-        }
-
-        container.querySelector('#archive-toggle-btn')?.addEventListener('click', () => {
-            this.viewMode = this.viewMode === 'archived' ? 'new' : 'archived';
-            this.expandedId = null;
-            const label = container.querySelector('#archive-toggle-label');
-            if (label) label.textContent = this.viewMode === 'archived' ? 'View New' : 'View Archived';
-            this.renderList();
-        });
-
+        // Search and status (incl. archived view) are owned by FilterBar.
         // Manual prospect entry
         const newModal = container.querySelector('#new-prospect-modal');
         const closeNew = () => newModal?.classList.remove('open');
@@ -473,64 +599,53 @@ const ProspectsModule = {
     },
 
     async changeStatus(id, newStatus) {
-        try {
-            const p = this.prospects.find((x) => x.id === id);
-            if (!p) return;
-            const oldStatus = p.status;
-            await DB.updateDoc('prospects', id, { status: newStatus });
-            await DB.logActivity('status_changed', 'scanner',
-                `changed ${p.businessName} from ${oldStatus} to ${newStatus}`,
-                { oldStatus, newStatus }, id);
+        const p = this.prospects.find((x) => x.id === id);
+        if (!p) return;
+
+        // Centralized transition — validates legality, writes status, logs to
+        // activityLog (module: 'pipeline'), runs side effects, toasts. Project
+        // doc creation is deferred to the sold transition and handled inside
+        // Pipeline.advanceProspect via ensureProjectForProspect below.
+        const result = await LaunchLocal.Pipeline.advanceProspect(
+            id, p.status, newStatus, { reason: 'scanner-button' }
+        );
+        if (result.ok) {
             p.status = newStatus;
-
-            // NOTE: project doc creation is intentionally deferred to the
-            // sold transition (see sales.js / project-detail.js). Approving
-            // a prospect only moves it into Prelim Site Works — Active
-            // Projects (the `projects` collection) stays empty until sold.
-            // ensureProjectForProspect() is still defined below for the
-            // sold-time callers that import it via ProspectsModule.
-
             this.expandedId = null;
             this.renderList();
-
-            const msg = newStatus === 'approved'
-                ? `${p.businessName} approved — moved to Prelim Site Works.`
-                : newStatus === 'archived'
-                    ? `${p.businessName} archived.`
-                    : `${p.businessName} restored.`;
-            LaunchLocal.toast(msg, newStatus === 'approved' ? 'success' : 'info');
-        } catch {
-            LaunchLocal.toast('Failed to update status.', 'error');
         }
     },
 
     /**
-     * Create a project doc the first time a prospect is approved. Called
-     * from changeStatus when transitioning new → approved; safe to call
-     * repeatedly (existence check guards against dupes).
+     * Create a project doc the first time a prospect transitions to sold.
+     * Tier-aware default monthlyFee (cents) — pulls SmartPricing reco when
+     * available, falls back to TIER_DEFAULTS keyed off
+     * `prospect.maintenanceTier`. Safe to call repeatedly (existence check).
      */
     async ensureProjectForProspect(p) {
         try {
             const existing = await DB.getDocs('projects', { where: [['prospectId', '==', p.id]] });
             if (existing.length > 0) return;
 
+            const tier = p.maintenanceTier || 'basic';
+            const monthlyFee = LaunchLocal.Pipeline.resolveMonthlyFee(p);
             const today = new Date().toISOString().slice(0, 10);
             const projectId = await DB.addDoc('projects', {
                 prospectId: p.id,
                 clientName: p.businessName,
                 domainName: null,
                 status: 'onboarding',
-                maintenanceTier: 'basic',
-                monthlyFee: 15000,
+                maintenanceTier: tier,
+                monthlyFee,
                 startDate: today,
                 renewalDate: null,
                 communicationLog: [],
                 revisions: [],
                 automationFlags: []
             });
-            await DB.logActivity('project_created', 'prelim',
-                `created project for approved prospect ${p.businessName}`,
-                { prospectId: p.id }, projectId);
+            await DB.logActivity('project_created', 'active-projects',
+                `created project for new client ${p.businessName}`,
+                { prospectId: p.id, tier, monthlyFee }, projectId);
         } catch (err) {
             window.log?.warn('ensureProjectForProspect failed:', err);
         }
