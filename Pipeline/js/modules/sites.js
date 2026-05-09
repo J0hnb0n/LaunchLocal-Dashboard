@@ -150,33 +150,33 @@ const SitesModule = {
                 <div class="loading-screen"><div class="spinner spinner-lg"></div></div>
             </div>
 
-            <div class="modal-overlay" id="qa-modal">
+            <div class="modal-overlay" id="qa-modal" role="dialog" aria-modal="true" aria-labelledby="qa-modal-title">
                 <div class="modal modal-lg">
                     <div class="modal-header">
                         <h3 class="modal-title" id="qa-modal-title">QA Review</h3>
-                        <button class="modal-close" id="qa-modal-close">&times;</button>
+                        <button class="modal-close" id="qa-modal-close" aria-label="Close">&times;</button>
                     </div>
                     <div class="modal-body" id="qa-modal-body"></div>
                     <div class="modal-footer" id="qa-modal-footer"></div>
                 </div>
             </div>
 
-            <div class="modal-overlay" id="generate-modal">
+            <div class="modal-overlay" id="generate-modal" role="dialog" aria-modal="true" aria-labelledby="generate-modal-title">
                 <div class="modal modal-xl">
                     <div class="modal-header">
                         <h3 class="modal-title" id="generate-modal-title">Generate Site Prompt</h3>
-                        <button class="modal-close" id="generate-modal-close">&times;</button>
+                        <button class="modal-close" id="generate-modal-close" aria-label="Close">&times;</button>
                     </div>
                     <div class="modal-body" id="generate-modal-body"></div>
                     <div class="modal-footer" id="generate-modal-footer"></div>
                 </div>
             </div>
 
-            <div class="modal-overlay" id="prompt-result-modal">
+            <div class="modal-overlay" id="prompt-result-modal" role="dialog" aria-modal="true" aria-labelledby="prompt-result-title">
                 <div class="modal modal-xl">
                     <div class="modal-header">
-                        <h3 class="modal-title">Prompt Ready — Copy to Claude Code</h3>
-                        <button class="modal-close" id="prompt-result-close">&times;</button>
+                        <h3 class="modal-title" id="prompt-result-title">Prompt Ready — Copy to Claude Code</h3>
+                        <button class="modal-close" id="prompt-result-close" aria-label="Close">&times;</button>
                     </div>
                     <div class="modal-body" id="prompt-result-body"></div>
                     <div class="modal-footer" id="prompt-result-footer"></div>
@@ -1345,7 +1345,7 @@ const SitesModule = {
                 try {
                     await DB.updateDoc('prospects', prospect.id, { status: 'site-queued' });
                 } catch (err) {
-                    console.warn('Failed to update prospect status:', err);
+                    window.log?.warn('Failed to update prospect status:', err);
                 }
             }
 

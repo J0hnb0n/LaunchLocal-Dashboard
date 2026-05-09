@@ -3,6 +3,8 @@
 Thumbs.db
 node_modules/
 setup.bat
+start-dev.bat
+push-sprint.bat
 
 # Client sites are tracked in this repo so every PC gets them via git pull.
 # The Stop hook still uploads them to Firebase Storage for dashboard previews.

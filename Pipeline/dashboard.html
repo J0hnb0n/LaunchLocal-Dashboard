@@ -33,9 +33,12 @@
 </head>
 <body>
 
+    <!-- Skip to main content (a11y) -->
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+
     <!-- Full-page loading screen (shown while auth state resolves) -->
-    <div id="app-loading" class="loading-screen" style="min-height: 100vh;">
-        <div class="spinner spinner-lg"></div>
+    <div id="app-loading" class="loading-screen" role="status" aria-live="polite" style="min-height: 100vh;">
+        <div class="spinner spinner-lg" aria-hidden="true"></div>
         <p>Loading LaunchLocal...</p>
     </div>
 
@@ -43,100 +46,100 @@
     <div id="app-shell" class="app-layout" style="display: none;">
 
         <!-- Sidebar Overlay (mobile) -->
-        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+        <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
 
         <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
+        <aside class="sidebar" id="sidebar" aria-label="Sidebar">
             <div class="sidebar-brand">
-                <div class="sidebar-brand-icon">L</div>
+                <div class="sidebar-brand-icon" aria-hidden="true">L</div>
                 <h2>Launch<span>Local</span></h2>
             </div>
 
-            <nav class="sidebar-nav" id="sidebar-nav">
-                <a class="nav-item active" href="#dashboard" data-module="dashboard">
-                    <span class="nav-item-icon" data-icon="dashboard"></span>
+            <nav class="sidebar-nav" id="sidebar-nav" aria-label="Main navigation">
+                <a class="nav-item active" href="#dashboard" data-module="dashboard" aria-current="page">
+                    <span class="nav-item-icon" data-icon="dashboard" aria-hidden="true"></span>
                     Dashboard
                 </a>
                 <a class="nav-item" href="#scouting" data-module="scouting" data-roles="admin,sales">
-                    <span class="nav-item-icon" data-icon="map"></span>
+                    <span class="nav-item-icon" data-icon="map" aria-hidden="true"></span>
                     Scouting
                 </a>
                 <a class="nav-item" href="#roadmap" data-module="roadmap" data-roles="admin">
-                    <span class="nav-item-icon" data-icon="calendar"></span>
+                    <span class="nav-item-icon" data-icon="calendar" aria-hidden="true"></span>
                     Roadmap
                 </a>
                 <a class="nav-item" href="#prospects" data-module="prospects" data-roles="admin,sales">
-                    <span class="nav-item-icon" data-icon="search"></span>
+                    <span class="nav-item-icon" data-icon="search" aria-hidden="true"></span>
                     Prospects
                 </a>
                 <a class="nav-item" href="#projects" data-module="projects" data-roles="admin,developer,sales">
-                    <span class="nav-item-icon" data-icon="folder"></span>
+                    <span class="nav-item-icon" data-icon="folder" aria-hidden="true"></span>
                     Projects
                 </a>
                 <a class="nav-item" href="#sales" data-module="sales" data-roles="admin,sales">
-                    <span class="nav-item-icon" data-icon="handshake"></span>
+                    <span class="nav-item-icon" data-icon="handshake" aria-hidden="true"></span>
                     Sales
                 </a>
                 <a class="nav-item" href="#billing" data-module="billing" data-roles="admin">
-                    <span class="nav-item-icon" data-icon="wallet"></span>
+                    <span class="nav-item-icon" data-icon="wallet" aria-hidden="true"></span>
                     Billing
                 </a>
                 <a class="nav-item" href="#expenses" data-module="expenses" data-roles="admin">
-                    <span class="nav-item-icon" data-icon="receipt"></span>
+                    <span class="nav-item-icon" data-icon="receipt" aria-hidden="true"></span>
                     Expenses
                 </a>
                 <a class="nav-item" href="#metrics" data-module="metrics" data-roles="admin,developer,sales">
-                    <span class="nav-item-icon" data-icon="trendUp"></span>
+                    <span class="nav-item-icon" data-icon="trendUp" aria-hidden="true"></span>
                     Metrics
                 </a>
             </nav>
 
             <div class="sidebar-footer">
                 <div class="sidebar-user" id="sidebar-user-menu-trigger">
-                    <div class="sidebar-avatar" id="user-avatar">?</div>
+                    <div class="sidebar-avatar" id="user-avatar" aria-hidden="true">?</div>
                     <div class="sidebar-user-info">
                         <div class="sidebar-user-name" id="user-name">Loading...</div>
                         <div class="sidebar-user-role" id="user-role-label">—</div>
                     </div>
                 </div>
                 <button class="btn-logout" id="logout-btn">
-                    <span data-icon="logout"></span>
+                    <span data-icon="logout" aria-hidden="true"></span>
                     Sign Out
                 </button>
             </div>
         </aside>
 
         <!-- Header -->
-        <header class="header">
+        <header class="header" role="banner">
             <div class="header-left">
-                <button class="mobile-menu-toggle icon-btn" id="mobile-menu-btn" aria-label="Toggle menu">
-                    <span data-icon="menu"></span>
+                <button class="mobile-menu-toggle icon-btn" id="mobile-menu-btn" aria-label="Toggle menu" aria-controls="sidebar" aria-expanded="false">
+                    <span data-icon="menu" aria-hidden="true"></span>
                 </button>
-                <div class="header-breadcrumb" id="header-breadcrumb">
+                <nav class="header-breadcrumb" id="header-breadcrumb" aria-label="Breadcrumb">
                     <span>LaunchLocal</span>
-                    <span class="sep">/</span>
-                </div>
+                    <span class="sep" aria-hidden="true">/</span>
+                </nav>
                 <h1 class="header-title" id="header-title">Dashboard</h1>
             </div>
             <div class="header-right">
                 <button class="icon-btn theme-toggle" id="theme-toggle" aria-label="Toggle theme">
-                    <span class="sun-icon" data-icon="sun"></span>
-                    <span class="moon-icon" data-icon="moon"></span>
+                    <span class="sun-icon" data-icon="sun" aria-hidden="true"></span>
+                    <span class="moon-icon" data-icon="moon" aria-hidden="true"></span>
                 </button>
                 <span class="badge" id="header-role-badge"></span>
                 <div class="dropdown" id="header-user-dropdown">
-                    <button class="icon-btn" id="user-menu-btn" aria-label="Account menu">
-                        <span data-icon="moreVertical"></span>
+                    <button class="icon-btn" id="user-menu-btn" aria-label="Account menu" aria-haspopup="menu" aria-expanded="false" aria-controls="user-menu">
+                        <span data-icon="moreVertical" aria-hidden="true"></span>
                     </button>
-                    <div class="dropdown-menu" id="user-menu">
+                    <div class="dropdown-menu" id="user-menu" role="menu" aria-labelledby="user-menu-btn">
                         <div class="dropdown-header">Account</div>
-                        <button class="dropdown-item" id="menu-settings">
-                            <span data-icon="settings"></span>
+                        <button class="dropdown-item" id="menu-settings" role="menuitem">
+                            <span data-icon="settings" aria-hidden="true"></span>
                             Settings
                         </button>
-                        <div class="dropdown-divider"></div>
-                        <button class="dropdown-item danger" id="menu-logout">
-                            <span data-icon="logout"></span>
+                        <div class="dropdown-divider" role="separator"></div>
+                        <button class="dropdown-item danger" id="menu-logout" role="menuitem">
+                            <span data-icon="logout" aria-hidden="true"></span>
                             Sign out
                         </button>
                     </div>
@@ -145,7 +148,7 @@
         </header>
 
         <!-- Main Content Area -->
-        <main class="main-content">
+        <main class="main-content" id="main-content" role="main" tabindex="-1">
             <div class="content-wrapper" id="module-content">
                 <!-- Module views render here via router -->
             </div>
@@ -153,7 +156,7 @@
     </div>
 
     <!-- Toast Container -->
-    <div class="toast-container" id="toast-container"></div>
+    <div class="toast-container" id="toast-container" role="status" aria-live="polite" aria-atomic="false"></div>
 
     <!-- Leaflet Map -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -165,6 +168,9 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+    <!-- Config (must load before any other app script) -->
+    <script src="js/config.js"></script>
 
     <!-- Utilities (early — must be defined before modules) -->
     <script src="js/utils/theme.js"></script>
@@ -307,13 +313,15 @@
             const overlay = document.getElementById('sidebar-overlay');
 
             mobileBtn.addEventListener('click', () => {
-                sidebar.classList.toggle('open');
+                const isOpen = sidebar.classList.toggle('open');
                 overlay.classList.toggle('open');
+                mobileBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
             });
 
             overlay.addEventListener('click', () => {
                 sidebar.classList.remove('open');
                 overlay.classList.remove('open');
+                mobileBtn.setAttribute('aria-expanded', 'false');
             });
 
             // Header user menu dropdown
@@ -321,21 +329,33 @@
             const userMenu = document.getElementById('user-menu');
             userMenuBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                userMenu.classList.toggle('open');
+                const isOpen = userMenu.classList.toggle('open');
+                userMenuBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
             });
             document.addEventListener('click', (e) => {
                 if (!userMenu.contains(e.target) && e.target !== userMenuBtn) {
                     userMenu.classList.remove('open');
+                    userMenuBtn.setAttribute('aria-expanded', 'false');
+                }
+            });
+            // Escape closes the user menu (a11y)
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && userMenu.classList.contains('open')) {
+                    userMenu.classList.remove('open');
+                    userMenuBtn.setAttribute('aria-expanded', 'false');
+                    userMenuBtn.focus();
                 }
             });
 
             // Settings route
             document.getElementById('menu-settings').addEventListener('click', () => {
                 userMenu.classList.remove('open');
+                userMenuBtn.setAttribute('aria-expanded', 'false');
                 window.location.hash = '#settings';
             });
             document.getElementById('menu-logout').addEventListener('click', () => {
                 userMenu.classList.remove('open');
+                userMenuBtn.setAttribute('aria-expanded', 'false');
                 document.getElementById('logout-btn').click();
             });
 

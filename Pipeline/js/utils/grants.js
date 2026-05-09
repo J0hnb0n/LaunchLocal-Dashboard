@@ -119,7 +119,7 @@ const Grants = {
                 return this._data;
             })
             .catch(err => {
-                console.warn('Grants: failed to load data', err);
+                window.log?.warn('Grants: failed to load data', err);
                 this._loading = null;
                 this._data = [];
                 return this._data;

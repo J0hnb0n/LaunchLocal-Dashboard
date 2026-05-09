@@ -230,9 +230,8 @@ const BillingModule = {
         `;
 
         Icons.inject(container);
-        container.querySelectorAll('[data-action]').forEach((btn) => {
-            btn.addEventListener('click', () => this.handleRowAction(btn.getAttribute('data-action'), btn.getAttribute('data-id')));
-        });
+        // Per-row [data-action] clicks are handled via the delegated listener
+        // installed once in bindEvents() — no per-render rebinding required.
     },
 
     renderRow(inv) {
@@ -360,28 +359,38 @@ const BillingModule = {
     },
 
     bindEvents(container) {
+        // Single delegated click listener handles all interactive elements
+        // inside the billing module — main tabs, invoice tabs, aging buckets,
+        // and per-row action buttons.
         container.addEventListener('click', (e) => {
             const mainTab = e.target.closest('#billing-main-tabs .module-tab');
-            if (mainTab) this.switchMainTab(mainTab.getAttribute('data-main-tab'));
-        });
+            if (mainTab) {
+                this.switchMainTab(mainTab.getAttribute('data-main-tab'));
+                return;
+            }
 
-        container.addEventListener('click', (e) => {
             const tab = e.target.closest('#invoice-tabs .module-tab');
             if (tab) {
                 container.querySelectorAll('#invoice-tabs .module-tab').forEach((t) => t.classList.remove('active'));
                 tab.classList.add('active');
                 this.activeTab = tab.getAttribute('data-tab');
                 this.renderTable();
+                return;
             }
-        });
 
-        container.addEventListener('click', (e) => {
             const bucket = e.target.closest('.aging-bucket');
             if (bucket) {
                 container.querySelectorAll('.aging-bucket').forEach((b) => b.classList.remove('active'));
                 bucket.classList.add('active');
                 this.activeAging = bucket.getAttribute('data-aging');
                 this.renderTable();
+                return;
+            }
+
+            // Per-row invoice actions (approve / pay) — only inside the table
+            const actionEl = e.target.closest('#invoice-table [data-action]');
+            if (actionEl) {
+                this.handleRowAction(actionEl.getAttribute('data-action'), actionEl.getAttribute('data-id'));
             }
         });
     }

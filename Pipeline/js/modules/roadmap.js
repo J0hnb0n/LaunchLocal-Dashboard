@@ -206,7 +206,7 @@ const RoadmapModule = {
                 this.updateStats();
             },
             (err) => {
-                console.warn('Roadmap snapshot error:', err);
+                window.log?.warn('Roadmap snapshot error:', err);
             }
         );
     },

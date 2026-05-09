@@ -14,6 +14,7 @@ const ExpensesModule = {
         container.innerHTML = this.getShellHTML();
         Icons.inject(container);
         this.bindEvents(container);
+        this.bindContentDelegation(container);
         await this.loadExpenses();
         return () => { this.expenses = []; this.editingId = null; };
     },
@@ -71,7 +72,7 @@ const ExpensesModule = {
                 </div>
             </div>
 
-            <div class="modal-overlay" id="expense-modal">
+            <div class="modal-overlay" id="expense-modal" role="dialog" aria-modal="true" aria-labelledby="expense-modal-title">
                 <div class="modal">
                     <div class="modal-header">
                         <h3 class="modal-title" id="expense-modal-title">Add Expense</h3>
@@ -223,10 +224,8 @@ const ExpensesModule = {
         } else {
             container.innerHTML = this.renderFlatTable(scoped);
         }
-
-        container.querySelectorAll('[data-expense-edit]').forEach((row) => {
-            row.addEventListener('click', () => this.openEditModal(row.getAttribute('data-expense-edit')));
-        });
+        // Per-row edit click is handled via delegation on the module container
+        // (see bindContentDelegation), so no per-row listener wiring here.
     },
 
     renderFlatTable(expenses) {
@@ -425,6 +424,20 @@ const ExpensesModule = {
             } catch (e) {
                 LaunchLocal.toast('Delete failed: ' + e.message, 'error');
             }
+        });
+    },
+
+    /**
+     * Single delegated click listener on #expense-content for row edits.
+     * Replaces the previous per-row addEventListener loop in renderContent().
+     */
+    bindContentDelegation(container) {
+        const content = container.querySelector('#expense-content');
+        if (!content) return;
+        content.addEventListener('click', (e) => {
+            const row = e.target.closest('[data-expense-edit]');
+            if (!row) return;
+            this.openEditModal(row.getAttribute('data-expense-edit'));
         });
     }
 };

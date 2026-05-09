@@ -25,7 +25,7 @@ const Auth = {
         // if this fails (network, function down) the user can still log in;
         // they just won't see live previews until a retry.
         await this.ensureServerSession().catch((err) => {
-            console.warn('Server session mint failed:', err);
+            window.log?.warn('Server session mint failed:', err);
         });
         return cred;
     },

@@ -85,27 +85,30 @@
 </head>
 <body class="login-page">
 
+    <!-- Skip to main content (a11y) -->
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+
     <button class="icon-btn theme-toggle login-page-theme" id="theme-toggle" aria-label="Toggle theme">
         <span class="sun-icon" data-icon="sun"></span>
         <span class="moon-icon" data-icon="moon"></span>
     </button>
 
     <!-- Login Card -->
-    <div class="login-card">
-        <div class="login-logo">
-            <div class="login-logo-mark">L</div>
+    <main class="login-card" id="main-content" role="main">
+        <header class="login-logo">
+            <div class="login-logo-mark" aria-hidden="true">L</div>
             <h1>Launch<span>Local</span></h1>
             <p>Local Business Growth Pipeline</p>
-        </div>
+        </header>
 
         <!-- Login Error Banner -->
-        <div id="login-error" class="alert alert-error" style="display: none;">
+        <div id="login-error" class="alert alert-error" role="alert" aria-live="assertive" style="display: none;">
             <span data-icon="alert"></span>
             <span id="login-error-text">Invalid email or password.</span>
         </div>
 
         <!-- Login Form -->
-        <form id="login-form" novalidate>
+        <form id="login-form" novalidate aria-label="Sign in">
             <div class="form-group">
                 <label class="form-label" for="email">Email</label>
                 <input
@@ -114,9 +117,10 @@
                     class="form-input"
                     placeholder="you@launchlocal.ca"
                     autocomplete="email"
+                    aria-describedby="email-error"
                     required
                 >
-                <p class="form-error" id="email-error">Please enter a valid email address.</p>
+                <p class="form-error" id="email-error" role="alert">Please enter a valid email address.</p>
             </div>
 
             <div class="form-group">
@@ -128,13 +132,14 @@
                         class="form-input"
                         placeholder="Enter your password"
                         autocomplete="current-password"
+                        aria-describedby="password-error"
                         required
                     >
                     <button type="button" class="password-toggle" id="password-toggle" aria-label="Toggle password visibility">
                         Show
                     </button>
                 </div>
-                <p class="form-error" id="password-error">Password is required.</p>
+                <p class="form-error" id="password-error" role="alert">Password is required.</p>
             </div>
 
             <button type="submit" class="btn btn-primary btn-block btn-lg" id="login-btn">
@@ -142,18 +147,21 @@
             </button>
         </form>
 
-        <div class="login-footer">
+        <footer class="login-footer">
             <p>Contact your admin if you need access.</p>
-        </div>
-    </div>
+        </footer>
+    </main>
 
     <!-- Toast Container -->
-    <div class="toast-container" id="toast-container"></div>
+    <div class="toast-container" id="toast-container" role="status" aria-live="polite" aria-atomic="false"></div>
 
     <!-- Firebase SDK (v9 compat) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+    <!-- Config (must load before any other app script) -->
+    <script src="js/config.js"></script>
 
     <!-- Utilities -->
     <script src="js/utils/theme.js"></script>
@@ -198,7 +206,10 @@
                 errorBanner.style.display = 'none';
 
                 document.querySelectorAll('.form-error').forEach(el => el.classList.remove('visible'));
-                document.querySelectorAll('.form-input').forEach(el => el.classList.remove('error'));
+                document.querySelectorAll('.form-input').forEach(el => {
+                    el.classList.remove('error');
+                    el.removeAttribute('aria-invalid');
+                });
 
                 const email = document.getElementById('email').value.trim();
                 const password = document.getElementById('password').value;
@@ -206,13 +217,17 @@
                 let hasError = false;
 
                 if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                    document.getElementById('email').classList.add('error');
+                    const emailEl = document.getElementById('email');
+                    emailEl.classList.add('error');
+                    emailEl.setAttribute('aria-invalid', 'true');
                     document.getElementById('email-error').classList.add('visible');
                     hasError = true;
                 }
 
                 if (!password) {
-                    document.getElementById('password').classList.add('error');
+                    const pwEl = document.getElementById('password');
+                    pwEl.classList.add('error');
+                    pwEl.setAttribute('aria-invalid', 'true');
                     document.getElementById('password-error').classList.add('visible');
                     hasError = true;
                 }
@@ -255,6 +270,7 @@
             document.querySelectorAll('.form-input').forEach(input => {
                 input.addEventListener('input', () => {
                     input.classList.remove('error');
+                    input.removeAttribute('aria-invalid');
                     const errorEl = input.closest('.form-group')?.querySelector('.form-error');
                     if (errorEl) errorEl.classList.remove('visible');
                     errorBanner.style.display = 'none';

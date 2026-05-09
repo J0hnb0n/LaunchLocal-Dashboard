@@ -15,6 +15,7 @@
  */
 
 const { auth: getAuth } = require('./admin');
+const { errorResponse, internalError, corsHeaders, rateLimitHeaders, preflight } = require('./errors');
 
 const SESSION_COOKIE_NAME = '__llSession';
 
@@ -67,22 +68,49 @@ async function requireUser(event) {
 
 /**
  * Wrap a function handler so unauth/uncaught errors return clean responses.
+ * Also handles OPTIONS preflight and folds CORS + rate-limit headers into
+ * every response (success and error alike).
+ *
+ * @param {Function} handler  the function-specific logic
+ * @param {object}   opts     { cors: corsOpts, rateLimit: number, label: string }
  */
-function withAuth(handler) {
+function withAuth(handler, opts = {}) {
+  const corsOpts = opts.cors || {};
+  const limit = opts.rateLimit || 60;
+  const label = opts.label || 'function';
+
   return async (event, context) => {
+    const requestOrigin = (event.headers && (event.headers.origin || event.headers.Origin)) || null;
+    const baseHeaders = {
+      ...corsHeaders({ ...corsOpts, requestOrigin }),
+      ...rateLimitHeaders(limit)
+    };
+
+    // Preflight short-circuit
+    const pf = preflight(event, corsOpts);
+    if (pf) return pf;
+
     try {
       const user = await requireUser(event);
-      return await handler(event, context, user);
-    } catch (err) {
-      const status = err.statusCode || (
-        err.code === 'auth/id-token-expired' || err.code === 'auth/session-cookie-expired'
-          ? 401 : 500
-      );
+      const result = await handler(event, context, user);
+      // Merge CORS + rate-limit headers onto whatever the handler returned.
       return {
-        statusCode: status,
-        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
-        body: JSON.stringify({ error: err.message || 'Server error' })
+        ...result,
+        headers: { ...baseHeaders, ...(result && result.headers) }
       };
+    } catch (err) {
+      // Authentication-related failures map to 401. Anything else is a 500
+      // — and we never leak the underlying message to the client.
+      if (err && err.statusCode === 401) {
+        return errorResponse(401, 'Not authenticated', baseHeaders);
+      }
+      if (err && (err.code === 'auth/id-token-expired' || err.code === 'auth/session-cookie-expired')) {
+        return errorResponse(401, 'Session expired', baseHeaders);
+      }
+      if (err && typeof err.code === 'string' && err.code.startsWith('auth/')) {
+        return errorResponse(401, 'Invalid credentials', baseHeaders);
+      }
+      return internalError(err, label, baseHeaders);
     }
   };
 }

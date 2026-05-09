@@ -18,6 +18,7 @@ const ProspectsModule = {
         container.innerHTML = this.getShellHTML();
         Icons.inject(container);
         this.bindEvents(container);
+        this.bindListDelegation(container);
         await this.loadProspects();
         return () => {
             this.prospects = [];
@@ -57,11 +58,11 @@ const ProspectsModule = {
             </div>
 
             <!-- Manual Prospect Entry Modal -->
-            <div class="modal-overlay" id="new-prospect-modal">
+            <div class="modal-overlay" id="new-prospect-modal" role="dialog" aria-modal="true" aria-labelledby="new-prospect-title">
                 <div class="modal modal-lg">
                     <div class="modal-header">
-                        <h3 class="modal-title">New Prospect</h3>
-                        <button class="modal-close" id="new-prospect-close">&times;</button>
+                        <h3 class="modal-title" id="new-prospect-title">New Prospect</h3>
+                        <button class="modal-close" id="new-prospect-close" aria-label="Close">&times;</button>
                     </div>
                     <div class="modal-body">
                         <form id="new-prospect-form" class="generate-form">
@@ -98,8 +99,8 @@ const ProspectsModule = {
                             </div>
                             <div class="form-group">
                                 <label class="form-label" for="np-website">Existing website</label>
-                                <input class="form-input" id="np-website" name="website" placeholder="https://… (leave blank if none)">
-                                <small class="form-hint">Leaving this blank scores the lead higher (no-website is the biggest opportunity signal).</small>
+                                <input class="form-input" id="np-website" name="website" placeholder="https://… (leave blank if none)" aria-describedby="np-website-hint">
+                                <small class="form-hint" id="np-website-hint">Leaving this blank scores the lead higher (no-website is the biggest opportunity signal).</small>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
@@ -181,28 +182,16 @@ const ProspectsModule = {
 
         list.innerHTML = `<div class="prospect-cards">${filtered.map((p) => this.renderCard(p)).join('')}</div>`;
 
-        list.querySelectorAll('.prospect-card').forEach((card) => {
-            card.addEventListener('click', (e) => {
-                if (e.target.closest('button, input, a, select, textarea')) return;
-                this.toggleExpand(card.getAttribute('data-id'));
-            });
-        });
-        list.querySelectorAll('.hot-toggle').forEach((btn) => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.toggleHotLead(btn.getAttribute('data-id'), btn.getAttribute('data-hot') === 'true');
-            });
-        });
-
+        // Delegated listener installed once per render() in bindListDelegation.
+        // Card-level click toggles expansion (handled in delegate).
         Icons.inject(list);
-        if (this.expandedId) this.bindExpandedHandlers(this.expandedId);
     },
 
     renderCard(p) {
         const scoreClass = this.getScoreClass(p.prospectScore);
         const hotBtn = p.hotLead
-            ? `<button class="hot-toggle hot-active" data-id="${p.id}" data-hot="true" title="Remove hot lead flag">&#9733;</button>`
-            : `<button class="hot-toggle" data-id="${p.id}" data-hot="false" title="Flag as hot lead">&#9734;</button>`;
+            ? `<button class="hot-toggle hot-active" data-action="toggle-hot" data-id="${p.id}" data-hot="true" title="Remove hot lead flag">&#9733;</button>`
+            : `<button class="hot-toggle" data-action="toggle-hot" data-id="${p.id}" data-hot="false" title="Flag as hot lead">&#9734;</button>`;
         const websiteChip = p.website
             ? `<span class="meta-chip ${p.website.startsWith('https') ? '' : 'chip-warn'}">${p.website.startsWith('https') ? '' : '&#9888;&nbsp;'}Has Website</span>`
             : `<span class="meta-chip chip-danger">No Website</span>`;
@@ -217,7 +206,7 @@ const ProspectsModule = {
         const expandedBody = isExpanded ? this.renderExpandedBody(p) : '';
 
         return `
-            <div class="prospect-card ${isExpanded ? 'expanded' : ''}" data-id="${p.id}">
+            <article class="prospect-card ${isExpanded ? 'expanded' : ''}" data-id="${p.id}" aria-label="Prospect: ${LaunchLocal.escapeHtml(p.businessName)}" aria-expanded="${isExpanded ? 'true' : 'false'}">
                 <div class="prospect-card-body">
                     <div class="prospect-card-info">
                         <div class="prospect-card-name">
@@ -233,12 +222,12 @@ const ProspectsModule = {
                         </div>
                     </div>
                     <div class="prospect-card-right">
-                        <div class="score-pill ${scoreClass}">${p.prospectScore}</div>
+                        <div class="score-pill ${scoreClass}" aria-label="Score: ${p.prospectScore}">${p.prospectScore}</div>
                         <div class="expand-caret" aria-hidden="true">${isExpanded ? '▲' : '▼'}</div>
                     </div>
                 </div>
                 ${expandedBody}
-            </div>
+            </article>
         `;
     },
 
@@ -264,12 +253,12 @@ const ProspectsModule = {
 
         const isArchived = p.status === 'archived';
         const actionButtons = isArchived
-            ? `<button class="btn btn-sm btn-secondary restore-btn" data-id="${p.id}">Restore to New</button>`
+            ? `<button class="btn btn-sm btn-secondary restore-btn" data-action="restore" data-id="${p.id}">Restore to New</button>`
             : `
-                <button class="btn btn-sm btn-primary approve-btn" data-id="${p.id}" title="Approve and move to Projects">
+                <button class="btn btn-sm btn-primary approve-btn" data-action="approve" data-id="${p.id}" title="Approve and move to Projects">
                     Approve &rarr;
                 </button>
-                <button class="btn btn-sm btn-ghost archive-btn" data-id="${p.id}">Archive</button>
+                <button class="btn btn-sm btn-ghost archive-btn" data-action="archive" data-id="${p.id}">Archive</button>
             `;
 
         return `
@@ -312,15 +301,15 @@ const ProspectsModule = {
                     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
                         <input type="date" class="form-input followup-date-input" data-id="${p.id}"
                             value="${p.nextFollowUp || ''}" style="max-width:180px;">
-                        <button class="btn btn-sm btn-primary followup-set-btn" data-id="${p.id}">Set</button>
-                        ${p.nextFollowUp ? `<button class="btn btn-sm btn-ghost followup-clear-btn" data-id="${p.id}">Clear</button>` : ''}
+                        <button class="btn btn-sm btn-primary followup-set-btn" data-action="followup-set" data-id="${p.id}">Set</button>
+                        ${p.nextFollowUp ? `<button class="btn btn-sm btn-ghost followup-clear-btn" data-action="followup-clear" data-id="${p.id}">Clear</button>` : ''}
                         ${followupChipHtml}
                     </div>
                 </div>
 
                 <div class="prospect-card-actions">
                     ${actionButtons}
-                    <button class="btn btn-sm btn-ghost timeline-btn" data-id="${p.id}">
+                    <button class="btn btn-sm btn-ghost timeline-btn" data-action="timeline" data-id="${p.id}">
                         <span data-icon="timeline"></span>Timeline
                     </button>
                 </div>
@@ -328,24 +317,49 @@ const ProspectsModule = {
         `;
     },
 
-    bindExpandedHandlers(id) {
-        const card = document.querySelector(`.prospect-card[data-id="${id}"]`);
-        if (!card) return;
-        Icons.inject(card);
+    /**
+     * Install a single delegated click listener on the prospect-list
+     * container. Replaces the previous pattern of attaching a listener to
+     * every card and every action button on each render() pass.
+     */
+    bindListDelegation(container) {
+        const list = container.querySelector('#prospect-list');
+        if (!list) return;
+        list.addEventListener('click', (e) => {
+            const actionEl = e.target.closest('[data-action]');
+            if (actionEl && list.contains(actionEl)) {
+                e.stopPropagation();
+                const id = actionEl.getAttribute('data-id');
+                const action = actionEl.getAttribute('data-action');
+                switch (action) {
+                    case 'toggle-hot': {
+                        const isHot = actionEl.getAttribute('data-hot') === 'true';
+                        this.toggleHotLead(id, isHot);
+                        return;
+                    }
+                    case 'approve':  this.changeStatus(id, 'approved'); return;
+                    case 'archive':  this.changeStatus(id, 'archived'); return;
+                    case 'restore':  this.changeStatus(id, 'new'); return;
+                    case 'timeline': window.location.hash = `#timeline?prospect=${id}`; return;
+                    case 'followup-set': {
+                        const card = actionEl.closest('.prospect-card');
+                        const date = card?.querySelector('.followup-date-input')?.value;
+                        if (!date) { LaunchLocal.toast('Please select a date.', 'warning'); return; }
+                        this.setFollowUp(id, date);
+                        return;
+                    }
+                    case 'followup-clear': this.setFollowUp(id, null); return;
+                }
+            }
 
-        card.querySelector('.approve-btn')?.addEventListener('click', () => this.changeStatus(id, 'approved'));
-        card.querySelector('.archive-btn')?.addEventListener('click', () => this.changeStatus(id, 'archived'));
-        card.querySelector('.restore-btn')?.addEventListener('click', () => this.changeStatus(id, 'new'));
-        card.querySelector('.timeline-btn')?.addEventListener('click', () => {
-            window.location.hash = `#timeline?prospect=${id}`;
+            // Card-level click toggles expansion. Skip when the click landed
+            // on an interactive descendant (input/select/textarea/anchor or
+            // any data-action element handled above).
+            const card = e.target.closest('.prospect-card');
+            if (!card || !list.contains(card)) return;
+            if (e.target.closest('button, input, a, select, textarea, [data-action]')) return;
+            this.toggleExpand(card.getAttribute('data-id'));
         });
-        card.querySelector('.followup-set-btn')?.addEventListener('click', () => {
-            const dateInput = card.querySelector('.followup-date-input');
-            const date = dateInput?.value;
-            if (!date) { LaunchLocal.toast('Please select a date.', 'warning'); return; }
-            this.setFollowUp(id, date);
-        });
-        card.querySelector('.followup-clear-btn')?.addEventListener('click', () => this.setFollowUp(id, null));
     },
 
     toggleExpand(id) {
@@ -517,7 +531,7 @@ const ProspectsModule = {
                 `created project for approved prospect ${p.businessName}`,
                 { prospectId: p.id }, projectId);
         } catch (err) {
-            console.warn('ensureProjectForProspect failed:', err);
+            window.log?.warn('ensureProjectForProspect failed:', err);
         }
     },
 

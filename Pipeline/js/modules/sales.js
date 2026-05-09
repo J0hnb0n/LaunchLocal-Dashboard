@@ -10,6 +10,7 @@ const SalesModule = {
         container.innerHTML = this.getShellHTML();
         await this.loadData();
         this.bindEvents(container);
+        this.bindQueueDelegation(container);
         return () => { this.prospects = []; this.sites = []; };
     },
 
@@ -45,32 +46,32 @@ const SalesModule = {
             </div>
 
             <!-- Pitch Brief Modal (tabs: Brief | Live Script | Comparison) -->
-            <div class="modal-overlay" id="cheatsheet-modal">
+            <div class="modal-overlay" id="cheatsheet-modal" role="dialog" aria-modal="true" aria-labelledby="cs-title">
                 <div class="modal modal-xl">
                     <div class="modal-header">
                         <h3 class="modal-title" id="cs-title">Pitch Brief</h3>
-                        <button class="modal-close" id="cs-close">&times;</button>
+                        <button class="modal-close" id="cs-close" aria-label="Close">&times;</button>
                     </div>
-                    <div class="modal-tabs" id="cs-tabs" role="tablist">
-                        <button class="modal-tab active" data-cstab="brief" role="tab">Brief</button>
-                        <button class="modal-tab" data-cstab="script" role="tab">Live Script</button>
-                        <button class="modal-tab" data-cstab="comparison" role="tab">Comparison</button>
+                    <div class="modal-tabs" id="cs-tabs" role="tablist" aria-label="Pitch brief sections">
+                        <button class="modal-tab active" data-cstab="brief" role="tab" aria-selected="true" aria-controls="cs-panel-brief" id="cs-tab-brief">Brief</button>
+                        <button class="modal-tab" data-cstab="script" role="tab" aria-selected="false" aria-controls="cs-panel-script" id="cs-tab-script" tabindex="-1">Live Script</button>
+                        <button class="modal-tab" data-cstab="comparison" role="tab" aria-selected="false" aria-controls="cs-panel-comparison" id="cs-tab-comparison" tabindex="-1">Comparison</button>
                     </div>
                     <div class="modal-body" id="cs-body">
-                        <div class="cs-tab-panel active" data-cspanel="brief"></div>
-                        <div class="cs-tab-panel" data-cspanel="script"></div>
-                        <div class="cs-tab-panel" data-cspanel="comparison"></div>
+                        <div class="cs-tab-panel active" data-cspanel="brief" id="cs-panel-brief" role="tabpanel" aria-labelledby="cs-tab-brief"></div>
+                        <div class="cs-tab-panel" data-cspanel="script" id="cs-panel-script" role="tabpanel" aria-labelledby="cs-tab-script" hidden></div>
+                        <div class="cs-tab-panel" data-cspanel="comparison" id="cs-panel-comparison" role="tabpanel" aria-labelledby="cs-tab-comparison" hidden></div>
                     </div>
                     <div class="modal-footer" id="cs-footer"></div>
                 </div>
             </div>
 
             <!-- Log Visit Modal -->
-            <div class="modal-overlay" id="visit-modal">
+            <div class="modal-overlay" id="visit-modal" role="dialog" aria-modal="true" aria-labelledby="visit-title">
                 <div class="modal">
                     <div class="modal-header">
                         <h3 class="modal-title" id="visit-title">Log Visit</h3>
-                        <button class="modal-close" id="visit-close">&times;</button>
+                        <button class="modal-close" id="visit-close" aria-label="Close">&times;</button>
                     </div>
                     <div class="modal-body" id="visit-body"></div>
                     <div class="modal-footer" id="visit-footer"></div>
@@ -138,17 +139,8 @@ const SalesModule = {
             </div>
         `;
 
-        if (isPitch) {
-            el.querySelectorAll('.cheatsheet-btn').forEach(btn =>
-                btn.addEventListener('click', () => this.openCheatsheet(btn.getAttribute('data-id'))));
-            el.querySelectorAll('.pitched-btn').forEach(btn =>
-                btn.addEventListener('click', () => this.moveStatus(btn.getAttribute('data-id'), 'pitched')));
-        } else {
-            el.querySelectorAll('.sold-btn').forEach(btn =>
-                btn.addEventListener('click', () => this.moveStatus(btn.getAttribute('data-id'), 'sold')));
-        }
-        el.querySelectorAll('.visit-btn').forEach(btn =>
-            btn.addEventListener('click', () => this.openVisitLog(btn.getAttribute('data-id'))));
+        // Per-row click handlers are installed once via bindQueueDelegation()
+        // on the module container. No re-binding needed on each renderQueues() pass.
     },
 
     renderRow(p, isPitch) {
@@ -175,10 +167,10 @@ const SalesModule = {
                 <td>
                     <div style="display:flex;gap:6px;flex-wrap:wrap;">
                         ${siteLinkBtn}
-                        ${isPitch ? `<button class="btn btn-primary btn-sm cheatsheet-btn" data-id="${p.id}">Cheat Sheet</button>` : ''}
-                        <button class="btn btn-secondary btn-sm visit-btn" data-id="${p.id}">Log Visit</button>
-                        ${isPitch ? `<button class="btn btn-secondary btn-sm pitched-btn" data-id="${p.id}">Mark Pitched</button>` : ''}
-                        ${!isPitch ? `<button class="btn btn-success btn-sm sold-btn" data-id="${p.id}">Mark Sold</button>` : ''}
+                        ${isPitch ? `<button class="btn btn-primary btn-sm cheatsheet-btn" data-action="cheatsheet" data-id="${p.id}">Cheat Sheet</button>` : ''}
+                        <button class="btn btn-secondary btn-sm visit-btn" data-action="visit" data-id="${p.id}">Log Visit</button>
+                        ${isPitch ? `<button class="btn btn-secondary btn-sm pitched-btn" data-action="pitched" data-id="${p.id}">Mark Pitched</button>` : ''}
+                        ${!isPitch ? `<button class="btn btn-success btn-sm sold-btn" data-action="sold" data-id="${p.id}">Mark Sold</button>` : ''}
                     </div>
                 </td>
             </tr>
@@ -211,27 +203,51 @@ const SalesModule = {
             onAvgTicketChange: (prospectId, val) => this.persistAvgTicket(prospectId, val)
         });
 
-        // Tab switching
+        // Tab switching (with WAI-ARIA tabs pattern: aria-selected, tabindex, hidden panels)
         const tabs = modal.querySelectorAll('.modal-tab');
         const panels = modal.querySelectorAll('.cs-tab-panel');
+        const activate = (t) => {
+            const target = t.getAttribute('data-cstab');
+            tabs.forEach(x => {
+                const isActive = x === t;
+                x.classList.toggle('active', isActive);
+                x.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                x.setAttribute('tabindex', isActive ? '0' : '-1');
+            });
+            panels.forEach(x => {
+                const matches = x.getAttribute('data-cspanel') === target;
+                x.classList.toggle('active', matches);
+                if (matches) x.removeAttribute('hidden'); else x.setAttribute('hidden', '');
+            });
+            // Re-render script tab if avg ticket changed in another tab session
+            if (target === 'script') {
+                const fresh = this.prospects.find(x => x.id === p.id) || p;
+                scriptPanel.innerHTML = LaunchLocal.SalesScript.render(fresh);
+                LaunchLocal.SalesScript.bind(scriptPanel, {
+                    onAvgTicketChange: (pid, v) => this.persistAvgTicket(pid, v)
+                });
+            }
+        };
         tabs.forEach(t => {
-            t.onclick = () => {
-                const target = t.getAttribute('data-cstab');
-                tabs.forEach(x => x.classList.toggle('active', x === t));
-                panels.forEach(x => x.classList.toggle('active', x.getAttribute('data-cspanel') === target));
-                // Re-render script tab if avg ticket changed in another tab session
-                if (target === 'script') {
-                    const fresh = this.prospects.find(x => x.id === p.id) || p;
-                    scriptPanel.innerHTML = LaunchLocal.SalesScript.render(fresh);
-                    LaunchLocal.SalesScript.bind(scriptPanel, {
-                        onAvgTicketChange: (pid, v) => this.persistAvgTicket(pid, v)
-                    });
-                }
-            };
+            t.onclick = () => activate(t);
+            // Arrow-key roving tabindex for the tablist
+            t.addEventListener('keydown', (e) => {
+                const keys = ['ArrowRight', 'ArrowLeft', 'Home', 'End'];
+                if (!keys.includes(e.key)) return;
+                e.preventDefault();
+                const list = Array.from(tabs);
+                const idx = list.indexOf(t);
+                let next = idx;
+                if (e.key === 'ArrowRight') next = (idx + 1) % list.length;
+                if (e.key === 'ArrowLeft')  next = (idx - 1 + list.length) % list.length;
+                if (e.key === 'Home') next = 0;
+                if (e.key === 'End')  next = list.length - 1;
+                list[next].focus();
+                activate(list[next]);
+            });
         });
         // Default to Brief tab on every open
-        tabs.forEach((t, i) => t.classList.toggle('active', i === 0));
-        panels.forEach((x, i) => x.classList.toggle('active', i === 0));
+        if (tabs[0]) activate(tabs[0]);
 
         // Footer
         const siteUrl = this.getSiteUrlForProspect(p.id);
@@ -365,7 +381,7 @@ const SalesModule = {
             if (p) p.avgTicket = value;
         } catch {
             // Non-critical — don't toast on every keystroke. Console is enough.
-            console.warn('Failed to persist avgTicket', prospectId, value);
+            window.log?.warn('Failed to persist avgTicket', prospectId, value);
         }
     },
 
@@ -506,7 +522,7 @@ const SalesModule = {
                 `created project for new client ${p.businessName}`,
                 { prospectId: p.id }, projectId);
         } catch (err) {
-            console.warn('ensureProjectForProspect failed:', err);
+            window.log?.warn('ensureProjectForProspect failed:', err);
         }
     },
 
@@ -544,6 +560,28 @@ const SalesModule = {
             container.querySelector(sel)?.addEventListener('click', e => {
                 if (e.target === e.currentTarget) e.target.classList.remove('open');
             });
+        });
+    },
+
+    /**
+     * Single delegated click listener for both pitch + follow-up queues.
+     * Replaces the previous pattern of attaching listeners to every row
+     * action button on each renderQueues() pass.
+     */
+    bindQueueDelegation(container) {
+        container.addEventListener('click', (e) => {
+            const actionEl = e.target.closest('[data-action]');
+            if (!actionEl) return;
+            // Only handle actions that originate inside the queue tables
+            if (!actionEl.closest('#pitch-queue, #followup-queue')) return;
+            const id = actionEl.getAttribute('data-id');
+            if (!id) return;
+            switch (actionEl.getAttribute('data-action')) {
+                case 'cheatsheet': this.openCheatsheet(id); break;
+                case 'visit':      this.openVisitLog(id); break;
+                case 'pitched':    this.moveStatus(id, 'pitched'); break;
+                case 'sold':       this.moveStatus(id, 'sold'); break;
+            }
         });
     }
 };

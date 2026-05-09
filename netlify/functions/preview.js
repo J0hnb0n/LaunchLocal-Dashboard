@@ -15,10 +15,19 @@
  *
  * Auth: requires a valid __llSession cookie OR Authorization: Bearer.
  * Set up via /api/session on dashboard login.
+ *
+ * Path-traversal hardening (defense in depth):
+ *   - Reject `..` raw or URL-encoded (single + double encoded)
+ *   - Reject null bytes (`\0`, `%00`)
+ *   - Reject backslashes (`\\`, `%5c`) — Storage uses forward slash only
+ *   - Decode once, re-check; then verify final path starts with sites/{slug}/
+ *   - Slug must match strict pattern (Title-Case-Hyphen + safe chars)
  */
 
+const path = require('path');
 const { bucket } = require('./_shared/admin');
 const { withAuth } = require('./_shared/auth');
+const { errorResponse } = require('./_shared/errors');
 
 const CONTENT_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -74,20 +83,92 @@ function parsePath(eventPath) {
 
 const SLUG_RE = /^[A-Za-z0-9][A-Za-z0-9_\-]*$/;
 
+// Patterns that are NEVER allowed in a path segment, regardless of encoding.
+// We test these against both the raw and (iteratively) decoded forms.
+const TRAVERSAL_PATTERNS = [
+  /\.\./,                 // literal ..
+  /\\/,                   // backslash
+  /\0/,                   // null byte
+  /%2e%2e/i,              // encoded ..
+  /%2f/i,                 // encoded forward slash inside a segment is suspect
+  /%5c/i,                 // encoded backslash
+  /%00/i                  // encoded null
+];
+
+/**
+ * Decode a URL-encoded string up to N times, stopping when no further
+ * decoding changes it. Returns null if decoding ever throws (malformed
+ * percent escape) — the caller should treat that as a hard reject.
+ */
+function decodeIteratively(input, maxIterations = 3) {
+  let cur = input;
+  for (let i = 0; i < maxIterations; i++) {
+    let next;
+    try {
+      next = decodeURIComponent(cur);
+    } catch {
+      return null;
+    }
+    if (next === cur) return cur;
+    cur = next;
+  }
+  return cur;
+}
+
+/**
+ * Returns true if the path contains any traversal/control character we
+ * refuse to serve, in either raw or decoded form.
+ */
+function isUnsafePath(rest) {
+  if (typeof rest !== 'string' || rest.length === 0) return true;
+
+  // Check raw form — catches percent-encoded attacks before decoding.
+  for (const pat of TRAVERSAL_PATTERNS) {
+    if (pat.test(rest)) return true;
+  }
+
+  // Decode iteratively to defeat double-encoding (e.g., %252e%252e).
+  const decoded = decodeIteratively(rest);
+  if (decoded === null) return true;
+
+  // Re-check decoded form — same patterns.
+  for (const pat of TRAVERSAL_PATTERNS) {
+    if (pat.test(decoded)) return true;
+  }
+
+  // Defense in depth: posix-normalize the decoded path and ensure it doesn't
+  // climb out of its own root. path.posix.normalize collapses ../ if any
+  // slipped through unicode/percent shenanigans.
+  const normalized = path.posix.normalize(decoded);
+  if (normalized.startsWith('..') || normalized.startsWith('/') || normalized.includes('../')) {
+    return true;
+  }
+
+  return false;
+}
+
 exports.handler = withAuth(async (event) => {
   if (event.httpMethod !== 'GET' && event.httpMethod !== 'HEAD') {
-    return jsonResponse(405, { error: 'Method not allowed' });
+    return errorResponse(405, 'Method not allowed');
   }
 
   const { slug, rest } = parsePath(event.path);
   if (!slug || !SLUG_RE.test(slug)) {
-    return jsonResponse(400, { error: 'Invalid slug' });
+    return errorResponse(400, 'Invalid slug');
   }
-  if (rest.includes('..')) {
-    return jsonResponse(400, { error: 'Invalid path' });
+  if (isUnsafePath(rest)) {
+    return errorResponse(400, 'Invalid path');
   }
 
   const objectPath = `sites/${slug}/${rest}`;
+
+  // Final sanity check: after normalization, the resolved object path must
+  // still live under sites/{slug}/. If it doesn't, somebody got creative.
+  const normalizedFull = path.posix.normalize(objectPath);
+  if (!normalizedFull.startsWith(`sites/${slug}/`)) {
+    return errorResponse(400, 'Invalid path');
+  }
+
   const file = bucket().file(objectPath);
 
   let metadata;
@@ -95,8 +176,10 @@ exports.handler = withAuth(async (event) => {
     [metadata] = await file.getMetadata();
   } catch (err) {
     if (err && err.code === 404) {
-      return jsonResponse(404, { error: 'Not found', path: objectPath });
+      return errorResponse(404, 'Not found');
     }
+    // eslint-disable-next-line no-console
+    console.error('[preview] metadata error', err && err.code, err && err.message);
     throw err;
   }
 
@@ -106,7 +189,8 @@ exports.handler = withAuth(async (event) => {
       headers: {
         'Content-Type': contentTypeFor(rest, metadata.contentType),
         'Content-Length': String(metadata.size || 0),
-        'Cache-Control': 'private, max-age=60'
+        'Cache-Control': 'private, max-age=60',
+        'X-Content-Type-Options': 'nosniff'
       },
       body: ''
     };
@@ -135,12 +219,8 @@ exports.handler = withAuth(async (event) => {
     body: isText ? buffer.toString('utf8') : buffer.toString('base64'),
     isBase64Encoded: !isText
   };
+}, {
+  cors: { methods: ['GET', 'HEAD'], headers: ['Authorization'], credentials: true },
+  rateLimit: 120,
+  label: 'preview'
 });
-
-function jsonResponse(statusCode, body) {
-  return {
-    statusCode,
-    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
-    body: JSON.stringify(body)
-  };
-}

@@ -118,40 +118,40 @@ const DashboardModule = {
                 </div>
             </div>
 
-            <div class="kpi-grid">
-                <div class="kpi-card" id="kpi-prospects">
+            <section class="kpi-grid" aria-label="Key metrics" aria-live="polite">
+                <article class="kpi-card" id="kpi-prospects">
                     <div class="kpi-card-header">
                         <span class="kpi-card-label">Prospects</span>
-                        <div class="kpi-card-icon blue" data-icon="search"></div>
+                        <div class="kpi-card-icon blue" data-icon="search" aria-hidden="true"></div>
                     </div>
                     <div class="kpi-card-value"><div class="skeleton skeleton-heading" style="width:60px;height:32px;"></div></div>
                     <div class="kpi-card-change"><div class="skeleton skeleton-text" style="width:80px;"></div></div>
-                </div>
-                <div class="kpi-card" id="kpi-sites">
+                </article>
+                <article class="kpi-card" id="kpi-sites">
                     <div class="kpi-card-header">
                         <span class="kpi-card-label">Sites</span>
-                        <div class="kpi-card-icon green" data-icon="monitor"></div>
+                        <div class="kpi-card-icon green" data-icon="monitor" aria-hidden="true"></div>
                     </div>
                     <div class="kpi-card-value"><div class="skeleton skeleton-heading" style="width:60px;height:32px;"></div></div>
                     <div class="kpi-card-change"><div class="skeleton skeleton-text" style="width:80px;"></div></div>
-                </div>
-                <div class="kpi-card" id="kpi-projects">
+                </article>
+                <article class="kpi-card" id="kpi-projects">
                     <div class="kpi-card-header">
                         <span class="kpi-card-label">Projects</span>
-                        <div class="kpi-card-icon amber" data-icon="folder"></div>
+                        <div class="kpi-card-icon amber" data-icon="folder" aria-hidden="true"></div>
                     </div>
                     <div class="kpi-card-value"><div class="skeleton skeleton-heading" style="width:60px;height:32px;"></div></div>
                     <div class="kpi-card-change"><div class="skeleton skeleton-text" style="width:80px;"></div></div>
-                </div>
-                <div class="kpi-card" id="kpi-revenue">
+                </article>
+                <article class="kpi-card" id="kpi-revenue">
                     <div class="kpi-card-header">
                         <span class="kpi-card-label">Revenue (MTD)</span>
-                        <div class="kpi-card-icon purple" data-icon="trendUp"></div>
+                        <div class="kpi-card-icon purple" data-icon="trendUp" aria-hidden="true"></div>
                     </div>
                     <div class="kpi-card-value"><div class="skeleton skeleton-heading" style="width:100px;height:32px;"></div></div>
                     <div class="kpi-card-change"><div class="skeleton skeleton-text" style="width:80px;"></div></div>
-                </div>
-            </div>
+                </article>
+            </section>
 
             <div class="dashboard-grid">
                 <div class="card">
@@ -173,15 +173,15 @@ const DashboardModule = {
                         </div>
                     </div>
                 </div>
-                <div class="card full-width">
-                    <div class="card-header">
-                        <h3 class="card-title"><span data-icon="activity"></span>&nbsp;Recent Activity</h3>
+                <section class="card full-width" aria-labelledby="dash-activity-title">
+                    <header class="card-header">
+                        <h3 class="card-title" id="dash-activity-title"><span data-icon="activity" aria-hidden="true"></span>&nbsp;Recent Activity</h3>
                         <span class="chip">Live</span>
+                    </header>
+                    <div class="card-body" id="activity-feed" role="log" aria-live="polite" aria-atomic="false" aria-relevant="additions">
+                        <div class="loading-screen" style="min-height:80px;"><div class="spinner" aria-hidden="true"></div></div>
                     </div>
-                    <div class="card-body" id="activity-feed">
-                        <div class="loading-screen" style="min-height:80px;"><div class="spinner"></div></div>
-                    </div>
-                </div>
+                </section>
             </div>
         `;
     },

@@ -31,6 +31,22 @@
     to   { transform: translateX(100%); opacity: 0; }
 }
 
+/* On mobile, toasts dock to the bottom — slide vertically instead of horizontally */
+@keyframes toastSlideInBottom {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes toastSlideOutBottom {
+    from { transform: translateY(0);    opacity: 1; }
+    to   { transform: translateY(100%); opacity: 0; }
+}
+
+@media (max-width: 768px) {
+    .toast        { animation-name: toastSlideInBottom; }
+    .toast.toast-exit { animation-name: toastSlideOutBottom; }
+}
+
 @keyframes shimmer {
     0%   { background-position: 200% 0; }
     100% { background-position: -200% 0; }

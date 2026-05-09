@@ -36,6 +36,14 @@
     outline-offset: 2px;
 }
 
+/* Disabled button while waiting on a network call */
+.btn[aria-busy="true"],
+.btn[data-loading="true"] {
+    opacity: 0.7;
+    cursor: progress;
+    pointer-events: none;
+}
+
 .btn:disabled,
 .btn.btn-loading {
     opacity: 0.55;
@@ -166,8 +174,9 @@
 .card {
     background: var(--bg-surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: var(--space-5);
+    border-radius: var(--card-radius);
+    padding: var(--card-padding);
+    box-shadow: var(--shadow-card);
     transition: border-color var(--transition-fast),
                 box-shadow var(--transition-fast),
                 transform var(--transition-fast);
@@ -177,7 +186,7 @@
 
 .card.card-interactive:hover {
     border-color: var(--border-strong);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-card-hover);
     transform: translateY(-2px);
 }
 
@@ -211,8 +220,9 @@
 .kpi-card {
     background: var(--bg-surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: var(--space-5);
+    border-radius: var(--card-radius);
+    padding: var(--card-padding);
+    box-shadow: var(--shadow-card);
     transition: border-color var(--transition-fast),
                 box-shadow var(--transition-fast),
                 transform var(--transition-fast);
@@ -230,7 +240,7 @@
 
 .kpi-card:hover {
     border-color: var(--border-strong);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-card-hover);
     transform: translateY(-2px);
 }
 
@@ -314,10 +324,19 @@
 
 .form-input:hover { border-color: var(--text-muted); }
 
+/* Always tint border on focus (cheap visual cue) */
 .form-input:focus {
+    border-color: var(--accent);
+    background: var(--bg-surface);
+    outline: none;
+}
+
+/* Strong focus ring only for keyboard users */
+.form-input:focus-visible {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-soft);
     background: var(--bg-surface);
+    outline: none;
 }
 
 .form-input:disabled {
@@ -547,8 +566,8 @@ select.form-input {
 }
 
 .modal-close {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -557,11 +576,25 @@ select.form-input {
     transition: background var(--transition-fast), color var(--transition-fast);
     font-size: 1.125rem;
     line-height: 1;
+    position: relative;
+    cursor: pointer;
+}
+
+/* Invisible 44x44 hit-area overlay so the visible 32px close keeps the design tight */
+.modal-close::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
 }
 
 .modal-close:hover {
     background: var(--bg-surface-2);
     color: var(--text-primary);
+}
+
+.modal-close:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
 }
 
 .modal-body { padding: var(--space-5); }
@@ -578,8 +611,11 @@ select.form-input {
 }
 
 
-/* --- Loading Spinner --- */
-.spinner {
+/* --- Loading Spinner ---
+   .spinner is the canonical class. .loading-spinner is an alias kept for
+   external callers / templates that follow the convention name. */
+.spinner,
+.loading-spinner {
     display: inline-block;
     width: 18px;
     height: 18px;
@@ -746,7 +782,7 @@ select.form-input {
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    padding: 8px 12px;
+    padding: 10px 12px;
     font-size: var(--font-size-sm);
     color: var(--text-primary);
     cursor: pointer;
@@ -756,9 +792,15 @@ select.form-input {
     background: transparent;
     width: 100%;
     text-align: left;
+    min-height: 36px;
 }
 
 .dropdown-item:hover { background: var(--bg-surface-2); }
+.dropdown-item:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+    background: var(--bg-surface-2);
+}
 
 .dropdown-item svg {
     width: 15px;
@@ -877,6 +919,11 @@ select.form-input {
 
 .segmented-btn:hover { color: var(--text-primary); }
 
+.segmented-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
 .segmented-btn.active {
     background: var(--bg-surface);
     color: var(--text-primary);
@@ -912,3 +959,35 @@ select.form-input {
 .chip-danger { background: var(--danger-dim); color: var(--danger); border-color: var(--danger-border); font-weight: 600; }
 .chip-warn   { background: var(--warning-dim); color: var(--warning); border-color: var(--warning-border); }
 .chip-success{ background: var(--success-dim); color: var(--success); border-color: var(--success-border); }
+
+
+/* a11y — skip-to-content link.
+   Visually hidden until keyboard focus reveals it at top-left.
+   Pairs with #main-content target in index.html and dashboard.html. */
+.skip-to-content {
+    position: absolute;
+    left: -9999px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    z-index: 9999;
+}
+
+.skip-to-content:focus {
+    position: fixed;
+    left: 12px;
+    top: 12px;
+    width: auto;
+    height: auto;
+    padding: 10px 16px;
+    background: var(--accent);
+    color: var(--bg-base, #0b0b14);
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    text-decoration: none;
+    outline: 2px solid var(--accent-border);
+    outline-offset: 2px;
+}

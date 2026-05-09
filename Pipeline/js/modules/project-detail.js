@@ -123,51 +123,51 @@ const ProjectDetailModule = {
             </div>
 
             <!-- Borrowed modals from SitesModule for prompt gen / QA review -->
-            <div class="modal-overlay" id="qa-modal">
+            <div class="modal-overlay" id="qa-modal" role="dialog" aria-modal="true" aria-labelledby="qa-modal-title">
                 <div class="modal modal-lg">
                     <div class="modal-header">
                         <h3 class="modal-title" id="qa-modal-title">QA Review</h3>
-                        <button class="modal-close" id="qa-modal-close">&times;</button>
+                        <button class="modal-close" id="qa-modal-close" aria-label="Close">&times;</button>
                     </div>
                     <div class="modal-body" id="qa-modal-body"></div>
                     <div class="modal-footer" id="qa-modal-footer"></div>
                 </div>
             </div>
-            <div class="modal-overlay" id="generate-modal">
+            <div class="modal-overlay" id="generate-modal" role="dialog" aria-modal="true" aria-labelledby="generate-modal-title">
                 <div class="modal modal-xl">
                     <div class="modal-header">
                         <h3 class="modal-title" id="generate-modal-title">Generate Site Prompt</h3>
-                        <button class="modal-close" id="generate-modal-close">&times;</button>
+                        <button class="modal-close" id="generate-modal-close" aria-label="Close">&times;</button>
                     </div>
                     <div class="modal-body" id="generate-modal-body"></div>
                     <div class="modal-footer" id="generate-modal-footer"></div>
                 </div>
             </div>
-            <div class="modal-overlay" id="prompt-result-modal">
+            <div class="modal-overlay" id="prompt-result-modal" role="dialog" aria-modal="true" aria-labelledby="prompt-result-title">
                 <div class="modal modal-xl">
                     <div class="modal-header">
-                        <h3 class="modal-title">Prompt Ready — Copy to Claude Code</h3>
-                        <button class="modal-close" id="prompt-result-close">&times;</button>
+                        <h3 class="modal-title" id="prompt-result-title">Prompt Ready — Copy to Claude Code</h3>
+                        <button class="modal-close" id="prompt-result-close" aria-label="Close">&times;</button>
                     </div>
                     <div class="modal-body" id="prompt-result-body"></div>
                     <div class="modal-footer" id="prompt-result-footer"></div>
                 </div>
             </div>
-            <div class="modal-overlay" id="visit-modal">
+            <div class="modal-overlay" id="visit-modal" role="dialog" aria-modal="true" aria-labelledby="visit-title">
                 <div class="modal">
                     <div class="modal-header">
                         <h3 class="modal-title" id="visit-title">Log Visit</h3>
-                        <button class="modal-close" id="visit-close">&times;</button>
+                        <button class="modal-close" id="visit-close" aria-label="Close">&times;</button>
                     </div>
                     <div class="modal-body" id="visit-body"></div>
                     <div class="modal-footer" id="visit-footer"></div>
                 </div>
             </div>
-            <div class="modal-overlay" id="invoice-modal">
+            <div class="modal-overlay" id="invoice-modal" role="dialog" aria-modal="true" aria-labelledby="invoice-modal-title">
                 <div class="modal">
                     <div class="modal-header">
-                        <h3 class="modal-title">New Invoice</h3>
-                        <button class="modal-close" id="invoice-modal-close">&times;</button>
+                        <h3 class="modal-title" id="invoice-modal-title">New Invoice</h3>
+                        <button class="modal-close" id="invoice-modal-close" aria-label="Close">&times;</button>
                     </div>
                     <div class="modal-body" id="invoice-modal-body"></div>
                     <div class="modal-footer" id="invoice-modal-footer"></div>

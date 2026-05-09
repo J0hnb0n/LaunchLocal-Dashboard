@@ -36,9 +36,10 @@ const Router = {
     init() {
         window.addEventListener('hashchange', () => this.handleRoute());
 
-        // Navigate to current hash or default to #dashboard
+        const defaultRoute = (window.AppConfig && window.AppConfig.DEFAULT_ROUTE) || '#dashboard';
+        // Navigate to current hash or default route
         if (!window.location.hash || window.location.hash === '#') {
-            window.location.hash = '#dashboard';
+            window.location.hash = defaultRoute;
         } else {
             this.handleRoute();
         }
@@ -50,13 +51,15 @@ const Router = {
      */
     async handleRoute() {
         // Strip any query params from hash so #timeline?project=xyz → timeline
-        const rawHash = window.location.hash.replace('#', '') || 'dashboard';
+        const defaultRoute = (window.AppConfig && window.AppConfig.DEFAULT_ROUTE) || '#dashboard';
+        const defaultHash = defaultRoute.replace(/^#/, '') || 'dashboard';
+        const rawHash = window.location.hash.replace('#', '') || defaultHash;
         const hash = rawHash.split('?')[0];
         const route = this.routes[hash];
 
-        // If route doesn't exist, redirect to dashboard
+        // If route doesn't exist, redirect to default route
         if (!route) {
-            window.location.hash = '#dashboard';
+            window.location.hash = defaultRoute;
             return;
         }
 
@@ -65,7 +68,7 @@ const Router = {
             const userRole = LaunchLocal.currentUser?.role;
             if (!route.roles.includes(userRole)) {
                 LaunchLocal.toast('You don\'t have access to that module.', 'warning');
-                window.location.hash = '#dashboard';
+                window.location.hash = defaultRoute;
                 return;
             }
         }
@@ -81,7 +84,7 @@ const Router = {
             try {
                 this.currentCleanup();
             } catch (err) {
-                console.warn('Module cleanup error:', err);
+                window.log?.warn('Module cleanup error:', err);
             }
         }
         this.currentCleanup = null;
@@ -118,12 +121,17 @@ const Router = {
             if (typeof cleanup === 'function') {
                 this.currentCleanup = cleanup;
             }
-            // Fade-in transition after render
-            // Force reflow so the animation restarts on each navigation
-            void content.offsetWidth;
-            content.classList.add('module-enter');
+            // Fade-in transition after render — use double-rAF to schedule the
+            // class change on the next frame after the previous removal. This
+            // avoids a synchronous forced layout (was: `void content.offsetWidth`)
+            // and still reliably restarts the CSS animation between navigations.
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    content.classList.add('module-enter');
+                });
+            });
             // Hydrate any data-icon elements rendered by the module
-            if (window.Icons && typeof Icons.inject === 'function') Icons.inject(content);
+            this._scheduleIconInject(content);
         } catch (error) {
             console.error(`Failed to render module "${hash}":`, error);
             const alertIcon = window.Icons ? Icons.get('alert', 22) : '&#9888;';
@@ -152,5 +160,25 @@ const Router = {
     reload() {
         this.currentRoute = null;
         this.handleRoute();
+    },
+
+    /**
+     * Debounce Icons.inject() across rapid successive calls within the same
+     * frame. Modules sometimes trigger multiple injects (initial render, then
+     * Icons.inject(list) inside renderList(), etc.) — coalescing them
+     * eliminates redundant DOM walks. Called from handleRoute(); modules can
+     * still call Icons.inject() directly if they need synchronous injection
+     * for measurement or animation purposes.
+     * @private
+     * @param {HTMLElement} target
+     */
+    _scheduleIconInject(target) {
+        if (!window.Icons || typeof Icons.inject !== 'function') return;
+        if (this._iconInjectScheduled) return;
+        this._iconInjectScheduled = true;
+        requestAnimationFrame(() => {
+            this._iconInjectScheduled = false;
+            try { Icons.inject(target); } catch (err) { window.log?.warn('Icons.inject error:', err); }
+        });
     }
 };

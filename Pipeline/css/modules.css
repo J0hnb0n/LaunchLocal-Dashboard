@@ -723,7 +723,7 @@ td.td-sub {
     gap: var(--space-4);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
     .cheatsheet-grid,
     .comparison-grid { grid-template-columns: 1fr; }
     .cs-full, .cs-pricing-section { grid-column: 1; }
@@ -1068,8 +1068,13 @@ td.td-sub {
     gap: var(--space-3);
 }
 
-@media (max-width: 1024px) { .commission-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 600px)  { .commission-grid { grid-template-columns: 1fr; } }
+@media (max-width: 1024px) {
+    .commission-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .commission-grid { grid-template-columns: 1fr; }
+}
 
 .commission-item {
     padding: var(--space-4);
@@ -1270,7 +1275,7 @@ td.td-sub {
     box-shadow: 0 1px 3px rgba(0,0,0,0.25);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
     .scout-layout { grid-template-columns: 1fr; }
     .scout-map-container { height: 360px; }
 }
@@ -1343,7 +1348,7 @@ td.td-sub {
     gap: var(--space-3);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
     .generate-form .form-row { grid-template-columns: 1fr; }
 }
 
@@ -1703,7 +1708,7 @@ td.td-sub {
     cursor: pointer;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
     .hours-row {
         grid-template-columns: 44px 1fr 1fr;
         grid-template-rows: auto auto;
@@ -2059,7 +2064,7 @@ td.td-sub {
     gap: var(--space-4);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
     .metrics-grid {
         grid-template-columns: 1fr;
     }
