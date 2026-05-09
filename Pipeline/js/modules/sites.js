@@ -535,11 +535,32 @@ const SitesModule = {
                 try { await DB.updateDoc('prospects', s.prospectId, { status: 'site-ready' }); } catch {}
             }
 
+            // Pull pitch-ready prospect back out of the sales queue if a
+            // revision is requested — sales should not pitch a broken site.
+            // Only revert when the prospect is currently `site-ready`; if the
+            // operator already moved it forward (pitched/sold), leave alone.
+            let revertedProspect = false;
+            if (status === 'revision-needed' && s.prospectId) {
+                try {
+                    const prospect = await DB.getDoc('prospects', s.prospectId);
+                    if (prospect && prospect.status === 'site-ready') {
+                        await DB.updateDoc('prospects', s.prospectId, { status: 'site-queued' });
+                        await DB.logActivity('site_reverted_to_queue', 'sites',
+                            `${s.businessName}: site reverted to queue — revision needed before pitching`,
+                            { siteId: id, fromStatus: 'site-ready', toStatus: 'site-queued' }, s.prospectId);
+                        revertedProspect = true;
+                    }
+                } catch { /* non-blocking — QA save already succeeded */ }
+            }
+
             s.qaStatus = status;
             s.qaFeedback = feedback;
             this.renderContent();
+            const revisionToast = revertedProspect
+                ? 'Pitch queue updated — revision needed before pitching'
+                : `Revision requested for ${s.businessName}.`;
             LaunchLocal.toast(
-                status === 'approved' ? `${s.businessName} approved — prospect marked site-ready.` : `Revision requested for ${s.businessName}.`,
+                status === 'approved' ? `${s.businessName} approved — prospect marked site-ready.` : revisionToast,
                 status === 'approved' ? 'success' : 'warning'
             );
         } catch {

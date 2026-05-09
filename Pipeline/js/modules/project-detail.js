@@ -1466,6 +1466,7 @@ const ProjectDetailModule = {
 
     async createInvoice() {
         const proj = this.project;
+        const prospect = this.prospect;
         const amount = parseFloat(document.getElementById('inv-amount').value);
         const type = document.getElementById('inv-type').value;
         const due = document.getElementById('inv-due').value;
@@ -1483,9 +1484,18 @@ const ProjectDetailModule = {
             const amountCents = Math.round(amount * 100);
             const rate = type === 'project' ? 0.15 : 0.10;
             const today = new Date().toISOString().slice(0, 10);
+            // Commission attribution: the prospect's assigned sales rep wins
+            // (so admins creating invoices on behalf of reps don't steal
+            // commission). Falls back to the project's assignedTo if set,
+            // and finally to whoever is creating the invoice.
+            const salesRepId = prospect?.assignedTo
+                || proj?.assignedTo
+                || LaunchLocal.currentUser?.uid
+                || null;
             await DB.addDoc('invoices', {
                 clientName: proj.clientName,
                 projectId: proj.id,
+                prospectId: prospect?.id || proj?.prospectId || null,
                 amount: amountCents,
                 type,
                 status: sendNow ? 'sent' : 'draft',
@@ -1495,7 +1505,7 @@ const ProjectDetailModule = {
                 stripeInvoiceId: null,
                 commissionRate: rate,
                 commissionAmount: Math.round(amountCents * rate),
-                salesRepId: LaunchLocal.currentUser?.uid,
+                salesRepId,
                 lineItems: [{ description: `${type.charAt(0).toUpperCase() + type.slice(1)} — ${proj.clientName}`, amount: amountCents }],
                 notes
             });

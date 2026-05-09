@@ -171,6 +171,7 @@ const SalesModule = {
                         <button class="btn btn-secondary btn-sm visit-btn" data-action="visit" data-id="${p.id}">Log Visit</button>
                         ${isPitch ? `<button class="btn btn-secondary btn-sm pitched-btn" data-action="pitched" data-id="${p.id}">Mark Pitched</button>` : ''}
                         ${!isPitch ? `<button class="btn btn-success btn-sm sold-btn" data-action="sold" data-id="${p.id}">Mark Sold</button>` : ''}
+                        ${!isPitch ? `<button class="btn btn-ghost btn-sm cooloff-btn" data-action="cool-off" data-id="${p.id}" title="Move back to pitch queue (cool off — not dead)">Cool Off</button>` : ''}
                     </div>
                 </td>
             </tr>
@@ -499,6 +500,31 @@ const SalesModule = {
         }
     },
 
+    /**
+     * Soft-revert a pitched prospect back into the pitch queue. Used when a
+     * deal has cooled off but isn't dead — keeps it visible on Sales without
+     * forcing an archive. Only valid from `pitched`; no-op otherwise.
+     */
+    async coolOff(id) {
+        try {
+            const p = this.prospects.find(x => x.id === id);
+            if (!p) return;
+            if (p.status !== 'pitched') {
+                LaunchLocal.toast('Cool Off only applies to pitched prospects.', 'warning');
+                return;
+            }
+            await DB.updateDoc('prospects', id, { status: 'site-ready' });
+            await DB.logActivity('cooled_off', 'sales',
+                `cooled off ${p.businessName} — moved back to pitch queue`,
+                { fromStatus: 'pitched', toStatus: 'site-ready' }, id);
+            p.status = 'site-ready';
+            this.renderQueues();
+            LaunchLocal.toast('Moved back to pitch queue', 'info');
+        } catch {
+            LaunchLocal.toast('Failed to move prospect back.', 'error');
+        }
+    },
+
     async ensureProjectForProspect(p) {
         try {
             const existing = await DB.getDocs('projects', { where: [['prospectId', '==', p.id]] });
@@ -581,6 +607,7 @@ const SalesModule = {
                 case 'visit':      this.openVisitLog(id); break;
                 case 'pitched':    this.moveStatus(id, 'pitched'); break;
                 case 'sold':       this.moveStatus(id, 'sold'); break;
+                case 'cool-off':   this.coolOff(id); break;
             }
         });
     }

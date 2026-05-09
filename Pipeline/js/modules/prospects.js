@@ -484,11 +484,12 @@ const ProspectsModule = {
                 { oldStatus, newStatus }, id);
             p.status = newStatus;
 
-            // Create the project record at approval time — from here forward
-            // the job lives in the Prelim Site Works module, not in Scanner.
-            if (newStatus === 'approved' && oldStatus !== 'approved') {
-                await this.ensureProjectForProspect(p);
-            }
+            // NOTE: project doc creation is intentionally deferred to the
+            // sold transition (see sales.js / project-detail.js). Approving
+            // a prospect only moves it into Prelim Site Works — Active
+            // Projects (the `projects` collection) stays empty until sold.
+            // ensureProjectForProspect() is still defined below for the
+            // sold-time callers that import it via ProspectsModule.
 
             this.expandedId = null;
             this.renderList();
