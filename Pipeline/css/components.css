@@ -127,6 +127,18 @@
     color: var(--text-primary);
 }
 
+/* Ghost-danger — transparent until hover, danger-colored text */
+.btn-ghost-danger {
+    background: transparent;
+    color: var(--danger);
+    border-color: transparent;
+}
+
+.btn-ghost-danger:hover {
+    background: var(--danger-dim);
+    color: var(--danger);
+}
+
 /* Accent-subtle — accent-dim bg */
 .btn-subtle {
     background: var(--accent-dim);
@@ -467,17 +479,25 @@ select.form-input {
 }
 .badge.with-dot::before { display: inline-block; }
 
-/* Prospect status */
+/* Prospect status — colors now flow from --status-* tokens (theme.css) */
 .badge-new,
-.badge-reviewed    { background: var(--info-dim); color: var(--info); border-color: var(--info-border); }
-.badge-approved,
-.badge-sold        { background: var(--success-dim); color: var(--success); border-color: var(--success-border); }
-.badge-queued      { background: var(--warning-dim); color: var(--warning); border-color: var(--warning-border); }
-.badge-ready       { background: var(--accent-dim); color: var(--accent); border-color: var(--accent-border); }
-.badge-pitched     { background: rgba(168, 85, 247, 0.14); color: #C084FC; border-color: rgba(168, 85, 247, 0.35); }
-.badge-archived    { background: var(--bg-surface-3); color: var(--text-muted); border-color: var(--border); }
-.badge-site-queued { background: var(--warning-dim); color: var(--warning); border-color: var(--warning-border); }
-.badge-site-ready  { background: var(--accent-dim); color: var(--accent); border-color: var(--accent-border); }
+.badge-reviewed    { background: var(--info-dim); color: var(--status-new); border-color: var(--info-border); }
+.badge-approved    { background: var(--success-dim); color: var(--status-approved); border-color: var(--accent-border); }
+.badge-sold        {
+    background: rgba(245, 158, 11, 0.14);
+    color: var(--status-sold);
+    border-color: rgba(245, 158, 11, 0.35);
+}
+.badge-queued      { background: var(--warning-dim); color: var(--status-site-queued); border-color: var(--warning-border); }
+.badge-ready       { background: var(--success-dim); color: var(--status-site-ready); border-color: var(--success-border); }
+.badge-pitched     {
+    background: rgba(167, 139, 250, 0.14);
+    color: var(--status-pitched);
+    border-color: rgba(167, 139, 250, 0.35);
+}
+.badge-archived    { background: var(--bg-surface-3); color: var(--status-archived); border-color: var(--border); }
+.badge-site-queued { background: var(--warning-dim); color: var(--status-site-queued); border-color: var(--warning-border); }
+.badge-site-ready  { background: var(--success-dim); color: var(--status-site-ready); border-color: var(--success-border); }
 
 /* Role badges */
 .badge-admin     { background: var(--accent-dim); color: var(--accent); border-color: var(--accent-border); }
@@ -485,27 +505,43 @@ select.form-input {
 .badge-developer { background: var(--success-dim); color: var(--success); border-color: var(--success-border); }
 
 /* Project status */
-.badge-active      { background: var(--success-dim); color: var(--success); border-color: var(--success-border); }
-.badge-onboarding  { background: var(--accent-dim); color: var(--accent); border-color: var(--accent-border); }
-.badge-maintenance { background: rgba(99, 102, 241, 0.14); color: #818CF8; border-color: rgba(99, 102, 241, 0.35); }
-.badge-renewal-due { background: var(--warning-dim); color: var(--warning); border-color: var(--warning-border); }
-.badge-churned     { background: var(--danger-dim); color: var(--danger); border-color: var(--danger-border); }
+.badge-active      { background: var(--success-dim); color: var(--status-active); border-color: var(--success-border); }
+.badge-onboarding  { background: var(--accent-dim); color: var(--status-onboarding); border-color: var(--accent-border); }
+.badge-maintenance {
+    background: rgba(129, 140, 248, 0.14);
+    color: var(--status-maintenance);
+    border-color: rgba(129, 140, 248, 0.35);
+}
+.badge-renewal-due { background: var(--warning-dim); color: var(--status-renewal-due); border-color: var(--warning-border); }
+.badge-churned     { background: var(--danger-dim); color: var(--status-churned); border-color: var(--danger-border); }
 
 /* Invoice status */
-.badge-draft       { background: var(--bg-surface-3); color: var(--text-secondary); border-color: var(--border-strong); }
-.badge-sent        { background: var(--accent-dim); color: var(--accent); border-color: var(--accent-border); }
-.badge-paid        { background: var(--success-dim); color: var(--success); border-color: var(--success-border); }
-.badge-overdue     { background: var(--danger-dim); color: var(--danger); border-color: var(--danger-border); }
-.badge-void        { background: var(--bg-surface-3); color: var(--text-muted); border-color: var(--border); }
+.badge-draft       { background: var(--bg-surface-3); color: var(--status-inv-draft); border-color: var(--border-strong); }
+.badge-sent        { background: var(--accent-dim); color: var(--status-inv-sent); border-color: var(--accent-border); }
+.badge-paid        { background: var(--success-dim); color: var(--status-inv-paid); border-color: var(--success-border); }
+.badge-overdue     { background: var(--danger-dim); color: var(--status-inv-overdue); border-color: var(--danger-border); }
+.badge-void        { background: var(--bg-surface-3); color: var(--status-inv-void); border-color: var(--border); }
 
 /* QA status */
-.badge-pending         { background: var(--warning-dim); color: var(--warning); border-color: var(--warning-border); }
-.badge-revision-needed { background: var(--danger-dim); color: var(--danger); border-color: var(--danger-border); }
+.badge-pending         { background: var(--warning-dim); color: var(--status-qa-pending); border-color: var(--warning-border); }
+.badge-qa-approved     { background: var(--success-dim); color: var(--status-qa-approved); border-color: var(--success-border); }
+.badge-revision-needed { background: var(--danger-dim); color: var(--status-qa-revision); border-color: var(--danger-border); }
 
 /* Maintenance tiers */
 .badge-basic    { background: var(--bg-surface-3); color: var(--text-secondary); border-color: var(--border-strong); }
 .badge-standard { background: var(--accent-dim); color: var(--accent); border-color: var(--accent-border); }
-.badge-premium  { background: rgba(217, 70, 239, 0.14); color: #E879F9; border-color: rgba(217, 70, 239, 0.35); }
+.badge-premium  {
+    background: rgba(232, 121, 249, 0.14);
+    color: #E879F9;
+    border-color: rgba(232, 121, 249, 0.35);
+}
+
+/* Compact badge size */
+.badge.badge-sm {
+    padding: 2px 7px;
+    font-size: 10px;
+}
+.badge .badge-label { line-height: 1; }
 
 /* Generic color variants */
 .badge-primary   { background: var(--accent-dim); color: var(--accent); border-color: var(--accent-border); }
@@ -991,3 +1027,45 @@ select.form-input {
     outline: 2px solid var(--accent-border);
     outline-offset: 2px;
 }
+
+
+/* ============================================
+   Nav badge
+   ============================================
+   Small count pill that appears at the right edge of a sidebar
+   `.nav-item`. Managed by js/utils/nav-badge.js. `.nav-item` is
+   already display:flex; align-items:center, so the badge just
+   uses margin-left:auto to push to the trailing edge.
+   ============================================ */
+.nav-item-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    margin-left: auto;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+    background: var(--accent-bg, var(--accent));
+    color: var(--accent-fg, #FFFFFF);
+    flex-shrink: 0;
+}
+
+.nav-badge-info {
+    background: var(--info-bg, var(--info, var(--accent)));
+    color: #FFFFFF;
+}
+
+.nav-badge-warning {
+    background: var(--warning-bg, var(--warning, #d97706));
+    color: #FFFFFF;
+}
+
+.nav-badge-danger {
+    background: var(--danger-bg, var(--danger, #dc2626));
+    color: #FFFFFF;
+}
+

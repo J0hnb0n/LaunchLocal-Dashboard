@@ -80,13 +80,12 @@ const ProjectsModule = {
             console.error('Projects load:', err);
             const list = document.getElementById('projects-list');
             if (list) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">&#9888;</div>
-                        <h3 class="empty-state-title">Failed to load</h3>
-                        <p class="empty-state-desc">Could not fetch projects. Try refreshing.</p>
-                    </div>
-                `;
+                list.innerHTML = LaunchLocal.EmptyState.render({
+                    icon: 'alert',
+                    title: 'Failed to load',
+                    desc: 'Could not fetch projects. Try refreshing.',
+                    variant: 'inline-error'
+                });
             }
         }
     },
@@ -132,13 +131,13 @@ const ProjectsModule = {
         jobs.sort(this.sortComparator());
 
         if (jobs.length === 0) {
-            list.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">${Icons.get('folder', 22)}</div>
-                    <h3 class="empty-state-title">No prelim jobs in flight</h3>
-                    <p class="empty-state-desc">Approve a prospect in the Scanner tab to kick one off.</p>
-                </div>
-            `;
+            list.innerHTML = LaunchLocal.EmptyState.render({
+                icon: 'folder',
+                title: 'No prelim jobs in flight',
+                desc: 'Approve a prospect in the Scanner tab to kick one off.',
+                ctaLabel: 'Open Scanner',
+                ctaHref: '#scanner'
+            });
             Icons.inject(list);
             return;
         }
@@ -183,7 +182,7 @@ const ProjectsModule = {
         const p = job.prospect;
         const proj = job.project;
 
-        const stageBadge = this.stageBadge(p.status);
+        const stageBadge = LaunchLocal.StatusPill.render(p.status, { domain: 'prospect', withIcon: true });
         const isSold = p.status === 'sold';
         const pendingRevisions = (proj?.revisions || []).filter((r) => r.status === 'pending').length;
         const imminentRenewal = this.isRenewalImminent(proj);
@@ -238,16 +237,13 @@ const ProjectsModule = {
         `;
     },
 
+    /**
+     * Thin wrapper preserved for legacy callers (project-detail.js still
+     * imports it as `ProjectsModule.stageBadge`). Real rendering happens
+     * in StatusPill — this just keeps the old call site working.
+     */
     stageBadge(status) {
-        const map = {
-            approved: { cls: 'badge-approved', label: 'Approved' },
-            'site-queued': { cls: 'badge-queued', label: 'Site Queued' },
-            'site-ready': { cls: 'badge-ready', label: 'Site Ready' },
-            pitched: { cls: 'badge-pitched', label: 'Pitched' },
-            sold: { cls: 'badge-sold', label: 'Sold' }
-        };
-        const cfg = map[status] || { cls: 'badge-neutral', label: status || 'unknown' };
-        return `<span class="badge ${cfg.cls}">${cfg.label}</span>`;
+        return LaunchLocal.StatusPill.render(status, { domain: 'prospect', withIcon: true });
     },
 
     isRenewalImminent(proj) {
@@ -287,3 +283,38 @@ const ProjectsModule = {
 };
 
 Router.register('prelim', ProjectsModule, 'Prelim Site Works', ['admin', 'developer']);
+
+// Sidebar nav badge — sites awaiting QA (qaStatus='pending'). Severity: warning.
+// Falls back to count of approved prospects (queue waiting for prompt-gen)
+// if the sites query fails or returns nothing meaningful.
+if (window.LaunchLocal && LaunchLocal.NavBadge) {
+    LaunchLocal.NavBadge.register('prelim', async () => {
+        try {
+            if (!LaunchLocal.db) return { count: 0 };
+            const snap = await LaunchLocal.db.collection('sites')
+                .where('qaStatus', '==', 'pending')
+                .get();
+            const n = snap.size || 0;
+            if (n > 0) return { count: n, severity: 'warning' };
+            // Fallback: count prospects awaiting prompt-gen (status='approved')
+            try {
+                const fallback = await LaunchLocal.db.collection('prospects')
+                    .where('status', '==', 'approved')
+                    .get();
+                const m = fallback.size || 0;
+                if (m > 0) return { count: m, severity: 'warning' };
+            } catch (_) { /* swallow */ }
+            return { count: 0 };
+        } catch (_) {
+            // Top-level failure (e.g., sites collection missing) — try fallback.
+            try {
+                const fallback = await LaunchLocal.db.collection('prospects')
+                    .where('status', '==', 'approved')
+                    .get();
+                const m = fallback.size || 0;
+                if (m > 0) return { count: m, severity: 'warning' };
+            } catch (_) { /* swallow */ }
+            return { count: 0 };
+        }
+    });
+}

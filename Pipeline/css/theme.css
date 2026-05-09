@@ -68,6 +68,34 @@
     --shadow-card:       0 1px 3px rgba(0, 0, 0, 0.30), 0 1px 2px rgba(0, 0, 0, 0.20);
     --shadow-card-hover: 0 6px 20px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.25);
 
+    /* Pipeline / project status colors — mapped onto semantic tokens */
+    --status-new:           var(--info);
+    --status-approved:      var(--accent);
+    --status-site-queued:   var(--warning);
+    --status-site-ready:    var(--success);
+    --status-pitched:       #A78BFA;       /* purple — accent for active pursuit */
+    --status-sold:          #F59E0B;       /* gold — celebrate the win, distinct from green */
+    --status-archived:      var(--text-muted);
+
+    /* Project lifecycle */
+    --status-onboarding:    var(--accent);
+    --status-active:        var(--success);
+    --status-maintenance:   #818CF8;       /* indigo — distinct from operational success */
+    --status-renewal-due:   var(--warning);
+    --status-churned:       var(--danger);
+
+    /* QA */
+    --status-qa-pending:    var(--warning);
+    --status-qa-approved:   var(--success);
+    --status-qa-revision:   var(--danger);
+
+    /* Invoice */
+    --status-inv-draft:     var(--text-muted);
+    --status-inv-sent:      var(--accent);
+    --status-inv-paid:      var(--success);
+    --status-inv-overdue:   var(--danger);
+    --status-inv-void:      var(--text-muted);
+
     color-scheme: dark;
 }
 
@@ -129,6 +157,31 @@
     /* Card-specific shadow stack (resting / hover) */
     --shadow-card:       0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.06);
     --shadow-card-hover: 0 6px 18px rgba(15, 23, 42, 0.10), 0 2px 6px rgba(15, 23, 42, 0.06);
+
+    /* Pipeline / project status colors — light-mode overrides for hex values */
+    --status-new:           var(--info);
+    --status-approved:      var(--accent);
+    --status-site-queued:   var(--warning);
+    --status-site-ready:    var(--success);
+    --status-pitched:       #7C6BD8;       /* darker purple for AA contrast */
+    --status-sold:          #D97706;       /* darker gold for AA contrast */
+    --status-archived:      var(--text-muted);
+
+    --status-onboarding:    var(--accent);
+    --status-active:        var(--success);
+    --status-maintenance:   #6366F1;       /* darker indigo for AA contrast */
+    --status-renewal-due:   var(--warning);
+    --status-churned:       var(--danger);
+
+    --status-qa-pending:    var(--warning);
+    --status-qa-approved:   var(--success);
+    --status-qa-revision:   var(--danger);
+
+    --status-inv-draft:     var(--text-muted);
+    --status-inv-sent:      var(--accent);
+    --status-inv-paid:      var(--success);
+    --status-inv-overdue:   var(--danger);
+    --status-inv-void:      var(--text-muted);
 
     color-scheme: light;
 }

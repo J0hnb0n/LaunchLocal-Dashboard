@@ -82,13 +82,12 @@ const ActiveProjectsModule = {
             console.error('Active Projects load:', err);
             const list = document.getElementById('active-projects-list');
             if (list) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">&#9888;</div>
-                        <h3 class="empty-state-title">Failed to load</h3>
-                        <p class="empty-state-desc">Could not fetch active projects. Try refreshing.</p>
-                    </div>
-                `;
+                list.innerHTML = LaunchLocal.EmptyState.render({
+                    icon: 'alert',
+                    title: 'Failed to load',
+                    desc: 'Could not fetch active projects. Try refreshing.',
+                    variant: 'inline-error'
+                });
             }
         }
     },
@@ -133,13 +132,13 @@ const ActiveProjectsModule = {
         jobs.sort(this.sortComparator());
 
         if (jobs.length === 0) {
-            list.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">${Icons.get('activity', 22)}</div>
-                    <h3 class="empty-state-title">No active projects yet</h3>
-                    <p class="empty-state-desc">Close a deal in Sales — sold prospects show up here as live clients.</p>
-                </div>
-            `;
+            list.innerHTML = LaunchLocal.EmptyState.render({
+                icon: 'activity',
+                title: 'No active projects yet',
+                desc: 'Close a deal in Sales — sold prospects show up here as live clients.',
+                ctaLabel: 'Open Sales',
+                ctaHref: '#sales'
+            });
             Icons.inject(list);
             return;
         }
@@ -184,7 +183,7 @@ const ActiveProjectsModule = {
     renderJobCard(job) {
         const p = job.prospect;
         const proj = job.project;
-        const lifecycleBadge = this.lifecycleBadge(proj?.status || 'onboarding');
+        const lifecycleBadge = LaunchLocal.StatusPill.render(proj?.status || 'onboarding', { domain: 'project', withIcon: true });
         const pendingRevisions = (proj?.revisions || []).filter((r) => r.status === 'pending').length;
         const renewalInfo = this.renewalInfo(proj);
         const clientName = proj?.clientName || p.businessName || 'Unnamed';
@@ -225,16 +224,12 @@ const ActiveProjectsModule = {
         `;
     },
 
+    /**
+     * Thin wrapper preserved for any legacy callers — real rendering
+     * happens in StatusPill (project domain).
+     */
     lifecycleBadge(status) {
-        const map = {
-            onboarding:    { cls: 'badge-queued',   label: 'Onboarding' },
-            active:        { cls: 'badge-sold',     label: 'Active' },
-            maintenance:   { cls: 'badge-approved', label: 'Maintenance' },
-            'renewal-due': { cls: 'badge-pitched',  label: 'Renewal due' },
-            churned:       { cls: 'badge-neutral',  label: 'Churned' }
-        };
-        const cfg = map[status] || { cls: 'badge-neutral', label: status || 'unknown' };
-        return `<span class="badge ${cfg.cls}">${cfg.label}</span>`;
+        return LaunchLocal.StatusPill.render(status, { domain: 'project', withIcon: true });
     },
 
     /**
@@ -286,3 +281,28 @@ const ActiveProjectsModule = {
 };
 
 Router.register('active-projects', ActiveProjectsModule, 'Active Projects', ['admin', 'developer']);
+
+// Sidebar nav badge — projects with renewalDate within next 30 days
+// (excluding churned). Severity: warning.
+if (window.LaunchLocal && LaunchLocal.NavBadge) {
+    LaunchLocal.NavBadge.register('active-projects', async () => {
+        try {
+            if (!LaunchLocal.db) return { count: 0 };
+            const snap = await LaunchLocal.db.collection('projects').get();
+            const now = Date.now();
+            const cutoff = now + (30 * 24 * 60 * 60 * 1000);
+            let due = 0;
+            snap.forEach((d) => {
+                const p = d.data();
+                if (!p || p.status === 'churned' || !p.renewalDate) return;
+                const t = new Date(p.renewalDate).getTime();
+                if (isNaN(t)) return;
+                if (t <= cutoff) due++;
+            });
+            if (due > 0) return { count: due, severity: 'warning' };
+            return { count: 0 };
+        } catch (_) {
+            return { count: 0 };
+        }
+    });
+}

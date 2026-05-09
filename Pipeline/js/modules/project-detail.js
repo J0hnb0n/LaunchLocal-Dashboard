@@ -74,14 +74,14 @@ const ProjectDetailModule = {
     },
 
     notFound(message) {
-        const icon = window.Icons ? Icons.get('alert', 22) : '';
-        return `
-            <div class="empty-state">
-                <div class="empty-state-icon">${icon}</div>
-                <h3 class="empty-state-title">${LaunchLocal.escapeHtml(message)}</h3>
-                <p class="empty-state-desc"><a href="#prelim">Back to Prelim Site Works</a></p>
-            </div>
-        `;
+        return LaunchLocal.EmptyState.render({
+            icon: 'alert',
+            title: message,
+            desc: 'Return to Prelim Site Works to find the right job.',
+            ctaLabel: 'Back to Prelim Site Works',
+            ctaHref: '#prelim',
+            variant: 'inline-error'
+        });
     },
 
     getShellHTML() {
@@ -89,7 +89,7 @@ const ProjectDetailModule = {
         const proj = this.project;
         const isSold = p.status === 'sold';
 
-        const stageBadge = ProjectsModule.stageBadge(p.status);
+        const stageBadge = LaunchLocal.StatusPill.render(p.status, { domain: 'prospect', withIcon: true });
         const tierBadge = isSold && proj?.maintenanceTier ? `<span class="badge badge-${proj.maintenanceTier}">${proj.maintenanceTier}</span>` : '';
 
         const billingDisabled = !isSold;
@@ -476,14 +476,16 @@ const ProjectDetailModule = {
         const s = this.site;
 
         if (!s) {
+            const slug = LaunchLocal.Slug.fromBusinessName(p.businessName) || p.id;
             body.innerHTML = `
-                <div class="empty-state" style="padding:40px 16px;">
-                    <div class="empty-state-icon">&#10010;</div>
+                <div class="empty-state empty-state-default" style="padding:40px 16px;">
+                    <div class="empty-state-icon">${Icons.get('plus', 22)}</div>
                     <h3 class="empty-state-title">Ready to generate site</h3>
-                    <p class="empty-state-desc">Create a site prompt for Claude Code — the build will land in <code>Client-Sites/${LaunchLocal.escapeHtml(LaunchLocal.Slug.fromBusinessName(p.businessName) || p.id)}/</code>.</p>
+                    <p class="empty-state-desc">Create a site prompt for Claude Code — the build will land in <code>Client-Sites/${LaunchLocal.escapeHtml(slug)}/</code>.</p>
                     <button class="btn btn-primary" id="pd-generate-btn">Generate Prompt</button>
                 </div>
             `;
+            Icons.inject(body);
             document.getElementById('pd-generate-btn')?.addEventListener('click', () => this.openGenerateForm(p, null));
             return;
         }
@@ -508,12 +510,7 @@ const ProjectDetailModule = {
         }
 
         // Built + possibly approved
-        const qaConfig = {
-            pending: { badge: 'badge-warning', label: 'Awaiting QA' },
-            approved: { badge: 'badge-success', label: 'Approved' },
-            'revision-needed': { badge: 'badge-danger', label: 'Needs Revision' }
-        };
-        const cfg = qaConfig[s.qaStatus] || { badge: 'badge-neutral', label: s.qaStatus || '—' };
+        const qaPill = LaunchLocal.StatusPill.render(s.qaStatus || 'pending', { domain: 'qa', withIcon: true });
 
         const previewUrl = SitesModule.previewUrlFor(s);
         const previewBlock = previewUrl ? `
@@ -533,7 +530,7 @@ const ProjectDetailModule = {
 
         body.innerHTML = `
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:var(--space-3);flex-wrap:wrap;">
-                <span class="badge ${cfg.badge}">${cfg.label}</span>
+                ${qaPill}
                 <span class="industry-tag">${LaunchLocal.escapeHtml(s.templateUsed || 'default')}</span>
             </div>
             ${previewBlock}
@@ -675,7 +672,7 @@ const ProjectDetailModule = {
             const isAdmin = LaunchLocal.currentUser?.role === 'admin';
             stageActions = `
                 <p class="text-muted">Client is sold — see the Clients tab for ongoing work.</p>
-                ${isAdmin ? `<button class="btn btn-ghost btn-sm" id="pd-rollback-btn" style="color: var(--danger);">Roll back to Prospect</button>` : ''}
+                ${isAdmin ? `<button class="btn btn-ghost-danger btn-sm" id="pd-rollback-btn">Roll back to Prospect</button>` : ''}
             `;
         } else {
             stageActions = `
@@ -1069,8 +1066,10 @@ const ProjectDetailModule = {
         if (!proj) {
             // Safety net for legacy prospects sold before auto-create shipped,
             // or any record where the project doc somehow went missing.
+            // EmptyState's CTA pattern doesn't fit a JS-handler button; render
+            // the shell via the factory and append the action button by hand.
             body.innerHTML = `
-                <div class="empty-state">
+                <div class="empty-state empty-state-default">
                     <div class="empty-state-icon">${Icons.get('folder', 22)}</div>
                     <h3 class="empty-state-title">No project record yet</h3>
                     <p class="empty-state-desc">Project records are now created automatically at approval. This one is missing — create it now to unlock revisions, billing, and renewals.</p>
@@ -1298,15 +1297,23 @@ const ProjectDetailModule = {
     renderBillingTab(body) {
         const proj = this.project;
         if (this.prospect.status !== 'sold') {
-            body.innerHTML = `
-                <div class="empty-state">
-                    <p class="empty-state-desc">Billing unlocks once the deal is closed.</p>
-                </div>
-            `;
+            body.innerHTML = LaunchLocal.EmptyState.render({
+                icon: 'wallet',
+                title: 'Billing locked',
+                desc: 'Billing unlocks once the deal is closed.',
+                variant: 'compact'
+            });
+            Icons.inject(body);
             return;
         }
         if (!proj) {
-            body.innerHTML = `<div class="empty-state"><p class="empty-state-desc">No project record yet.</p></div>`;
+            body.innerHTML = LaunchLocal.EmptyState.render({
+                icon: 'folder',
+                title: 'No project record yet',
+                desc: 'Create one from the Clients tab to enable billing.',
+                variant: 'compact'
+            });
+            Icons.inject(body);
             return;
         }
 
@@ -1378,7 +1385,7 @@ const ProjectDetailModule = {
         if (inv.status === 'draft') {
             actions = `<button class="btn btn-subtle btn-sm" data-action="send" data-id="${inv.id}">Mark Sent</button>`;
         } else if (inv.status === 'sent' || inv.status === 'overdue') {
-            actions = `<button class="btn btn-primary btn-sm" data-action="pay" data-id="${inv.id}">Mark Paid</button>`;
+            actions = `<button class="btn btn-success btn-sm" data-action="pay" data-id="${inv.id}">Mark Paid</button>`;
         } else if (inv.status === 'paid') {
             actions = `<span class="chip chip-success"><span data-icon="check"></span>Paid ${inv.paidDate || ''}</span>`;
         }
@@ -1386,7 +1393,7 @@ const ProjectDetailModule = {
             <tr>
                 <td><span class="chip">${LaunchLocal.escapeHtml(inv.type || '—')}</span></td>
                 <td style="text-align:right;"><strong class="mono">${LaunchLocal.formatCurrency(inv.amount || 0)}</strong></td>
-                <td><span class="badge badge-${inv.status}">${inv.status}</span></td>
+                <td>${LaunchLocal.StatusPill.render(inv.status, { domain: 'invoice', withIcon: true })}</td>
                 <td class="td-sub">${inv.issuedDate || '—'}</td>
                 <td class="td-sub">${inv.dueDate || '—'}</td>
                 <td style="text-align:right;">${actions}</td>

@@ -119,7 +119,7 @@ const ExpensesModule = {
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-ghost" id="exp-delete" style="display:none;margin-right:auto;color:var(--danger);">
+                        <button class="btn btn-ghost-danger" id="exp-delete" style="display:none;margin-right:auto;">
                             <span data-icon="trash"></span>Delete
                         </button>
                         <button class="btn btn-secondary" id="exp-cancel">Cancel</button>

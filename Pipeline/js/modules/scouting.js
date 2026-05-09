@@ -191,13 +191,19 @@ const ScoutingModule = {
 
     initMap() {
         if (!window.L) {
-            document.getElementById('scout-map').innerHTML = `
-                <div class="empty-state" style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-                    <div class="empty-state-icon">&#128506;</div>
-                    <h3 class="empty-state-title">Map unavailable</h3>
-                    <p class="empty-state-desc">Could not load the map library. Check your internet connection.</p>
-                </div>
-            `;
+            const mapEl = document.getElementById('scout-map');
+            mapEl.innerHTML = LaunchLocal.EmptyState.render({
+                icon: 'map',
+                title: 'Map unavailable',
+                desc: 'Could not load the map library. Check your internet connection.',
+                variant: 'inline-error'
+            });
+            // Restore the centered layout the original inline styles provided
+            mapEl.style.display = 'flex';
+            mapEl.style.flexDirection = 'column';
+            mapEl.style.alignItems = 'center';
+            mapEl.style.justifyContent = 'center';
+            Icons.inject(mapEl);
             return;
         }
 
@@ -391,11 +397,24 @@ const ScoutingModule = {
         if (this._resultMarkers) {
             this._resultMarkers.forEach(m => { try { m.remove(); } catch(_) {} });
         }
+        // Read score-tier colors from theme tokens so map markers track
+        // dark/light mode just like Charts does (see Pipeline/js/utils/charts.js).
+        const root = document.documentElement;
+        const readVar = (name, fallback) => {
+            const v = getComputedStyle(root).getPropertyValue(name).trim();
+            return v || fallback;
+        };
+        const C_HOT    = readVar('--danger',     '#F87171');
+        const C_HIGH   = readVar('--warning',    '#FBBF24');
+        const C_MEDIUM = readVar('--accent',     '#38BDF8');
+        const C_LOW    = readVar('--text-muted', '#64748B');
+
         this._resultMarkers = this.scanResults.map(r => {
             if (!r.prospect.lat || !r.prospect.lng) return null;
-            const color = r.score >= 80 ? '#EA4335'
-                : r.score >= 50 ? '#F9AB00'
-                : '#34A853';
+            const color = r.score >= 80 ? C_HOT
+                : r.score >= 50 ? C_HIGH
+                : r.score >= 20 ? C_MEDIUM
+                : C_LOW;
             const icon = L.divIcon({
                 className: '',
                 html: `<div style="width:10px;height:10px;background:${color};border:2px solid #fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,0.4);"></div>`,

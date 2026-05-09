@@ -108,14 +108,15 @@ const SalesModule = {
         if (!el) return;
 
         if (prospects.length === 0) {
-            el.innerHTML = `
-                <div class="empty-state" style="padding:24px 0;">
-                    <p class="empty-state-desc">${isPitch
-                        ? 'No prospects in pitch-ready status. Approve sites in QA to populate this queue.'
-                        : 'No open follow-ups. All pitched prospects have been resolved.'
-                    }</p>
-                </div>
-            `;
+            el.innerHTML = LaunchLocal.EmptyState.render({
+                icon: isPitch ? 'handshake' : 'check',
+                title: isPitch ? 'No pitch-ready prospects' : 'All caught up',
+                desc: isPitch
+                    ? 'No prospects in pitch-ready status. Approve sites in QA to populate this queue.'
+                    : 'No open follow-ups. All pitched prospects have been resolved.',
+                variant: 'compact'
+            });
+            Icons.inject(el);
             return;
         }
 
@@ -614,3 +615,30 @@ const SalesModule = {
 };
 
 Router.register('sales', SalesModule, 'Sales', ['admin', 'sales']);
+
+// Sidebar nav badge — pitched prospects with follow-ups due today + overdue.
+// danger if any overdue, warning if today only, info otherwise.
+if (window.LaunchLocal && LaunchLocal.NavBadge) {
+    LaunchLocal.NavBadge.register('sales', async () => {
+        try {
+            if (!LaunchLocal.db) return { count: 0 };
+            const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Toronto' });
+            const snap = await LaunchLocal.db.collection('prospects')
+                .where('status', '==', 'pitched')
+                .get();
+            let overdue = 0;
+            let todayCount = 0;
+            snap.forEach((d) => {
+                const f = d.data().nextFollowUp;
+                if (!f) return;
+                if (f < today) overdue++;
+                else if (f === today) todayCount++;
+            });
+            if (overdue > 0) return { count: overdue + todayCount, severity: 'danger' };
+            if (todayCount > 0) return { count: todayCount, severity: 'warning' };
+            return { count: 0 };
+        } catch (_) {
+            return { count: 0 };
+        }
+    });
+}

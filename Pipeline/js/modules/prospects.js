@@ -140,13 +140,12 @@ const ProspectsModule = {
         } catch (error) {
             const list = document.getElementById('prospect-list');
             if (list) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">&#9888;</div>
-                        <h3 class="empty-state-title">Failed to Load</h3>
-                        <p class="empty-state-desc">Could not fetch prospects. Try refreshing.</p>
-                    </div>
-                `;
+                list.innerHTML = LaunchLocal.EmptyState.render({
+                    icon: 'alert',
+                    title: 'Failed to Load',
+                    desc: 'Could not fetch prospects. Try refreshing.',
+                    variant: 'inline-error'
+                });
             }
         }
     },
@@ -168,16 +167,16 @@ const ProspectsModule = {
 
         if (filtered.length === 0) {
             const isArchivedView = this.viewMode === 'archived';
-            list.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">&#128269;</div>
-                    <h3 class="empty-state-title">${isArchivedView ? 'No archived prospects' : 'No new prospects'}</h3>
-                    <p class="empty-state-desc">${isArchivedView
-                        ? 'Archived prospects will appear here and can be restored.'
-                        : 'Use Scouting to import nearby businesses, or click + New Prospect to add one manually.'
-                    }</p>
-                </div>
-            `;
+            list.innerHTML = LaunchLocal.EmptyState.render({
+                icon: 'search',
+                title: isArchivedView ? 'No archived prospects' : 'No new prospects',
+                desc: isArchivedView
+                    ? 'Archived prospects will appear here and can be restored.'
+                    : 'Use Scouting to import nearby businesses, or click + New Prospect to add one manually.',
+                ctaLabel: isArchivedView ? null : 'Open Scouting',
+                ctaHref: isArchivedView ? null : '#scouting'
+            });
+            Icons.inject(list);
             return;
         }
 
@@ -256,7 +255,7 @@ const ProspectsModule = {
         const actionButtons = isArchived
             ? `<button class="btn btn-sm btn-secondary restore-btn" data-action="restore" data-id="${p.id}">Restore to New</button>`
             : `
-                <button class="btn btn-sm btn-primary approve-btn" data-action="approve" data-id="${p.id}" title="Approve and move to Prelim Site Works">
+                <button class="btn btn-sm btn-success approve-btn" data-action="approve" data-id="${p.id}" title="Approve and move to Prelim Site Works">
                     Approve &rarr;
                 </button>
                 <button class="btn btn-sm btn-ghost archive-btn" data-action="archive" data-id="${p.id}">Archive</button>
@@ -589,3 +588,21 @@ const ProspectsModule = {
 };
 
 Router.register('scanner', ProspectsModule, 'Scanner', ['admin', 'sales']);
+
+// Sidebar nav badge — prospects with status='new' (awaiting review).
+// Severity: info.
+if (window.LaunchLocal && LaunchLocal.NavBadge) {
+    LaunchLocal.NavBadge.register('scanner', async () => {
+        try {
+            if (!LaunchLocal.db) return { count: 0 };
+            const snap = await LaunchLocal.db.collection('prospects')
+                .where('status', '==', 'new')
+                .get();
+            const n = snap.size || 0;
+            if (n > 0) return { count: n, severity: 'info' };
+            return { count: 0 };
+        } catch (_) {
+            return { count: 0 };
+        }
+    });
+}

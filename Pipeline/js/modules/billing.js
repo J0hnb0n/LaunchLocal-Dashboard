@@ -242,9 +242,9 @@ const BillingModule = {
 
         let actions = '';
         if (inv.status === 'draft') {
-            actions = `<button class="btn btn-subtle btn-sm" data-action="approve" data-id="${inv.id}">Approve &amp; Send</button>`;
+            actions = `<button class="btn btn-primary btn-sm" data-action="approve" data-id="${inv.id}">Approve &amp; Send</button>`;
         } else if (inv.status === 'sent' || inv.status === 'overdue') {
-            actions = `<button class="btn btn-primary btn-sm" data-action="pay" data-id="${inv.id}">Mark Paid</button>`;
+            actions = `<button class="btn btn-success btn-sm" data-action="pay" data-id="${inv.id}">Mark Paid</button>`;
         } else if (inv.status === 'paid') {
             actions = `<span class="chip chip-success"><span data-icon="check"></span>Paid ${inv.paidDate || ''}</span>`;
         }
@@ -257,7 +257,7 @@ const BillingModule = {
                 </td>
                 <td><span class="chip">${inv.type || '—'}</span></td>
                 <td style="text-align:right;"><strong class="mono">${LaunchLocal.formatCurrency(inv.amount || 0)}</strong></td>
-                <td><span class="badge badge-${inv.status}">${inv.status}</span></td>
+                <td>${LaunchLocal.StatusPill.render(inv.status, { domain: 'invoice', withIcon: true })}</td>
                 <td class="td-sub">${inv.issuedDate || '—'}</td>
                 <td class="td-sub ${dueCls}">${inv.dueDate || '—'}</td>
                 <td style="text-align:right;" class="td-sub">${LaunchLocal.formatCurrency(inv.commissionAmount || 0)}</td>
@@ -397,3 +397,20 @@ const BillingModule = {
 };
 
 Router.register('billing', BillingModule, 'Billing', ['admin']);
+
+// Sidebar nav badge — invoices with status='overdue'. Severity: danger.
+if (window.LaunchLocal && LaunchLocal.NavBadge) {
+    LaunchLocal.NavBadge.register('billing', async () => {
+        try {
+            if (!LaunchLocal.db) return { count: 0 };
+            const snap = await LaunchLocal.db.collection('invoices')
+                .where('status', '==', 'overdue')
+                .get();
+            const n = snap.size || 0;
+            if (n > 0) return { count: n, severity: 'danger' };
+            return { count: 0 };
+        } catch (_) {
+            return { count: 0 };
+        }
+    });
+}

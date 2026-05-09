@@ -527,7 +527,12 @@ const MetricsModule = {
         const reps = Object.keys(byRep);
         if (reps.length === 0) {
             document.getElementById('chart-commissions').parentElement.innerHTML =
-                '<div class="empty-state" style="padding:24px 8px;"><p class="empty-state-desc">No commission data yet.</p></div>';
+                LaunchLocal.EmptyState.render({
+                    icon: 'dollar',
+                    title: 'No commissions yet',
+                    desc: 'Once invoices are paid, the commission breakdown will show up here.',
+                    variant: 'compact'
+                });
             return;
         }
 

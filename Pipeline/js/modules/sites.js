@@ -201,11 +201,12 @@ const SitesModule = {
             // sees in Firestore — no client-side probe needed.
         } catch {
             const content = document.getElementById('site-content');
-            if (content) content.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">&#9888;</div>
-                    <h3 class="empty-state-title">Failed to load sites</h3>
-                </div>`;
+            if (content) content.innerHTML = LaunchLocal.EmptyState.render({
+                icon: 'alert',
+                title: 'Failed to load sites',
+                desc: 'Could not fetch sites. Try refreshing.',
+                variant: 'inline-error'
+            });
         }
     },
 
@@ -290,13 +291,14 @@ const SitesModule = {
         const items = [...readyToGenerate, ...siteCards].sort((a, b) => rank(a) - rank(b));
 
         if (items.length === 0) {
-            content.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">&#128187;</div>
-                    <h3 class="empty-state-title">No sites yet</h3>
-                    <p class="empty-state-desc">Approve a prospect in the Scanner module and it will appear here, ready for site generation.</p>
-                </div>
-            `;
+            content.innerHTML = LaunchLocal.EmptyState.render({
+                icon: 'monitor',
+                title: 'No sites yet',
+                desc: 'Approve a prospect in the Scanner module and it will appear here, ready for site generation.',
+                ctaLabel: 'Open Scanner',
+                ctaHref: '#scanner'
+            });
+            Icons.inject(content);
             return;
         }
 
@@ -386,12 +388,7 @@ const SitesModule = {
             `;
         }
 
-        const qaConfig = {
-            pending: { badge: 'badge-warning', label: 'Awaiting QA' },
-            approved: { badge: 'badge-success', label: 'Approved' },
-            'revision-needed': { badge: 'badge-danger', label: 'Needs Revision' }
-        };
-        const cfg = qaConfig[s.qaStatus] || { badge: 'badge-neutral', label: s.qaStatus || 'Unknown' };
+        const qaPill = LaunchLocal.StatusPill.render(s.qaStatus || 'pending', { domain: 'qa', withIcon: true });
 
         return `
             <div class="site-card">
@@ -408,7 +405,7 @@ const SitesModule = {
                 <div class="site-card-info">
                     <div class="site-card-name">${LaunchLocal.escapeHtml(s.businessName || 'Unnamed Site')}</div>
                     <div class="site-card-meta">
-                        <span class="badge ${cfg.badge}">${cfg.label}</span>
+                        ${qaPill}
                         <span class="industry-tag">${LaunchLocal.escapeHtml(s.templateUsed || 'default')}</span>
                     </div>
                     ${s.qaFeedback ? `<div class="site-feedback">"${LaunchLocal.escapeHtml(s.qaFeedback)}"</div>` : ''}
@@ -462,7 +459,7 @@ const SitesModule = {
                     <div class="detail-row"><span>PageSpeed Score</span><span>${s.pageSpeedScore || '—'}</span></div>
                     <div class="detail-row"><span>Mobile Score</span><span>${s.mobileScore || '—'}</span></div>
                     <div class="detail-row"><span>QA Status</span><span>
-                        <span class="badge ${s.qaStatus === 'approved' ? 'badge-success' : s.qaStatus === 'revision-needed' ? 'badge-danger' : 'badge-warning'}">${LaunchLocal.escapeHtml(s.qaStatus || '—')}</span>
+                        ${LaunchLocal.StatusPill.render(s.qaStatus || 'pending', { domain: 'qa', withIcon: true })}
                     </span></div>
                 </div>
             </div>
