@@ -136,53 +136,12 @@ img { max-width: 100%; height: auto; display: block; }
   transition: filter 0.3s ease, opacity 180ms ease;
   pointer-events: none;
 }
-.brand.is-video-active .brand-logo { opacity: 0; }
 :root[data-theme="dark"] .brand-logo {
   filter: brightness(0) invert(0.92);
-}
-/* Intro + hover videos overlay the static dog in the same spot.
-   Source videos are 960x960 with the dog isolated at x=313..650 y=310..510
-   (337x200 within the frame, surrounded by white padding). We scale the full
-   video to 307px (so the 200px dog → 64px tall matching PNG height), clip away
-   the padding with inset(), and position so the dog's bottom line lands at
-   bottom:-16px — same anchor as .brand-logo. */
-.brand-vid {
-  position: absolute;
-  left: -104px;    /* -4 (target left) minus 100 (dog left inside scaled video) */
-  bottom: -160px;  /* -16 (target bottom) minus 144 (space below dog in scaled video) */
-  width: 307px;
-  height: 307px;
-  max-width: none;
-  display: block;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 180ms ease;
-  clip-path: inset(99px 99px 144px 100px);
-  background: transparent;
-}
-.brand-vid.is-active { opacity: 1; }
-/* Heart particle canvas sits above and around the dog, non-blocking. */
-.brand-hearts {
-  position: absolute;
-  left: -24px;
-  bottom: -16px;
-  width: 140px;
-  height: 140px;
-  pointer-events: none;
-  z-index: 3;
-  image-rendering: pixelated;
 }
 @media (max-width: 480px) {
   .brand { height: 36px; width: 90px; }
   .brand-logo { height: 50px; bottom: -12px; }
-  /* Mobile: scale 50/200 = 0.25 → video 240x240, dog 85x50, inset redone */
-  .brand-vid {
-    width: 240px; height: 240px;
-    left: -82px;   /* -4 - 78 */
-    bottom: -125px; /* -12 - 113 */
-    clip-path: inset(78px 78px 112px 78px);
-  }
-  .brand-hearts { width: 110px; height: 110px; left: -20px; bottom: -12px; }
 }
 
 /* Subtle inline CTA — replaces the heavier .cta-band on shop page. */
