@@ -365,13 +365,17 @@
             function paint() {
                 const showClear = !isStateDefault(state, config);
                 wrapper.innerHTML = `
-                    ${renderSearch(config)}
-                    ${renderPills(config, state)}
-                    ${renderSelects(config, state)}
-                    ${renderDateRange(config, state)}
-                    ${renderQuickFilters(config, state)}
-                    ${renderSort(config, state)}
-                    ${renderClearAll(showClear)}
+                    <div class="filter-row filter-row-primary">
+                        ${renderPills(config, state)}
+                    </div>
+                    <div class="filter-row filter-row-secondary">
+                        ${renderSearch(config)}
+                        ${renderQuickFilters(config, state)}
+                        ${renderSelects(config, state)}
+                        ${renderDateRange(config, state)}
+                        ${renderSort(config, state)}
+                        ${renderClearAll(showClear)}
+                    </div>
                 `;
                 // Restore the search input value (paint blew it away)
                 const searchEl = wrapper.querySelector('[data-fb-search]');

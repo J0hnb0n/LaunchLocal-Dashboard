@@ -84,6 +84,7 @@ _Auto-maintained by the dashboard refresh (daily noon + Claude Code session-end 
 - [ ] Add online pre-order or pick-up form — let customers secure sandwiches before showing up
 - [ ] Build a seasonal specials section for rotating items like the Saskadelphia
 - [ ] Audit mobile performance — lazy-load or serve lower-weight frames under 768px
+- [ ] Smoke-test the new aspect-ratio mobile layout (b06bda1) on iOS Safari + Chrome Android, then port the same fixed-height fix into the other demo sites if any of them clip the same way
 
 ## Rules for Claude
 1. Read this file first, then identify which files are affected and state why
