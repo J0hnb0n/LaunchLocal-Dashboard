@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session Rates | Jörð Outdoor Spa — Turkey Point, Norfolk County</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --dark:      #0e1510;
+  --dark2:     #182018;
+  --dark3:     #1f2a1f;
+  --green:     #2d4a2d;
+  --green-lt:  #3d6b3d;
+  --ember:     #c8813a;
+  --ember-lt:  #e09a52;
+  --cream:     #f2ead8;
+  --cream2:    #e8dfc8;
+  --muted:     #8a9485;
+  --white:     #ffffff;
+  --radius:    12px;
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: 'Outfit', sans-serif; color: var(--cream); background: var(--dark); overflow-x: hidden; }
+h1,h2,h3,h4,h5 { font-family: 'Cormorant Garamond', serif; line-height: 1.15; }
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(14,21,16,0.96);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(242,234,216,0.08);
+  padding: 0 5%;
+  display: flex; align-items: center; gap: 20px;
+  height: 72px;
+}
+.nav-logo img { height: 44px; object-fit: contain; }
+.nav-links { display: flex; align-items: center; gap: 28px; margin-left: auto; }
+.nav-links a {
+  color: rgba(242,234,216,0.65); text-decoration: none;
+  font-size: 13.5px; font-weight: 500; letter-spacing: 0.04em;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--cream); }
+.nav-links a.active { color: var(--cream); }
+.nav-book {
+  background: var(--ember); color: var(--dark) !important;
+  padding: 9px 20px; border-radius: 8px;
+  font-weight: 600 !important; font-size: 13.5px !important;
+  transition: background 0.2s, transform 0.15s !important;
+}
+.nav-book:hover { background: var(--ember-lt) !important; transform: translateY(-1px); }
+.nav-toggle {
+  display: none; background: none; border: none;
+  color: var(--cream); font-size: 24px; cursor: pointer;
+  padding: 8px; line-height: 1;
+}
+
+/* ── SHARED ── */
+.section-tag {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--ember);
+  display: block; margin-bottom: 16px;
+}
+.section-title { font-size: clamp(34px, 4vw, 56px); font-weight: 300; color: var(--cream); }
+.section-title em { font-style: italic; }
+.btn-primary {
+  background: var(--ember); color: var(--dark);
+  padding: 14px 28px; border-radius: 8px;
+  font-size: 14px; font-weight: 600; text-decoration: none;
+  border: none; cursor: pointer; font-family: 'Outfit', sans-serif;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-primary:hover { background: var(--ember-lt); transform: translateY(-2px); }
+
+/* ── RATES ── */
+.rates { background: var(--dark2); padding: 140px 5% 100px; min-height: calc(100vh - 72px); }
+.rates-inner { max-width: 900px; margin: 0 auto; text-align: center; }
+.rates-head { margin-bottom: 60px; }
+.rates-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 48px; }
+.rate-card {
+  background: var(--dark3); border-radius: 16px;
+  padding: 40px 32px; border: 1px solid rgba(242,234,216,0.07);
+  text-align: center; transition: border-color 0.2s, transform 0.2s;
+  position: relative; overflow: hidden;
+}
+.rate-card:hover { border-color: rgba(200,129,58,0.3); transform: translateY(-4px); }
+.rate-card.featured {
+  border-color: rgba(200,129,58,0.4);
+  background: linear-gradient(135deg, rgba(200,129,58,0.08), var(--dark3));
+}
+.rate-card.featured::before {
+  content: 'Best Value';
+  position: absolute; top: 16px; right: 16px;
+  background: var(--ember); color: var(--dark);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 99px;
+  font-family: 'Outfit', sans-serif;
+}
+.rate-icon { font-size: 28px; margin-bottom: 18px; }
+.rate-name { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; color: var(--cream); margin-bottom: 8px; }
+.rate-price { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 300; color: var(--ember); line-height: 1; margin-bottom: 6px; }
+.rate-price sup { font-size: 20px; vertical-align: super; }
+.rate-note { font-size: 13px; color: var(--muted); margin-bottom: 24px; font-weight: 300; }
+.rate-desc { font-size: 13.5px; color: rgba(242,234,216,0.55); line-height: 1.65; font-weight: 300; margin-bottom: 28px; }
+.rate-includes { list-style: none; text-align: left; }
+.rate-includes li {
+  font-size: 13px; color: rgba(242,234,216,0.6);
+  padding: 7px 0; border-bottom: 1px solid rgba(242,234,216,0.06);
+  display: flex; align-items: center; gap: 9px; font-weight: 300;
+}
+.rate-includes li:last-child { border-bottom: none; }
+.rate-check { color: var(--ember); font-size: 13px; }
+
+/* ── FOOTER ── */
+footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(255,255,255,0.05); }
+.footer-inner { max-width: 1100px; margin: 0 auto; }
+.footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 32px; }
+.footer-logo img { height: 40px; margin-bottom: 16px; }
+.footer-tagline { font-size: 13.5px; color: rgba(242,234,216,0.35); line-height: 1.65; max-width: 220px; font-weight: 300; }
+.footer-col h4 { font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 700; color: rgba(242,234,216,0.8); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px; }
+.footer-col a, .footer-col p { display: block; font-size: 13.5px; color: rgba(242,234,216,0.38); text-decoration: none; margin-bottom: 10px; transition: color 0.2s; font-weight: 300; }
+.footer-col a:hover { color: rgba(242,234,216,0.72); }
+.footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.footer-bottom p { font-size: 12px; color: rgba(242,234,216,0.2); }
+.social-links { display: flex; gap: 12px; }
+.social-link { font-size: 12.5px; color: rgba(242,234,216,0.35); text-decoration: none; transition: color 0.2s; }
+.social-link:hover { color: var(--ember); }
+
+/* ── SCROLL REVEAL ── */
+.reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  nav { height: 60px; }
+  .nav-toggle { display: flex; align-items: center; }
+  .nav-links {
+    display: none; position: fixed;
+    top: 60px; left: 0; right: 0; bottom: 0;
+    height: calc(100vh - 60px);
+    flex-direction: column; align-items: center; justify-content: center;
+    gap: 32px; background: rgba(14,21,16,0.98);
+    backdrop-filter: blur(16px); z-index: 199; margin-left: 0;
+  }
+  .nav-links.open { display: flex; }
+  .nav-links a { font-size: 18px; color: var(--cream); }
+  .nav-book { margin-left: auto; font-size: 12px !important; padding: 8px 14px !important; }
+  .nav-book-full { display: none; }
+  .rates { padding: 100px 5% 60px; }
+  .rates-grid { grid-template-columns: 1fr; max-width: 400px; margin-left: auto; margin-right: auto; }
+  footer { padding: 40px 5% 28px; }
+  .footer-top { grid-template-columns: 1fr; gap: 32px; }
+  .footer-bottom { flex-direction: column; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" style="text-decoration:none;">
+    <img src="https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/dd9cadab-7313-4bbc-a318-d8e93badf2ba/Joro+2-24.png?format=1500w" alt="Jörð Outdoor Spa" style="height:44px; object-fit:contain;">
+  </a>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html#experience" onclick="closeNav()">The Experience</a>
+    <a href="rates.html" class="active" onclick="closeNav()">Session Rates</a>
+    <a href="private.html" onclick="closeNav()">Private Events</a>
+    <a href="journal.html" onclick="closeNav()">Wellness Journal</a>
+    <a href="faq.html" onclick="closeNav()">FAQ</a>
+  </div>
+  <a href="https://go.theflybook.com/book/374/EntityConfig/33213" target="_blank" class="nav-book">Book<span class="nav-book-full"> a Session</span></a>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu">&#9776;</button>
+</nav>
+
+<!-- RATES -->
+<section class="rates">
+  <div class="rates-inner">
+    <div class="rates-head reveal">
+      <span class="section-tag">Session Rates</span>
+      <h2 class="section-title">Simple, <em>transparent</em> pricing.</h2>
+      <p style="font-size:16px; color:var(--muted); font-weight:300; margin-top:14px; line-height:1.7;">Every session includes a robe, towel, flip flops, tea, and water. Come as you are.</p>
+    </div>
+    <div class="rates-grid">
+      <div class="rate-card reveal">
+        <div class="rate-icon">🔥</div>
+        <div class="rate-name">Drop In</div>
+        <div class="rate-price"><sup>$</sup>54<span style="font-size:22px;">.95</span></div>
+        <div class="rate-note">per person</div>
+        <div class="rate-desc">Perfect for first-timers or anyone wanting a standalone session. Includes full access to all amenities.</div>
+        <ul class="rate-includes">
+          <li><span class="rate-check">✓</span> Wood-fired sauna</li>
+          <li><span class="rate-check">✓</span> Cold plunge tubs</li>
+          <li><span class="rate-check">✓</span> Fire circle lounge</li>
+          <li><span class="rate-check">✓</span> Robe, towel & flip flops</li>
+          <li><span class="rate-check">✓</span> Tea & water included</li>
+        </ul>
+      </div>
+      <div class="rate-card featured reveal reveal-delay-1">
+        <div class="rate-icon">✦</div>
+        <div class="rate-name">4-Session Package</div>
+        <div class="rate-price"><sup>$</sup>211<span style="font-size:22px;">+</span></div>
+        <div class="rate-note">save 15% · shareable with household</div>
+        <div class="rate-desc">For those who've felt the difference and want to keep coming back. Packages can be shared within your household.</div>
+        <ul class="rate-includes">
+          <li><span class="rate-check">✓</span> Everything in Drop In</li>
+          <li><span class="rate-check">✓</span> 15% savings per visit</li>
+          <li><span class="rate-check">✓</span> Shareable with household</li>
+          <li><span class="rate-check">✓</span> Flexible scheduling</li>
+          <li><span class="rate-check">✓</span> Priority booking access</li>
+        </ul>
+      </div>
+      <div class="rate-card reveal reveal-delay-2">
+        <div class="rate-icon">🌊</div>
+        <div class="rate-name">8-Session Package</div>
+        <div class="rate-price"><sup>$</sup>351<span style="font-size:22px;">+</span></div>
+        <div class="rate-note">save 20% · shareable with household</div>
+        <div class="rate-desc">The full commitment to contrast therapy as a regular wellness practice. Maximum savings, maximum benefit.</div>
+        <ul class="rate-includes">
+          <li><span class="rate-check">✓</span> Everything in Drop In</li>
+          <li><span class="rate-check">✓</span> 20% savings per visit</li>
+          <li><span class="rate-check">✓</span> Shareable with household</li>
+          <li><span class="rate-check">✓</span> Flexible scheduling</li>
+          <li><span class="rate-check">✓</span> Priority booking access</li>
+        </ul>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:44px;" class="reveal">
+      <a href="https://go.theflybook.com/book/374/EntityConfig/33213" target="_blank" class="btn-primary">Book a Session Now</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">
+          <img src="https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/dd9cadab-7313-4bbc-a318-d8e93badf2ba/Joro+2-24.png?format=1500w" alt="Jörð Outdoor Spa">
+        </div>
+        <p class="footer-tagline">Norfolk's outdoor spa, helping you slow down and connect. Located inside Long Point Eco-Adventures.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Experience</h4>
+        <a href="index.html#experience">The Cycle</a>
+        <a href="rates.html">Session Rates</a>
+        <a href="private.html">Private Events</a>
+        <a href="https://go.theflybook.com/book/374/EntityConfig/33213" target="_blank">Book a Session</a>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <a href="journal.html">Wellness Journal</a>
+        <a href="faq.html">FAQ</a>
+        <a href="https://www.instagram.com/joro.well/" target="_blank">Instagram</a>
+        <a href="https://www.jorooutdoorspa.com/giftcards" target="_blank">Gift Cards</a>
+      </div>
+      <div class="footer-col">
+        <h4>Visit Us</h4>
+        <p>1730 Front Road</p>
+        <p>Turkey Point, ON</p>
+        <p>(226) 567-2772</p>
+        <p>joro.wellspa@gmail.com</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Jörð Outdoor Spa. All rights reserved.</p>
+      <div class="social-links">
+        <a href="https://www.instagram.com/joro.well/" target="_blank" class="social-link">Instagram</a>
+        <a href="https://go.theflybook.com/book/374/EntityConfig/33213" target="_blank" class="social-link">Book Now</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleNav() { document.getElementById('navLinks').classList.toggle('open'); }
+function closeNav() { document.getElementById('navLinks').classList.remove('open'); }
+
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); revealObs.unobserve(e.target); }});
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+</script>
+</body>
+</html>

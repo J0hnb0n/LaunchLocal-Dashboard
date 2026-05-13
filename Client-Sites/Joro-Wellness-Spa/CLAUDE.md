@@ -25,7 +25,11 @@ The main `index.html` has been cleaned of pitch-only demo features (re-engagemen
 ```
 Joro/
 ├── CLAUDE.md             ← this file
-├── index.html            ← the website (cleaned, ready for Squarespace port)
+├── index.html            ← Home page (hero, experience, about, reviews, newsletter)
+├── rates.html            ← Session Rates page
+├── private.html          ← Private & Group Events page (with booking form)
+├── journal.html          ← Wellness Journal page (articles + modal reader)
+├── faq.html              ← FAQ page (accordion)
 ├── roadmap.html          ← implementation order of operations (visual)
 ├── SALES-CHEATSHEET.md   ← original pitch material (kept for reference)
 ├── Dashboard/            ← UPSELL: 2025 KPI dashboard (sub-project)
@@ -33,7 +37,7 @@ Joro/
 ```
 
 ## Stack (website)
-- Vanilla HTML/CSS/JS — single file, no build step
+- Vanilla HTML/CSS/JS — multi-page, inline CSS per page (each page is self-contained for Squarespace copy-paste), no build step
 - Fonts: Cormorant Garamond + Outfit (Google Fonts CDN)
 - Images: Joro's live Squarespace CDN URLs
 - Final destination: Drew's Squarespace (port pending — see Phase 2 in roadmap.html)
@@ -42,17 +46,18 @@ Joro/
 - `--dark: #0e1510` · `--ember: #c8813a` · `--cream: #f2ead8`
 - Classy, sleek, professional. The pitch-era "✦ New Feature" badges and ember-glow borders have been removed.
 
-## Website Features (live in index.html)
-| Feature | Notes |
-|---------|-------|
-| Hero + experience cycle | Hot → cold → fire circle storytelling |
-| Session rates | Drop-in / 4-pack / 8-pack / private |
-| Private Booking form | Full form (name, email, phone, event type, group size, date, notes); confirmation state on submit |
-| FlyBook embed | Third-party booking widget |
-| Wellness Journal | 2 articles with modal reader — "Science of Contrast Therapy", "Your First Cold Plunge" |
-| Google Reviews | Auto-scrolling carousel |
-| FAQ accordion | 9 expandable Q&As |
-| Newsletter signup | Email capture |
+## Website Features (multi-page, May 2026)
+| Page | Feature | Notes |
+|------|---------|-------|
+| `index.html` | Hero + experience cycle | Hot → cold → fire circle storytelling |
+| `index.html` | About / Our Story | Location context, CTA |
+| `index.html` | Google Reviews | Auto-scrolling carousel, 8 reviews |
+| `index.html` | Newsletter signup | Email capture |
+| `rates.html` | Session rates | Drop-in / 4-pack / 8-pack pricing cards |
+| `private.html` | Private Booking form | Full form (name, email, phone, event type, group size, date, notes); confirmation state on submit |
+| `journal.html` | Wellness Journal | 2 articles with modal reader — "Science of Contrast Therapy", "Your First Cold Plunge" |
+| `faq.html` | FAQ accordion | 9 expandable Q&As |
+| All pages | FlyBook booking link | Third-party booking via nav button |
 
 ## Removed from website (pitch-only)
 - **AI Chatbot** — Drew passed for now. Not preserved as an upsell folder; if Drew revisits, rebuild from scratch.

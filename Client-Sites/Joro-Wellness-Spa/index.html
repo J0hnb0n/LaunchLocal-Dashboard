@@ -46,6 +46,7 @@ nav {
   transition: color 0.2s;
 }
 .nav-links a:hover { color: var(--cream); }
+.nav-links a.active { color: var(--cream); }
 .nav-book {
   background: var(--ember); color: var(--dark) !important;
   padding: 9px 20px; border-radius: 8px;
@@ -123,10 +124,7 @@ nav {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── PILLARS ── */
-.pillars { background: var(--dark2); padding: 100px 5%; }
-.pillars-inner { max-width: 1100px; margin: 0 auto; }
-.pillars-head { text-align: center; margin-bottom: 70px; }
+/* ── SHARED ── */
 .section-tag {
   font-family: 'Outfit', sans-serif;
   font-size: 11px; font-weight: 700; letter-spacing: 0.16em;
@@ -135,6 +133,11 @@ nav {
 }
 .section-title { font-size: clamp(34px, 4vw, 56px); font-weight: 300; color: var(--cream); }
 .section-title em { font-style: italic; }
+
+/* ── PILLARS ── */
+.pillars { background: var(--dark2); padding: 100px 5%; }
+.pillars-inner { max-width: 1100px; margin: 0 auto; }
+.pillars-head { text-align: center; margin-bottom: 70px; }
 .pillars-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
 .pillar {
   position: relative; overflow: hidden;
@@ -176,235 +179,12 @@ nav {
   font-size: 13px; font-weight: 500; margin-bottom: 32px;
 }
 
-/* ── RATES ── */
-.rates { background: var(--dark2); padding: 100px 5%; }
-.rates-inner { max-width: 900px; margin: 0 auto; text-align: center; }
-.rates-head { margin-bottom: 60px; }
-.rates-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 48px; }
-.rate-card {
-  background: var(--dark3); border-radius: 16px;
-  padding: 40px 32px; border: 1px solid rgba(242,234,216,0.07);
-  text-align: center; transition: border-color 0.2s, transform 0.2s;
-  position: relative; overflow: hidden;
-}
-.rate-card:hover { border-color: rgba(200,129,58,0.3); transform: translateY(-4px); }
-.rate-card.featured {
-  border-color: rgba(200,129,58,0.4);
-  background: linear-gradient(135deg, rgba(200,129,58,0.08), var(--dark3));
-}
-.rate-card.featured::before {
-  content: 'Best Value';
-  position: absolute; top: 16px; right: 16px;
-  background: var(--ember); color: var(--dark);
-  font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
-  text-transform: uppercase; padding: 4px 10px; border-radius: 99px;
-  font-family: 'Outfit', sans-serif;
-}
-.rate-icon { font-size: 28px; margin-bottom: 18px; }
-.rate-name { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; color: var(--cream); margin-bottom: 8px; }
-.rate-price { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 300; color: var(--ember); line-height: 1; margin-bottom: 6px; }
-.rate-price sup { font-size: 20px; vertical-align: super; }
-.rate-note { font-size: 13px; color: var(--muted); margin-bottom: 24px; font-weight: 300; }
-.rate-desc { font-size: 13.5px; color: rgba(242,234,216,0.55); line-height: 1.65; font-weight: 300; margin-bottom: 28px; }
-.rate-includes { list-style: none; text-align: left; }
-.rate-includes li {
-  font-size: 13px; color: rgba(242,234,216,0.6);
-  padding: 7px 0; border-bottom: 1px solid rgba(242,234,216,0.06);
-  display: flex; align-items: center; gap: 9px; font-weight: 300;
-}
-.rate-includes li:last-child { border-bottom: none; }
-.rate-check { color: var(--ember); font-size: 13px; }
-
-/* ── PRIVATE BOOKING SECTION (NEW FEATURE) ── */
-.private-booking { padding: 100px 5%; background: var(--dark); }
-.private-inner {
-  max-width: 1000px; margin: 0 auto;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 70px; align-items: start;
-}
-.private-left .section-title { margin-bottom: 20px; }
-.private-left p { font-size: 15px; color: rgba(242,234,216,0.6); line-height: 1.8; font-weight: 300; margin-bottom: 16px; }
-.private-feature {
-  display: flex; align-items: flex-start; gap: 14px;
-  padding: 14px 0; border-bottom: 1px solid rgba(242,234,216,0.07);
-}
-.private-feature:last-child { border-bottom: none; }
-.pf-icon {
-  width: 36px; height: 36px; border-radius: 8px;
-  background: rgba(200,129,58,0.12); border: 1px solid rgba(200,129,58,0.2);
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  font-size: 16px;
-}
-.pf-label { font-size: 14px; font-weight: 500; color: var(--cream); margin-bottom: 3px; }
-.pf-desc { font-size: 13px; color: var(--muted); font-weight: 300; line-height: 1.5; }
-
-.private-form {
-  background: var(--dark2); border: 1px solid rgba(242,234,216,0.1);
-  border-radius: 18px; padding: 36px;
-}
-.private-form h3 {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 24px; font-weight: 400; color: var(--cream); margin-bottom: 24px;
-}
-.form-group { margin-bottom: 14px; }
-.form-group label {
-  display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.07em;
-  text-transform: uppercase; color: rgba(242,234,216,0.45); margin-bottom: 7px;
-}
-.form-group input, .form-group select, .form-group textarea {
-  width: 100%; background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(242,234,216,0.12);
-  border-radius: 8px; padding: 11px 14px;
-  font-size: 14px; color: var(--cream); outline: none;
-  font-family: 'Outfit', sans-serif;
-  transition: border-color 0.2s;
-}
-.form-group input::placeholder, .form-group textarea::placeholder { color: rgba(242,234,216,0.25); }
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: rgba(200,129,58,0.5); }
-.form-group select option { background: #1f2a1f; color: var(--cream); }
-.form-group textarea { resize: vertical; min-height: 80px; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.form-submit {
-  width: 100%; padding: 13px; background: var(--ember); color: var(--dark);
-  border: none; border-radius: 8px; font-size: 14px; font-weight: 600;
-  cursor: pointer; font-family: 'Outfit', sans-serif;
-  transition: background 0.2s, transform 0.15s; margin-top: 6px;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-}
-.form-submit:hover { background: var(--ember-lt); transform: translateY(-1px); }
-.form-success {
-  display: none; text-align: center; padding: 28px;
-  background: rgba(200,129,58,0.08); border-radius: 10px;
-  border: 1px solid rgba(200,129,58,0.2);
-}
-.form-success h4 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; color: var(--cream); margin-bottom: 10px; }
-.form-success p { font-size: 14px; color: var(--muted); font-weight: 300; line-height: 1.6; }
-
-/* ── NEWSLETTER ── */
-.newsletter { background: var(--dark3); padding: 80px 5%; }
-.newsletter-inner {
-  max-width: 600px; margin: 0 auto; text-align: center;
-}
-.newsletter h2 { font-size: 38px; font-weight: 300; color: var(--cream); margin-bottom: 12px; }
-.newsletter p { font-size: 15px; color: var(--muted); line-height: 1.7; font-weight: 300; margin-bottom: 36px; }
-.nl-form { display: flex; gap: 10px; max-width: 440px; margin: 0 auto; }
-.nl-input {
-  flex: 1; background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(242,234,216,0.15); border-radius: 8px;
-  padding: 12px 16px; font-size: 14px; color: var(--cream);
-  font-family: 'Outfit', sans-serif; outline: none;
-}
-.nl-input::placeholder { color: rgba(242,234,216,0.3); }
-.nl-input:focus { border-color: rgba(200,129,58,0.5); }
-.nl-btn {
-  background: var(--ember); color: var(--dark); border: none;
-  padding: 12px 22px; border-radius: 8px; font-size: 14px;
-  font-weight: 600; cursor: pointer; font-family: 'Outfit', sans-serif;
-  white-space: nowrap; transition: background 0.2s;
-}
-.nl-btn:hover { background: var(--ember-lt); }
-.nl-note { font-size: 12px; color: rgba(242,234,216,0.3); margin-top: 14px; }
-
-/* ── BLOG / WELLNESS JOURNAL ── */
-.journal { padding: 100px 5%; background: var(--dark); }
-.journal-inner { max-width: 1100px; margin: 0 auto; }
-.journal-head { margin-bottom: 60px; }
-.journal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 48px; }
-.article-card {
-  background: var(--dark2); border-radius: 16px; overflow: hidden;
-  border: 1px solid rgba(242,234,216,0.07);
-  transition: border-color 0.2s, transform 0.2s; cursor: pointer;
-}
-.article-card:hover { border-color: rgba(200,129,58,0.25); transform: translateY(-4px); }
-.article-img { width: 100%; height: 220px; object-fit: cover; display: block; }
-.article-body { padding: 28px; }
-.article-tag {
-  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
-  text-transform: uppercase; color: var(--ember); margin-bottom: 12px;
-  font-family: 'Outfit', sans-serif;
-}
-.article-title { font-size: 24px; font-weight: 400; color: var(--cream); margin-bottom: 12px; line-height: 1.25; }
-.article-excerpt { font-size: 14px; color: var(--muted); line-height: 1.7; font-weight: 300; margin-bottom: 20px; }
-.article-meta { display: flex; align-items: center; gap: 10px; font-size: 12px; color: rgba(242,234,216,0.35); font-family: 'Outfit', sans-serif; }
-.article-read { color: var(--ember); text-decoration: none; font-size: 13px; font-weight: 500; margin-top: 14px; display: inline-flex; align-items: center; gap: 5px; transition: gap 0.2s; }
-.article-read:hover { gap: 9px; }
-
-/* Article modal */
-.article-modal {
-  display: none; position: fixed; inset: 0; z-index: 500;
-  background: rgba(0,0,0,0.75); backdrop-filter: blur(6px);
-  overflow-y: auto; padding: 40px 5%;
-}
-.article-modal.open { display: flex; align-items: flex-start; justify-content: center; }
-.article-modal-inner {
-  background: var(--dark2); border-radius: 20px;
-  max-width: 740px; width: 100%; margin: auto;
-  border: 1px solid rgba(242,234,216,0.1); overflow: hidden;
-}
-.article-modal-img { width: 100%; height: 320px; object-fit: cover; }
-.article-modal-body { padding: 48px; }
-.article-modal-tag { font-size: 10.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ember); margin-bottom: 14px; font-family: 'Outfit', sans-serif; }
-.article-modal-title { font-size: 38px; font-weight: 300; color: var(--cream); margin-bottom: 12px; line-height: 1.2; }
-.article-modal-meta { font-size: 12.5px; color: rgba(242,234,216,0.35); margin-bottom: 32px; font-family: 'Outfit', sans-serif; }
-.article-modal-body p { font-size: 16px; color: rgba(242,234,216,0.72); line-height: 1.85; font-weight: 300; margin-bottom: 20px; }
-.article-modal-body h3 { font-size: 24px; font-weight: 400; color: var(--cream); margin: 32px 0 12px; }
-.modal-close {
-  position: absolute; top: 16px; right: 16px;
-  background: rgba(0,0,0,0.5); border: none; color: var(--cream);
-  width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
-  font-size: 18px; display: flex; align-items: center; justify-content: center;
-}
-.article-modal-inner { position: relative; }
-
-/* ── FAQs ── */
-.faq-section { padding: 100px 5%; background: var(--dark2); }
-.faq-inner { max-width: 800px; margin: 0 auto; }
-.faq-head { text-align: center; margin-bottom: 56px; }
-.faq-item {
-  border-bottom: 1px solid rgba(242,234,216,0.08);
-  overflow: hidden;
-}
-.faq-q {
-  width: 100%; background: transparent; border: none; color: var(--cream);
-  padding: 20px 0; display: flex; align-items: center; justify-content: space-between;
-  font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 400;
-  cursor: pointer; text-align: left; gap: 16px;
-  transition: color 0.2s;
-}
-.faq-q:hover { color: var(--ember); }
-.faq-chevron { font-size: 12px; color: var(--ember); transition: transform 0.3s; flex-shrink: 0; }
-.faq-chevron.open { transform: rotate(180deg); }
-.faq-a { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
-.faq-a-inner { padding: 0 0 20px; font-size: 14.5px; color: rgba(242,234,216,0.6); line-height: 1.75; font-weight: 300; }
-
-/* ── FOOTER ── */
-footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(255,255,255,0.05); }
-.footer-inner { max-width: 1100px; margin: 0 auto; }
-.footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 32px; }
-.footer-logo img { height: 40px; margin-bottom: 16px; }
-.footer-tagline { font-size: 13.5px; color: rgba(242,234,216,0.35); line-height: 1.65; max-width: 220px; font-weight: 300; }
-.footer-col h4 { font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 700; color: rgba(242,234,216,0.8); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px; }
-.footer-col a, .footer-col p { display: block; font-size: 13.5px; color: rgba(242,234,216,0.38); text-decoration: none; margin-bottom: 10px; transition: color 0.2s; font-weight: 300; }
-.footer-col a:hover { color: rgba(242,234,216,0.72); }
-.footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-.footer-bottom p { font-size: 12px; color: rgba(242,234,216,0.2); }
-.social-links { display: flex; gap: 12px; }
-.social-link { font-size: 12.5px; color: rgba(242,234,216,0.35); text-decoration: none; transition: color 0.2s; }
-.social-link:hover { color: var(--ember); }
-
-/* ── SCROLL REVEAL ── */
-.reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
-.reveal.visible { opacity: 1; transform: none; }
-.reveal-delay-1 { transition-delay: 0.1s; }
-.reveal-delay-2 { transition-delay: 0.2s; }
-.reveal-delay-3 { transition-delay: 0.3s; }
-
 /* ── GOOGLE REVIEWS ── */
 .reviews-section { padding: 100px 0; background: var(--dark3); overflow: hidden; }
 .reviews-inner { max-width: 1100px; margin: 0 auto; }
 .reviews-head { margin-bottom: 56px; }
 .reviews-rating-row { display: flex; align-items: center; gap: 18px; margin-top: 18px; }
 .reviews-big-score { font-family: 'Cormorant Garamond', serif; font-size: 64px; font-weight: 300; color: var(--cream); line-height: 1; }
-.reviews-meta { }
 .reviews-stars-row { color: #f5a623; font-size: 22px; letter-spacing: 2px; margin-bottom: 5px; }
 .reviews-count { font-size: 13px; color: var(--muted); font-weight: 300; }
 .reviews-google-badge { display: inline-flex; align-items: center; gap: 7px; margin-top: 8px; font-size: 12px; color: rgba(242,234,216,0.4); font-weight: 400; }
@@ -447,9 +227,55 @@ footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(
 .reviews-cta a { font-size: 14px; color: var(--ember); text-decoration: none; font-weight: 500; border-bottom: 1px solid rgba(200,129,58,0.3); padding-bottom: 2px; transition: border-color 0.2s; }
 .reviews-cta a:hover { border-color: var(--ember); }
 
+/* ── NEWSLETTER ── */
+.newsletter { background: var(--dark3); padding: 80px 5%; }
+.newsletter-inner {
+  max-width: 600px; margin: 0 auto; text-align: center;
+}
+.newsletter h2 { font-size: 38px; font-weight: 300; color: var(--cream); margin-bottom: 12px; }
+.newsletter p { font-size: 15px; color: var(--muted); line-height: 1.7; font-weight: 300; margin-bottom: 36px; }
+.nl-form { display: flex; gap: 10px; max-width: 440px; margin: 0 auto; }
+.nl-input {
+  flex: 1; background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(242,234,216,0.15); border-radius: 8px;
+  padding: 12px 16px; font-size: 14px; color: var(--cream);
+  font-family: 'Outfit', sans-serif; outline: none;
+}
+.nl-input::placeholder { color: rgba(242,234,216,0.3); }
+.nl-input:focus { border-color: rgba(200,129,58,0.5); }
+.nl-btn {
+  background: var(--ember); color: var(--dark); border: none;
+  padding: 12px 22px; border-radius: 8px; font-size: 14px;
+  font-weight: 600; cursor: pointer; font-family: 'Outfit', sans-serif;
+  white-space: nowrap; transition: background 0.2s;
+}
+.nl-btn:hover { background: var(--ember-lt); }
+.nl-note { font-size: 12px; color: rgba(242,234,216,0.3); margin-top: 14px; }
+
+/* ── FOOTER ── */
+footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(255,255,255,0.05); }
+.footer-inner { max-width: 1100px; margin: 0 auto; }
+.footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 32px; }
+.footer-logo img { height: 40px; margin-bottom: 16px; }
+.footer-tagline { font-size: 13.5px; color: rgba(242,234,216,0.35); line-height: 1.65; max-width: 220px; font-weight: 300; }
+.footer-col h4 { font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 700; color: rgba(242,234,216,0.8); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px; }
+.footer-col a, .footer-col p { display: block; font-size: 13.5px; color: rgba(242,234,216,0.38); text-decoration: none; margin-bottom: 10px; transition: color 0.2s; font-weight: 300; }
+.footer-col a:hover { color: rgba(242,234,216,0.72); }
+.footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.footer-bottom p { font-size: 12px; color: rgba(242,234,216,0.2); }
+.social-links { display: flex; gap: 12px; }
+.social-link { font-size: 12.5px; color: rgba(242,234,216,0.35); text-decoration: none; transition: color 0.2s; }
+.social-link:hover { color: var(--ember); }
+
+/* ── SCROLL REVEAL ── */
+.reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+
 /* ── RESPONSIVE ── */
 @media (max-width: 768px) {
-  /* NAV */
   nav { height: 60px; }
   .nav-toggle { display: flex; align-items: center; }
   .nav-links {
@@ -464,59 +290,25 @@ footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(
   .nav-links a { font-size: 18px; color: var(--cream); }
   .nav-book { margin-left: auto; font-size: 12px !important; padding: 8px 14px !important; }
   .nav-book-full { display: none; }
-
-  /* HERO */
   .hero { min-height: 85vh; }
   .hero-inner { padding: 0 6% 60px; }
   .hero-sub { font-size: 16px; }
-
-  /* PILLARS */
   .pillars { padding: 60px 5%; }
   .pillars-head { margin-bottom: 40px; }
   .pillars-grid { grid-template-columns: 1fr; gap: 16px; }
   .pillar { aspect-ratio: 4/3; }
-
-  /* ABOUT */
   .about { padding: 60px 5%; }
   .about-inner { grid-template-columns: 1fr; gap: 40px; }
   .about-img img { height: 300px; }
-
-  /* RATES */
-  .rates { padding: 60px 5%; }
-  .rates-grid { grid-template-columns: 1fr; max-width: 400px; margin-left: auto; margin-right: auto; }
-
-  /* PRIVATE BOOKING */
-  .private-booking { padding: 60px 5%; }
-  .private-inner { grid-template-columns: 1fr; gap: 40px; }
-  .form-row { grid-template-columns: 1fr; }
-
-  /* NEWSLETTER */
-  .newsletter { padding: 50px 5%; }
-  .nl-form { flex-direction: column; }
-
-  /* JOURNAL */
-  .journal { padding: 60px 5%; }
-  .journal-grid { grid-template-columns: 1fr; }
-
-  /* REVIEWS */
   .reviews-section { padding: 60px 0; }
   .reviews-big-score { font-size: 48px; }
   .reviews-track-wrap::before, .reviews-track-wrap::after { width: 60px; }
   .review-card { width: 280px; }
-
-  /* FAQ */
-  .faq-section { padding: 60px 5%; }
-
-  /* FOOTER */
+  .newsletter { padding: 50px 5%; }
+  .nl-form { flex-direction: column; }
   footer { padding: 40px 5% 28px; }
   .footer-top { grid-template-columns: 1fr; gap: 32px; }
   .footer-bottom { flex-direction: column; text-align: center; }
-
-  /* ARTICLE MODAL */
-  .article-modal { padding: 20px 4%; }
-  .article-modal-img { height: 200px; }
-  .article-modal-body { padding: 28px; }
-  .article-modal-title { font-size: 28px; }
 }
 </style>
 </head>
@@ -524,15 +316,15 @@ footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(
 
 <!-- NAV -->
 <nav>
-  <a href="#" style="text-decoration:none;">
+  <a href="index.html" style="text-decoration:none;">
     <img src="https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/dd9cadab-7313-4bbc-a318-d8e93badf2ba/Joro+2-24.png?format=1500w" alt="Jörð Outdoor Spa" style="height:44px; object-fit:contain;">
   </a>
   <div class="nav-links" id="navLinks">
     <a href="#experience" onclick="closeNav()">The Experience</a>
-    <a href="#rates" onclick="closeNav()">Session Rates</a>
-    <a href="#private" onclick="closeNav()">Private Events</a>
-    <a href="#journal" onclick="closeNav()">Wellness Journal</a>
-    <a href="#faq" onclick="closeNav()">FAQ</a>
+    <a href="rates.html" onclick="closeNav()">Session Rates</a>
+    <a href="private.html" onclick="closeNav()">Private Events</a>
+    <a href="journal.html" onclick="closeNav()">Wellness Journal</a>
+    <a href="faq.html" onclick="closeNav()">FAQ</a>
   </div>
   <a href="https://go.theflybook.com/book/374/EntityConfig/33213" target="_blank" class="nav-book">Book<span class="nav-book-full"> a Session</span></a>
   <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu">&#9776;</button>
@@ -614,228 +406,6 @@ footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(
   </div>
 </section>
 
-<!-- RATES -->
-<section class="rates" id="rates">
-  <div class="rates-inner">
-    <div class="rates-head reveal">
-      <span class="section-tag">Session Rates</span>
-      <h2 class="section-title">Simple, <em>transparent</em> pricing.</h2>
-      <p style="font-size:16px; color:var(--muted); font-weight:300; margin-top:14px; line-height:1.7;">Every session includes a robe, towel, flip flops, tea, and water. Come as you are.</p>
-    </div>
-    <div class="rates-grid">
-      <div class="rate-card reveal">
-        <div class="rate-icon">🔥</div>
-        <div class="rate-name">Drop In</div>
-        <div class="rate-price"><sup>$</sup>54<span style="font-size:22px;">.95</span></div>
-        <div class="rate-note">per person</div>
-        <div class="rate-desc">Perfect for first-timers or anyone wanting a standalone session. Includes full access to all amenities.</div>
-        <ul class="rate-includes">
-          <li><span class="rate-check">✓</span> Wood-fired sauna</li>
-          <li><span class="rate-check">✓</span> Cold plunge tubs</li>
-          <li><span class="rate-check">✓</span> Fire circle lounge</li>
-          <li><span class="rate-check">✓</span> Robe, towel & flip flops</li>
-          <li><span class="rate-check">✓</span> Tea & water included</li>
-        </ul>
-      </div>
-      <div class="rate-card featured reveal reveal-delay-1">
-        <div class="rate-icon">✦</div>
-        <div class="rate-name">4-Session Package</div>
-        <div class="rate-price"><sup>$</sup>211<span style="font-size:22px;">+</span></div>
-        <div class="rate-note">save 15% · shareable with household</div>
-        <div class="rate-desc">For those who've felt the difference and want to keep coming back. Packages can be shared within your household.</div>
-        <ul class="rate-includes">
-          <li><span class="rate-check">✓</span> Everything in Drop In</li>
-          <li><span class="rate-check">✓</span> 15% savings per visit</li>
-          <li><span class="rate-check">✓</span> Shareable with household</li>
-          <li><span class="rate-check">✓</span> Flexible scheduling</li>
-          <li><span class="rate-check">✓</span> Priority booking access</li>
-        </ul>
-      </div>
-      <div class="rate-card reveal reveal-delay-2">
-        <div class="rate-icon">🌊</div>
-        <div class="rate-name">8-Session Package</div>
-        <div class="rate-price"><sup>$</sup>351<span style="font-size:22px;">+</span></div>
-        <div class="rate-note">save 20% · shareable with household</div>
-        <div class="rate-desc">The full commitment to contrast therapy as a regular wellness practice. Maximum savings, maximum benefit.</div>
-        <ul class="rate-includes">
-          <li><span class="rate-check">✓</span> Everything in Drop In</li>
-          <li><span class="rate-check">✓</span> 20% savings per visit</li>
-          <li><span class="rate-check">✓</span> Shareable with household</li>
-          <li><span class="rate-check">✓</span> Flexible scheduling</li>
-          <li><span class="rate-check">✓</span> Priority booking access</li>
-        </ul>
-      </div>
-    </div>
-    <div style="text-align:center; margin-top:44px;" class="reveal">
-      <a href="https://go.theflybook.com/book/374/EntityConfig/33213" target="_blank" class="btn-primary">Book a Session Now</a>
-    </div>
-  </div>
-</section>
-
-<!-- PRIVATE BOOKING -->
-<section class="private-booking" id="private">
-  <div class="private-inner">
-    <div class="private-left reveal">
-      <span class="section-tag">Private & Group Events</span>
-      <h2 class="section-title">The whole space,<br><em>just for you.</em></h2>
-      <p>Whether it's a corporate retreat, birthday, bachelorette, or a crew that wants the space to themselves — Joro makes it happen. Starting from $249.95 with custom time allotments.</p>
-      <div style="margin-top: 32px;">
-        <div class="private-feature">
-          <div class="pf-icon">🏢</div>
-          <div>
-            <div class="pf-label">Corporate & Team Events</div>
-            <div class="pf-desc">Wellness days, team retreats, client entertainment. Unforgettable and fully catered to your group.</div>
-          </div>
-        </div>
-        <div class="private-feature">
-          <div class="pf-icon">🎉</div>
-          <div>
-            <div class="pf-label">Celebrations</div>
-            <div class="pf-desc">Birthdays, bachelorettes, anniversaries. Private access to the full Joro experience.</div>
-          </div>
-        </div>
-        <div class="private-feature">
-          <div class="pf-icon">👥</div>
-          <div>
-            <div class="pf-label">Group Bookings</div>
-            <div class="pf-desc">Groups of any size welcome. Discounts available for larger parties.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="reveal reveal-delay-1">
-      <div class="private-form">
-        <h3>Request a Private Session</h3>
-        <div id="privateFormWrap">
-          <div class="form-row">
-            <div class="form-group">
-              <label>First Name</label>
-              <input type="text" placeholder="Your name">
-            </div>
-            <div class="form-group">
-              <label>Last Name</label>
-              <input type="text" placeholder="Last name">
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" placeholder="you@email.com">
-          </div>
-          <div class="form-group">
-            <label>Phone</label>
-            <input type="tel" placeholder="(226) 000-0000">
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Event Type</label>
-              <select>
-                <option value="">Select type...</option>
-                <option>Corporate / Team Day</option>
-                <option>Birthday</option>
-                <option>Bachelorette / Bachelor</option>
-                <option>Anniversary</option>
-                <option>Group of Friends</option>
-                <option>Other</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Group Size</label>
-              <select>
-                <option value="">Guests...</option>
-                <option>2–5 guests</option>
-                <option>6–10 guests</option>
-                <option>11–20 guests</option>
-                <option>20+ guests</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Preferred Date</label>
-            <input type="date">
-          </div>
-          <div class="form-group">
-            <label>Notes</label>
-            <textarea placeholder="Any special requests, dietary needs, or questions..."></textarea>
-          </div>
-          <button class="form-submit" onclick="submitPrivateForm()">
-            Send Request
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
-          <p style="text-align:center; font-size:12px; color:rgba(242,234,216,0.25); margin-top:12px; font-weight:300;">We'll respond within one business day.</p>
-        </div>
-        <div class="form-success" id="privateSuccess">
-          <div style="font-size:32px; margin-bottom:14px;">🌿</div>
-          <h4>Request received — thank you.</h4>
-          <p>Drew will be in touch within one business day to confirm your date and arrange the details. We can't wait to host you.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- NEWSLETTER -->
-<section class="newsletter">
-  <div class="newsletter-inner reveal">
-    <span class="section-tag">Stay Connected</span>
-    <h2>The Connection Plunge</h2>
-    <p>Monthly wellness tips, upcoming events, and special offers — delivered to your inbox by the Joro team.</p>
-    <div class="nl-form">
-      <input class="nl-input" type="email" placeholder="Your email address">
-      <button class="nl-btn" onclick="this.textContent='✓ Joined!'">Sign Up</button>
-    </div>
-    <p class="nl-note">No spam. Unsubscribe anytime.</p>
-  </div>
-</section>
-
-<!-- WELLNESS JOURNAL -->
-<section class="journal" id="journal">
-  <div class="journal-inner">
-    <div class="journal-head reveal">
-      <span class="section-tag">Content & SEO</span>
-      <h2 class="section-title">The Jörð <em>Wellness Journal</em></h2>
-      <p style="font-size:15px; color:var(--muted); font-weight:300; line-height:1.7; max-width:540px; margin-top:14px;">Stories, science, and guides from the Joro team — helping new guests discover contrast therapy and giving regulars more to explore.</p>
-    </div>
-    <div class="journal-grid">
-      <div class="article-card reveal" onclick="openArticle(0)">
-        <img class="article-img" src="https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/8417f644-0ef3-4353-a71c-e2d2c137801a/April+Content+Night-16.jpg" alt="Contrast therapy science">
-        <div class="article-body">
-          <div class="article-tag">Wellness Science</div>
-          <h3 class="article-title">The Science of Contrast Therapy: What Actually Happens to Your Body</h3>
-          <p class="article-excerpt">From the moment you step into the sauna, a cascade of physiological responses begins. Here's what the research actually says about hot-cold cycling.</p>
-          <div class="article-meta">
-            <span>By Joro Team</span>
-            <span>·</span>
-            <span>6 min read</span>
-          </div>
-          <a href="#" class="article-read" onclick="event.stopPropagation(); openArticle(0)">Read article →</a>
-        </div>
-      </div>
-      <div class="article-card reveal reveal-delay-1" onclick="openArticle(1)">
-        <img class="article-img" src="https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/bcab9b6f-0449-4ec5-87ec-3cee69f7ca52/Joro+Men+Cold+Plunge.jpg" alt="Cold plunge guide">
-        <div class="article-body">
-          <div class="article-tag">Beginner's Guide</div>
-          <h3 class="article-title">Your First Cold Plunge: What to Expect, and Why You'll Come Back</h3>
-          <p class="article-excerpt">The cold plunge intimidates almost everyone before their first time. Here's an honest guide to what actually happens — and why the guests who try it almost always come back for more.</p>
-          <div class="article-meta">
-            <span>By Joro Team</span>
-            <span>·</span>
-            <span>5 min read</span>
-          </div>
-          <a href="#" class="article-read" onclick="event.stopPropagation(); openArticle(1)">Read article →</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Article Modal -->
-<div class="article-modal" id="articleModal" onclick="if(event.target===this)closeArticle()">
-  <div class="article-modal-inner" id="articleModalInner">
-    <button class="modal-close" onclick="closeArticle()">✕</button>
-    <!-- Filled by JS -->
-  </div>
-</div>
-
 <!-- GOOGLE REVIEWS -->
 <section class="reviews-section" id="reviews">
   <div class="reviews-inner">
@@ -867,19 +437,22 @@ footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(
     </div>
 
     <div class="reviews-cta reveal" style="padding: 0 5%;">
-      <a href="https://www.google.com/search?q=Joro+Outdoor+Spa+Turkey+Point" target="_blank">Read all reviews on Google →</a>
+      <a href="https://www.google.com/search?q=Joro+Outdoor+Spa+Turkey+Point" target="_blank">Read all reviews on Google &rarr;</a>
     </div>
   </div>
 </section>
 
-<!-- FAQs -->
-<section class="faq-section" id="faq">
-  <div class="faq-inner">
-    <div class="faq-head reveal">
-      <span class="section-tag">FAQ</span>
-      <h2 class="section-title">You've got questions.<br><em>We've got answers.</em></h2>
+<!-- NEWSLETTER -->
+<section class="newsletter">
+  <div class="newsletter-inner reveal">
+    <span class="section-tag">Stay Connected</span>
+    <h2>The Connection Plunge</h2>
+    <p>Monthly wellness tips, upcoming events, and special offers — delivered to your inbox by the Joro team.</p>
+    <div class="nl-form">
+      <input class="nl-input" type="email" placeholder="Your email address">
+      <button class="nl-btn" onclick="this.textContent='✓ Joined!'">Sign Up</button>
     </div>
-    <div id="faqList"></div>
+    <p class="nl-note">No spam. Unsubscribe anytime.</p>
   </div>
 </section>
 
@@ -896,14 +469,14 @@ footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(
       <div class="footer-col">
         <h4>Experience</h4>
         <a href="#experience">The Cycle</a>
-        <a href="#rates">Session Rates</a>
-        <a href="#private">Private Events</a>
+        <a href="rates.html">Session Rates</a>
+        <a href="private.html">Private Events</a>
         <a href="https://go.theflybook.com/book/374/EntityConfig/33213" target="_blank">Book a Session</a>
       </div>
       <div class="footer-col">
         <h4>Explore</h4>
-        <a href="#journal">Wellness Journal</a>
-        <a href="#faq">FAQ</a>
+        <a href="journal.html">Wellness Journal</a>
+        <a href="faq.html">FAQ</a>
         <a href="https://www.instagram.com/joro.well/" target="_blank">Instagram</a>
         <a href="https://www.jorooutdoorspa.com/giftcards" target="_blank">Gift Cards</a>
       </div>
@@ -916,7 +489,7 @@ footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(
       </div>
     </div>
     <div class="footer-bottom">
-      <p>© 2026 Jörð Outdoor Spa. All rights reserved.</p>
+      <p>&copy; 2026 Jörð Outdoor Spa. All rights reserved.</p>
       <div class="social-links">
         <a href="https://www.instagram.com/joro.well/" target="_blank" class="social-link">Instagram</a>
         <a href="https://go.theflybook.com/book/374/EntityConfig/33213" target="_blank" class="social-link">Book Now</a>
@@ -944,7 +517,7 @@ const reviewsData = [
 
 function buildReviews() {
   const track = document.getElementById('reviewsTrack');
-  const allReviews = [...reviewsData, ...reviewsData]; // duplicate for infinite loop
+  const allReviews = [...reviewsData, ...reviewsData];
   track.innerHTML = allReviews.map(r => `
     <div class="review-card">
       <div class="review-card-stars">★★★★★</div>
@@ -966,108 +539,6 @@ const revealObs = new IntersectionObserver(entries => {
   entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); revealObs.unobserve(e.target); }});
 }, { threshold: 0.08 });
 document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
-
-// ── FAQ ──
-const faqs = [
-  { q: "What is Jörð Outdoor Spa?", a: "Joro is Norfolk County's first Scandinavian-inspired outdoor spa, offering hot and cold therapy through a guided cycle of wood-fired sauna, cold plunge tubs, and nature-based relaxation. Located within Long Point Eco-Adventures, Turkey Point, ON." },
-  { q: "What does a session include?", a: "Your 1 hour 45-minute visit includes a wood-fired sauna, cold plunge tubs (8–10°C or 2–4°C options), the outdoor fire circle and lounge, plus a robe, towel, flip flops, tea, and water." },
-  { q: "I'm new to cold plunges — is this beginner-friendly?", a: "Absolutely. Joro is designed for both beginners and wellness enthusiasts. We provide guidance, safety tips, and encouragement. No pressure, just presence. Most first-timers who plan to skip the plunge end up in the tub." },
-  { q: "What should I bring?", a: "You only need a swimsuit — we provide robes, towels, and flip flops. Bring a water bottle if you'd like, and arrive hydrated." },
-  { q: "Does Joro operate in the rain or cold weather?", a: "Yes! Light rain is part of the outdoor experience — it makes the sauna and fire feel even better. We operate in light rain and mild weather. In cases of severe weather, we issue full refunds and notify you by text and email." },
-  { q: "Can I skip the cold plunge?", a: "Of course — you have full access to all amenities regardless of which you use. That said, most guests who say they'll skip it end up in the tub. You don't have to, but we're confident you'll want to." },
-  { q: "Do you offer private or group bookings?", a: "Yes! We love hosting groups and private events — corporate retreats, birthdays, bachelorettes, and more. Private bookings start from $249.95 with custom time allotments. Use the booking form above or email joro.wellspa@gmail.com." },
-  { q: "Is hot and cold therapy safe for everyone?", a: "Most adults can safely enjoy sauna and cold plunge sessions. If you have cardiovascular concerns, high blood pressure, or are pregnant, we recommend checking with a healthcare professional before your visit." },
-  { q: "What are the health benefits?", a: "Guests regularly report improved circulation, relief from sore muscles, reduced stress and anxiety, better sleep, and elevated mood and mental clarity. The cold plunge in particular is known for a natural dopamine boost." },
-];
-const faqList = document.getElementById('faqList');
-faqs.forEach((f, i) => {
-  faqList.innerHTML += `<div class="faq-item">
-    <button class="faq-q" onclick="toggleFaq(${i})">
-      <span>${f.q}</span>
-      <span class="faq-chevron" id="fchev-${i}">▼</span>
-    </button>
-    <div class="faq-a" id="fa-${i}"><div class="faq-a-inner">${f.a}</div></div>
-  </div>`;
-});
-function toggleFaq(i) {
-  const a = document.getElementById('fa-' + i);
-  const ch = document.getElementById('fchev-' + i);
-  const isOpen = a.style.maxHeight && a.style.maxHeight !== '0px';
-  document.querySelectorAll('.faq-a').forEach(el => el.style.maxHeight = '0px');
-  document.querySelectorAll('.faq-chevron').forEach(el => el.classList.remove('open'));
-  if (!isOpen) { a.style.maxHeight = a.scrollHeight + 'px'; ch.classList.add('open'); }
-}
-
-// ── PRIVATE FORM ──
-function submitPrivateForm() {
-  document.getElementById('privateFormWrap').style.display = 'none';
-  document.getElementById('privateSuccess').style.display = 'block';
-}
-
-// ── ARTICLE DATA ──
-const articles = [
-  {
-    tag: 'Wellness Science',
-    title: 'The Science of Contrast Therapy: What Actually Happens to Your Body',
-    meta: 'By Joro Team · 6 min read · Wellness',
-    img: 'https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/8417f644-0ef3-4353-a71c-e2d2c137801a/April+Content+Night-16.jpg',
-    content: `
-      <p>Step into a wood-fired sauna, and within minutes your body is doing something remarkable. Your core temperature climbs, blood vessels dilate, and your heart rate increases — not unlike a moderate cardio workout. Then you step into a cold plunge, and the opposite cascade begins. Understanding this cycle is the key to understanding why contrast therapy has been practiced in Scandinavian cultures for centuries, and why it's now a growing part of modern wellness.</p>
-      <h3>The Heat Phase: Your Body's First Response</h3>
-      <p>When you enter the sauna at Joro, which sits between 70–90°C, your body begins a process called thermoregulation. Blood vessels near the skin dilate in an attempt to release excess heat, dramatically increasing circulation to the skin and muscles. Your heart rate rises to accommodate this increased blood flow. Muscles relax as they're flooded with warmth, and the elevated temperature triggers the release of heat shock proteins — molecular chaperones that help repair damaged cells.</p>
-      <p>Research published in the journal <em>Experimental Gerontology</em> suggests that regular sauna use is associated with reduced risk of cardiovascular events, likely because of these circulatory benefits. At Joro, most guests spend 10–15 minutes in the sauna before the transition — though your body will tell you when you're ready.</p>
-      <h3>The Cold Phase: Where the Magic Happens</h3>
-      <p>The cold plunge is where contrast therapy gets its name — and its reputation. When you enter water at 2–10°C, your body undergoes vasoconstriction: blood vessels rapidly narrow to protect your core temperature. This forces blood toward your vital organs and away from the extremities.</p>
-      <p>What follows is a neurological event. Your sympathetic nervous system — the "fight or flight" system — activates. Norepinephrine levels spike dramatically. Studies from the University of Helsinki found that cold water immersion can increase plasma norepinephrine by up to 300%, which explains both the sharp alertness and the elevated mood guests often report. That clarity you feel after the plunge isn't just relief — it's neurochemistry.</p>
-      <h3>The Fire Circle: Recovery and Integration</h3>
-      <p>After the heat and cold, the fire circle is where your body's parasympathetic nervous system — the "rest and digest" system — takes over. Your heart rate settles. Your muscles continue to benefit from the improved circulation created by the contrast cycle. Cortisol levels, which may have spiked slightly during the cold plunge, begin to normalize.</p>
-      <p>This is also where the social element matters. Research consistently shows that shared experience and social bonding have their own measurable wellness effects — reducing stress hormones and increasing oxytocin. The fire circle wasn't designed by accident.</p>
-      <h3>How Often Should You Come?</h3>
-      <p>Most wellness practitioners who study contrast therapy suggest that benefits compound with regularity. A single session produces acute effects — improved mood, muscle recovery, mental clarity. Consistent practice over weeks and months is associated with improved baseline circulation, better sleep quality, and greater stress resilience. Joro's package offerings are designed exactly for this: making regular practice accessible and affordable.</p>
-    `
-  },
-  {
-    tag: "Beginner's Guide",
-    title: 'Your First Cold Plunge: What to Expect, and Why You\'ll Come Back',
-    meta: 'By Joro Team · 5 min read · Guides',
-    img: 'https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/bcab9b6f-0449-4ec5-87ec-3cee69f7ca52/Joro+Men+Cold+Plunge.jpg',
-    content: `
-      <p>Almost everyone arrives at Joro with the same silent thought: I might skip the cold plunge. And almost everyone ends up in the tub. This guide is for the people in the first camp — the ones who are curious, maybe a little nervous, and want to know what they're actually getting into.</p>
-      <h3>The First 10 Seconds</h3>
-      <p>Let's be honest: it's a shock. When you step into water at 2–10°C, your body triggers a cold shock response. Your breathing sharpens — sometimes into a gasp. Your heart rate spikes. For a brief moment, every instinct tells you to get out. This is completely normal, and it passes quickly.</p>
-      <p>At Joro, we offer two plunge options: a gentler tub at 8–10°C for those new to cold exposure, and a deeper challenge at 2–4°C. For your first time, the gentler option is a perfectly legitimate choice. The goal isn't to prove anything — it's to experience the benefit.</p>
-      <h3>Seconds 10–60: The Shift</h3>
-      <p>If you stay with your breathing — slow, controlled exhales through the mouth — something shifts around the 15–30 second mark. The sharp sensation dulls. Your nervous system begins to adapt. You stop fighting the cold and start being in it. This is the moment most first-timers describe as a turning point.</p>
-      <p>By 60 seconds, many guests report feeling genuinely calm — a kind of alert stillness that's hard to describe until you've experienced it. Your body has released a flood of norepinephrine, and it's not unpleasant. It feels like clarity.</p>
-      <h3>Getting Out: The Afterglow</h3>
-      <p>When you step out of the plunge, your body immediately begins rewarming. Blood rushes back to your extremities. You may feel a tingling sensation, a burst of warmth, even a wave of lightness. Most guests describe this as one of the best feelings of their visit — the contrast between the cold and the air, the feeling of your own body doing its work.</p>
-      <p>From there, the fire circle is waiting. Your robe, a cup of tea, the crackling fire, and however much time you want to just sit and be.</p>
-      <h3>Why You'll Come Back</h3>
-      <p>The thing about the cold plunge is that it changes your relationship to discomfort in a small but meaningful way. You've chosen something hard, stayed with it, and come out the other side feeling better than when you started. That's a feeling people want to repeat.</p>
-      <p>Most guests who visit Joro once say the same thing afterward: "I didn't think I'd like it, but I'm already thinking about when I can come back." That's not marketing — it's just what happens when your body experiences something it was built to do.</p>
-    `
-  }
-];
-
-function openArticle(idx) {
-  const a = articles[idx];
-  document.getElementById('articleModalInner').innerHTML = `
-    <button class="modal-close" onclick="closeArticle()">✕</button>
-    <img class="article-modal-img" src="${a.img}" alt="${a.title}">
-    <div class="article-modal-body">
-      <div class="article-modal-tag">${a.tag}</div>
-      <h2 class="article-modal-title">${a.title}</h2>
-      <div class="article-modal-meta">${a.meta}</div>
-      ${a.content}
-    </div>`;
-  document.getElementById('articleModal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeArticle() {
-  document.getElementById('articleModal').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
 </script>
 </body>
 </html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ | Jörð Outdoor Spa — Turkey Point, Norfolk County</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --dark:      #0e1510;
+  --dark2:     #182018;
+  --dark3:     #1f2a1f;
+  --green:     #2d4a2d;
+  --green-lt:  #3d6b3d;
+  --ember:     #c8813a;
+  --ember-lt:  #e09a52;
+  --cream:     #f2ead8;
+  --cream2:    #e8dfc8;
+  --muted:     #8a9485;
+  --white:     #ffffff;
+  --radius:    12px;
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: 'Outfit', sans-serif; color: var(--cream); background: var(--dark); overflow-x: hidden; }
+h1,h2,h3,h4,h5 { font-family: 'Cormorant Garamond', serif; line-height: 1.15; }
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(14,21,16,0.96);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(242,234,216,0.08);
+  padding: 0 5%;
+  display: flex; align-items: center; gap: 20px;
+  height: 72px;
+}
+.nav-logo img { height: 44px; object-fit: contain; }
+.nav-links { display: flex; align-items: center; gap: 28px; margin-left: auto; }
+.nav-links a {
+  color: rgba(242,234,216,0.65); text-decoration: none;
+  font-size: 13.5px; font-weight: 500; letter-spacing: 0.04em;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--cream); }
+.nav-links a.active { color: var(--cream); }
+.nav-book {
+  background: var(--ember); color: var(--dark) !important;
+  padding: 9px 20px; border-radius: 8px;
+  font-weight: 600 !important; font-size: 13.5px !important;
+  transition: background 0.2s, transform 0.15s !important;
+}
+.nav-book:hover { background: var(--ember-lt) !important; transform: translateY(-1px); }
+.nav-toggle {
+  display: none; background: none; border: none;
+  color: var(--cream); font-size: 24px; cursor: pointer;
+  padding: 8px; line-height: 1;
+}
+
+/* ── SHARED ── */
+.section-tag {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--ember);
+  display: block; margin-bottom: 16px;
+}
+.section-title { font-size: clamp(34px, 4vw, 56px); font-weight: 300; color: var(--cream); }
+.section-title em { font-style: italic; }
+
+/* ── FAQ ── */
+.faq-section { padding: 140px 5% 100px; background: var(--dark2); min-height: calc(100vh - 72px); }
+.faq-inner { max-width: 800px; margin: 0 auto; }
+.faq-head { text-align: center; margin-bottom: 56px; }
+.faq-item {
+  border-bottom: 1px solid rgba(242,234,216,0.08);
+  overflow: hidden;
+}
+.faq-q {
+  width: 100%; background: transparent; border: none; color: var(--cream);
+  padding: 20px 0; display: flex; align-items: center; justify-content: space-between;
+  font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 400;
+  cursor: pointer; text-align: left; gap: 16px;
+  transition: color 0.2s;
+}
+.faq-q:hover { color: var(--ember); }
+.faq-chevron { font-size: 12px; color: var(--ember); transition: transform 0.3s; flex-shrink: 0; }
+.faq-chevron.open { transform: rotate(180deg); }
+.faq-a { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+.faq-a-inner { padding: 0 0 20px; font-size: 14.5px; color: rgba(242,234,216,0.6); line-height: 1.75; font-weight: 300; }
+
+/* ── FOOTER ── */
+footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(255,255,255,0.05); }
+.footer-inner { max-width: 1100px; margin: 0 auto; }
+.footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 32px; }
+.footer-logo img { height: 40px; margin-bottom: 16px; }
+.footer-tagline { font-size: 13.5px; color: rgba(242,234,216,0.35); line-height: 1.65; max-width: 220px; font-weight: 300; }
+.footer-col h4 { font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 700; color: rgba(242,234,216,0.8); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px; }
+.footer-col a, .footer-col p { display: block; font-size: 13.5px; color: rgba(242,234,216,0.38); text-decoration: none; margin-bottom: 10px; transition: color 0.2s; font-weight: 300; }
+.footer-col a:hover { color: rgba(242,234,216,0.72); }
+.footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.footer-bottom p { font-size: 12px; color: rgba(242,234,216,0.2); }
+.social-links { display: flex; gap: 12px; }
+.social-link { font-size: 12.5px; color: rgba(242,234,216,0.35); text-decoration: none; transition: color 0.2s; }
+.social-link:hover { color: var(--ember); }
+
+/* ── SCROLL REVEAL ── */
+.reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  nav { height: 60px; }
+  .nav-toggle { display: flex; align-items: center; }
+  .nav-links {
+    display: none; position: fixed;
+    top: 60px; left: 0; right: 0; bottom: 0;
+    height: calc(100vh - 60px);
+    flex-direction: column; align-items: center; justify-content: center;
+    gap: 32px; background: rgba(14,21,16,0.98);
+    backdrop-filter: blur(16px); z-index: 199; margin-left: 0;
+  }
+  .nav-links.open { display: flex; }
+  .nav-links a { font-size: 18px; color: var(--cream); }
+  .nav-book { margin-left: auto; font-size: 12px !important; padding: 8px 14px !important; }
+  .nav-book-full { display: none; }
+  .faq-section { padding: 100px 5% 60px; }
+  footer { padding: 40px 5% 28px; }
+  .footer-top { grid-template-columns: 1fr; gap: 32px; }
+  .footer-bottom { flex-direction: column; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" style="text-decoration:none;">
+    <img src="https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/dd9cadab-7313-4bbc-a318-d8e93badf2ba/Joro+2-24.png?format=1500w" alt="Jörð Outdoor Spa" style="height:44px; object-fit:contain;">
+  </a>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html#experience" onclick="closeNav()">The Experience</a>
+    <a href="rates.html" onclick="closeNav()">Session Rates</a>
+    <a href="private.html" onclick="closeNav()">Private Events</a>
+    <a href="journal.html" onclick="closeNav()">Wellness Journal</a>
+    <a href="faq.html" class="active" onclick="closeNav()">FAQ</a>
+  </div>
+  <a href="https://go.theflybook.com/book/374/EntityConfig/33213" target="_blank" class="nav-book">Book<span class="nav-book-full"> a Session</span></a>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu">&#9776;</button>
+</nav>
+
+<!-- FAQs -->
+<section class="faq-section">
+  <div class="faq-inner">
+    <div class="faq-head reveal">
+      <span class="section-tag">FAQ</span>
+      <h2 class="section-title">You've got questions.<br><em>We've got answers.</em></h2>
+    </div>
+    <div id="faqList"></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">
+          <img src="https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/dd9cadab-7313-4bbc-a318-d8e93badf2ba/Joro+2-24.png?format=1500w" alt="Jörð Outdoor Spa">
+        </div>
+        <p class="footer-tagline">Norfolk's outdoor spa, helping you slow down and connect. Located inside Long Point Eco-Adventures.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Experience</h4>
+        <a href="index.html#experience">The Cycle</a>
+        <a href="rates.html">Session Rates</a>
+        <a href="private.html">Private Events</a>
+        <a href="https://go.theflybook.com/book/374/EntityConfig/33213" target="_blank">Book a Session</a>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <a href="journal.html">Wellness Journal</a>
+        <a href="faq.html">FAQ</a>
+        <a href="https://www.instagram.com/joro.well/" target="_blank">Instagram</a>
+        <a href="https://www.jorooutdoorspa.com/giftcards" target="_blank">Gift Cards</a>
+      </div>
+      <div class="footer-col">
+        <h4>Visit Us</h4>
+        <p>1730 Front Road</p>
+        <p>Turkey Point, ON</p>
+        <p>(226) 567-2772</p>
+        <p>joro.wellspa@gmail.com</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Jörð Outdoor Spa. All rights reserved.</p>
+      <div class="social-links">
+        <a href="https://www.instagram.com/joro.well/" target="_blank" class="social-link">Instagram</a>
+        <a href="https://go.theflybook.com/book/374/EntityConfig/33213" target="_blank" class="social-link">Book Now</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleNav() { document.getElementById('navLinks').classList.toggle('open'); }
+function closeNav() { document.getElementById('navLinks').classList.remove('open'); }
+
+const faqs = [
+  { q: "What is Jörð Outdoor Spa?", a: "Joro is Norfolk County's first Scandinavian-inspired outdoor spa, offering hot and cold therapy through a guided cycle of wood-fired sauna, cold plunge tubs, and nature-based relaxation. Located within Long Point Eco-Adventures, Turkey Point, ON." },
+  { q: "What does a session include?", a: "Your 1 hour 45-minute visit includes a wood-fired sauna, cold plunge tubs (8–10°C or 2–4°C options), the outdoor fire circle and lounge, plus a robe, towel, flip flops, tea, and water." },
+  { q: "I'm new to cold plunges — is this beginner-friendly?", a: "Absolutely. Joro is designed for both beginners and wellness enthusiasts. We provide guidance, safety tips, and encouragement. No pressure, just presence. Most first-timers who plan to skip the plunge end up in the tub." },
+  { q: "What should I bring?", a: "You only need a swimsuit — we provide robes, towels, and flip flops. Bring a water bottle if you'd like, and arrive hydrated." },
+  { q: "Does Joro operate in the rain or cold weather?", a: "Yes! Light rain is part of the outdoor experience — it makes the sauna and fire feel even better. We operate in light rain and mild weather. In cases of severe weather, we issue full refunds and notify you by text and email." },
+  { q: "Can I skip the cold plunge?", a: "Of course — you have full access to all amenities regardless of which you use. That said, most guests who say they'll skip it end up in the tub. You don't have to, but we're confident you'll want to." },
+  { q: "Do you offer private or group bookings?", a: "Yes! We love hosting groups and private events — corporate retreats, birthdays, bachelorettes, and more. Private bookings start from $249.95 with custom time allotments. Use the booking form above or email joro.wellspa@gmail.com." },
+  { q: "Is hot and cold therapy safe for everyone?", a: "Most adults can safely enjoy sauna and cold plunge sessions. If you have cardiovascular concerns, high blood pressure, or are pregnant, we recommend checking with a healthcare professional before your visit." },
+  { q: "What are the health benefits?", a: "Guests regularly report improved circulation, relief from sore muscles, reduced stress and anxiety, better sleep, and elevated mood and mental clarity. The cold plunge in particular is known for a natural dopamine boost." },
+];
+
+const faqList = document.getElementById('faqList');
+faqs.forEach((f, i) => {
+  faqList.innerHTML += `<div class="faq-item">
+    <button class="faq-q" onclick="toggleFaq(${i})">
+      <span>${f.q}</span>
+      <span class="faq-chevron" id="fchev-${i}">&#9660;</span>
+    </button>
+    <div class="faq-a" id="fa-${i}"><div class="faq-a-inner">${f.a}</div></div>
+  </div>`;
+});
+
+function toggleFaq(i) {
+  const a = document.getElementById('fa-' + i);
+  const ch = document.getElementById('fchev-' + i);
+  const isOpen = a.style.maxHeight && a.style.maxHeight !== '0px';
+  document.querySelectorAll('.faq-a').forEach(el => el.style.maxHeight = '0px');
+  document.querySelectorAll('.faq-chevron').forEach(el => el.classList.remove('open'));
+  if (!isOpen) { a.style.maxHeight = a.scrollHeight + 'px'; ch.classList.add('open'); }
+}
+
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); revealObs.unobserve(e.target); }});
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+</script>
+</body>
+</html>

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wellness Journal | Jörð Outdoor Spa — Turkey Point, Norfolk County</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --dark:      #0e1510;
+  --dark2:     #182018;
+  --dark3:     #1f2a1f;
+  --green:     #2d4a2d;
+  --green-lt:  #3d6b3d;
+  --ember:     #c8813a;
+  --ember-lt:  #e09a52;
+  --cream:     #f2ead8;
+  --cream2:    #e8dfc8;
+  --muted:     #8a9485;
+  --white:     #ffffff;
+  --radius:    12px;
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: 'Outfit', sans-serif; color: var(--cream); background: var(--dark); overflow-x: hidden; }
+h1,h2,h3,h4,h5 { font-family: 'Cormorant Garamond', serif; line-height: 1.15; }
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(14,21,16,0.96);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(242,234,216,0.08);
+  padding: 0 5%;
+  display: flex; align-items: center; gap: 20px;
+  height: 72px;
+}
+.nav-logo img { height: 44px; object-fit: contain; }
+.nav-links { display: flex; align-items: center; gap: 28px; margin-left: auto; }
+.nav-links a {
+  color: rgba(242,234,216,0.65); text-decoration: none;
+  font-size: 13.5px; font-weight: 500; letter-spacing: 0.04em;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--cream); }
+.nav-links a.active { color: var(--cream); }
+.nav-book {
+  background: var(--ember); color: var(--dark) !important;
+  padding: 9px 20px; border-radius: 8px;
+  font-weight: 600 !important; font-size: 13.5px !important;
+  transition: background 0.2s, transform 0.15s !important;
+}
+.nav-book:hover { background: var(--ember-lt) !important; transform: translateY(-1px); }
+.nav-toggle {
+  display: none; background: none; border: none;
+  color: var(--cream); font-size: 24px; cursor: pointer;
+  padding: 8px; line-height: 1;
+}
+
+/* ── SHARED ── */
+.section-tag {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--ember);
+  display: block; margin-bottom: 16px;
+}
+.section-title { font-size: clamp(34px, 4vw, 56px); font-weight: 300; color: var(--cream); }
+.section-title em { font-style: italic; }
+
+/* ── JOURNAL ── */
+.journal { padding: 140px 5% 100px; background: var(--dark); min-height: calc(100vh - 72px); }
+.journal-inner { max-width: 1100px; margin: 0 auto; }
+.journal-head { margin-bottom: 60px; }
+.journal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 48px; }
+.article-card {
+  background: var(--dark2); border-radius: 16px; overflow: hidden;
+  border: 1px solid rgba(242,234,216,0.07);
+  transition: border-color 0.2s, transform 0.2s; cursor: pointer;
+}
+.article-card:hover { border-color: rgba(200,129,58,0.25); transform: translateY(-4px); }
+.article-img { width: 100%; height: 220px; object-fit: cover; display: block; }
+.article-body { padding: 28px; }
+.article-tag {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--ember); margin-bottom: 12px;
+  font-family: 'Outfit', sans-serif;
+}
+.article-title { font-size: 24px; font-weight: 400; color: var(--cream); margin-bottom: 12px; line-height: 1.25; }
+.article-excerpt { font-size: 14px; color: var(--muted); line-height: 1.7; font-weight: 300; margin-bottom: 20px; }
+.article-meta { display: flex; align-items: center; gap: 10px; font-size: 12px; color: rgba(242,234,216,0.35); font-family: 'Outfit', sans-serif; }
+.article-read { color: var(--ember); text-decoration: none; font-size: 13px; font-weight: 500; margin-top: 14px; display: inline-flex; align-items: center; gap: 5px; transition: gap 0.2s; }
+.article-read:hover { gap: 9px; }
+
+/* Article modal */
+.article-modal {
+  display: none; position: fixed; inset: 0; z-index: 500;
+  background: rgba(0,0,0,0.75); backdrop-filter: blur(6px);
+  overflow-y: auto; padding: 40px 5%;
+}
+.article-modal.open { display: flex; align-items: flex-start; justify-content: center; }
+.article-modal-inner {
+  background: var(--dark2); border-radius: 20px;
+  max-width: 740px; width: 100%; margin: auto;
+  border: 1px solid rgba(242,234,216,0.1); overflow: hidden;
+  position: relative;
+}
+.article-modal-img { width: 100%; height: 320px; object-fit: cover; }
+.article-modal-body { padding: 48px; }
+.article-modal-tag { font-size: 10.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ember); margin-bottom: 14px; font-family: 'Outfit', sans-serif; }
+.article-modal-title { font-size: 38px; font-weight: 300; color: var(--cream); margin-bottom: 12px; line-height: 1.2; }
+.article-modal-meta { font-size: 12.5px; color: rgba(242,234,216,0.35); margin-bottom: 32px; font-family: 'Outfit', sans-serif; }
+.article-modal-body p { font-size: 16px; color: rgba(242,234,216,0.72); line-height: 1.85; font-weight: 300; margin-bottom: 20px; }
+.article-modal-body h3 { font-size: 24px; font-weight: 400; color: var(--cream); margin: 32px 0 12px; }
+.modal-close {
+  position: absolute; top: 16px; right: 16px;
+  background: rgba(0,0,0,0.5); border: none; color: var(--cream);
+  width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+  font-size: 18px; display: flex; align-items: center; justify-content: center;
+}
+
+/* ── FOOTER ── */
+footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(255,255,255,0.05); }
+.footer-inner { max-width: 1100px; margin: 0 auto; }
+.footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 32px; }
+.footer-logo img { height: 40px; margin-bottom: 16px; }
+.footer-tagline { font-size: 13.5px; color: rgba(242,234,216,0.35); line-height: 1.65; max-width: 220px; font-weight: 300; }
+.footer-col h4 { font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 700; color: rgba(242,234,216,0.8); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px; }
+.footer-col a, .footer-col p { display: block; font-size: 13.5px; color: rgba(242,234,216,0.38); text-decoration: none; margin-bottom: 10px; transition: color 0.2s; font-weight: 300; }
+.footer-col a:hover { color: rgba(242,234,216,0.72); }
+.footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.footer-bottom p { font-size: 12px; color: rgba(242,234,216,0.2); }
+.social-links { display: flex; gap: 12px; }
+.social-link { font-size: 12.5px; color: rgba(242,234,216,0.35); text-decoration: none; transition: color 0.2s; }
+.social-link:hover { color: var(--ember); }
+
+/* ── SCROLL REVEAL ── */
+.reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+.reveal-delay-1 { transition-delay: 0.1s; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  nav { height: 60px; }
+  .nav-toggle { display: flex; align-items: center; }
+  .nav-links {
+    display: none; position: fixed;
+    top: 60px; left: 0; right: 0; bottom: 0;
+    height: calc(100vh - 60px);
+    flex-direction: column; align-items: center; justify-content: center;
+    gap: 32px; background: rgba(14,21,16,0.98);
+    backdrop-filter: blur(16px); z-index: 199; margin-left: 0;
+  }
+  .nav-links.open { display: flex; }
+  .nav-links a { font-size: 18px; color: var(--cream); }
+  .nav-book { margin-left: auto; font-size: 12px !important; padding: 8px 14px !important; }
+  .nav-book-full { display: none; }
+  .journal { padding: 100px 5% 60px; }
+  .journal-grid { grid-template-columns: 1fr; }
+  .article-modal { padding: 20px 4%; }
+  .article-modal-img { height: 200px; }
+  .article-modal-body { padding: 28px; }
+  .article-modal-title { font-size: 28px; }
+  footer { padding: 40px 5% 28px; }
+  .footer-top { grid-template-columns: 1fr; gap: 32px; }
+  .footer-bottom { flex-direction: column; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" style="text-decoration:none;">
+    <img src="https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/dd9cadab-7313-4bbc-a318-d8e93badf2ba/Joro+2-24.png?format=1500w" alt="Jörð Outdoor Spa" style="height:44px; object-fit:contain;">
+  </a>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html#experience" onclick="closeNav()">The Experience</a>
+    <a href="rates.html" onclick="closeNav()">Session Rates</a>
+    <a href="private.html" onclick="closeNav()">Private Events</a>
+    <a href="journal.html" class="active" onclick="closeNav()">Wellness Journal</a>
+    <a href="faq.html" onclick="closeNav()">FAQ</a>
+  </div>
+  <a href="https://go.theflybook.com/book/374/EntityConfig/33213" target="_blank" class="nav-book">Book<span class="nav-book-full"> a Session</span></a>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu">&#9776;</button>
+</nav>
+
+<!-- WELLNESS JOURNAL -->
+<section class="journal">
+  <div class="journal-inner">
+    <div class="journal-head reveal">
+      <span class="section-tag">Content & SEO</span>
+      <h2 class="section-title">The Jörð <em>Wellness Journal</em></h2>
+      <p style="font-size:15px; color:var(--muted); font-weight:300; line-height:1.7; max-width:540px; margin-top:14px;">Stories, science, and guides from the Joro team — helping new guests discover contrast therapy and giving regulars more to explore.</p>
+    </div>
+    <div class="journal-grid">
+      <div class="article-card reveal" onclick="openArticle(0)">
+        <img class="article-img" src="https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/8417f644-0ef3-4353-a71c-e2d2c137801a/April+Content+Night-16.jpg" alt="Contrast therapy science">
+        <div class="article-body">
+          <div class="article-tag">Wellness Science</div>
+          <h3 class="article-title">The Science of Contrast Therapy: What Actually Happens to Your Body</h3>
+          <p class="article-excerpt">From the moment you step into the sauna, a cascade of physiological responses begins. Here's what the research actually says about hot-cold cycling.</p>
+          <div class="article-meta">
+            <span>By Joro Team</span>
+            <span>&middot;</span>
+            <span>6 min read</span>
+          </div>
+          <a href="#" class="article-read" onclick="event.stopPropagation(); openArticle(0)">Read article &rarr;</a>
+        </div>
+      </div>
+      <div class="article-card reveal reveal-delay-1" onclick="openArticle(1)">
+        <img class="article-img" src="https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/bcab9b6f-0449-4ec5-87ec-3cee69f7ca52/Joro+Men+Cold+Plunge.jpg" alt="Cold plunge guide">
+        <div class="article-body">
+          <div class="article-tag">Beginner's Guide</div>
+          <h3 class="article-title">Your First Cold Plunge: What to Expect, and Why You'll Come Back</h3>
+          <p class="article-excerpt">The cold plunge intimidates almost everyone before their first time. Here's an honest guide to what actually happens — and why the guests who try it almost always come back for more.</p>
+          <div class="article-meta">
+            <span>By Joro Team</span>
+            <span>&middot;</span>
+            <span>5 min read</span>
+          </div>
+          <a href="#" class="article-read" onclick="event.stopPropagation(); openArticle(1)">Read article &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Article Modal -->
+<div class="article-modal" id="articleModal" onclick="if(event.target===this)closeArticle()">
+  <div class="article-modal-inner" id="articleModalInner">
+    <button class="modal-close" onclick="closeArticle()">&#10005;</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">
+          <img src="https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/dd9cadab-7313-4bbc-a318-d8e93badf2ba/Joro+2-24.png?format=1500w" alt="Jörð Outdoor Spa">
+        </div>
+        <p class="footer-tagline">Norfolk's outdoor spa, helping you slow down and connect. Located inside Long Point Eco-Adventures.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Experience</h4>
+        <a href="index.html#experience">The Cycle</a>
+        <a href="rates.html">Session Rates</a>
+        <a href="private.html">Private Events</a>
+        <a href="https://go.theflybook.com/book/374/EntityConfig/33213" target="_blank">Book a Session</a>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <a href="journal.html">Wellness Journal</a>
+        <a href="faq.html">FAQ</a>
+        <a href="https://www.instagram.com/joro.well/" target="_blank">Instagram</a>
+        <a href="https://www.jorooutdoorspa.com/giftcards" target="_blank">Gift Cards</a>
+      </div>
+      <div class="footer-col">
+        <h4>Visit Us</h4>
+        <p>1730 Front Road</p>
+        <p>Turkey Point, ON</p>
+        <p>(226) 567-2772</p>
+        <p>joro.wellspa@gmail.com</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Jörð Outdoor Spa. All rights reserved.</p>
+      <div class="social-links">
+        <a href="https://www.instagram.com/joro.well/" target="_blank" class="social-link">Instagram</a>
+        <a href="https://go.theflybook.com/book/374/EntityConfig/33213" target="_blank" class="social-link">Book Now</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleNav() { document.getElementById('navLinks').classList.toggle('open'); }
+function closeNav() { document.getElementById('navLinks').classList.remove('open'); }
+
+const articles = [
+  {
+    tag: 'Wellness Science',
+    title: 'The Science of Contrast Therapy: What Actually Happens to Your Body',
+    meta: 'By Joro Team · 6 min read · Wellness',
+    img: 'https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/8417f644-0ef3-4353-a71c-e2d2c137801a/April+Content+Night-16.jpg',
+    content: `
+      <p>Step into a wood-fired sauna, and within minutes your body is doing something remarkable. Your core temperature climbs, blood vessels dilate, and your heart rate increases — not unlike a moderate cardio workout. Then you step into a cold plunge, and the opposite cascade begins. Understanding this cycle is the key to understanding why contrast therapy has been practiced in Scandinavian cultures for centuries, and why it’s now a growing part of modern wellness.</p>
+      <h3>The Heat Phase: Your Body’s First Response</h3>
+      <p>When you enter the sauna at Joro, which sits between 70–90°C, your body begins a process called thermoregulation. Blood vessels near the skin dilate in an attempt to release excess heat, dramatically increasing circulation to the skin and muscles. Your heart rate rises to accommodate this increased blood flow. Muscles relax as they’re flooded with warmth, and the elevated temperature triggers the release of heat shock proteins — molecular chaperones that help repair damaged cells.</p>
+      <p>Research published in the journal <em>Experimental Gerontology</em> suggests that regular sauna use is associated with reduced risk of cardiovascular events, likely because of these circulatory benefits. At Joro, most guests spend 10–15 minutes in the sauna before the transition — though your body will tell you when you’re ready.</p>
+      <h3>The Cold Phase: Where the Magic Happens</h3>
+      <p>The cold plunge is where contrast therapy gets its name — and its reputation. When you enter water at 2–10°C, your body undergoes vasoconstriction: blood vessels rapidly narrow to protect your core temperature. This forces blood toward your vital organs and away from the extremities.</p>
+      <p>What follows is a neurological event. Your sympathetic nervous system — the “fight or flight” system — activates. Norepinephrine levels spike dramatically. Studies from the University of Helsinki found that cold water immersion can increase plasma norepinephrine by up to 300%, which explains both the sharp alertness and the elevated mood guests often report. That clarity you feel after the plunge isn’t just relief — it’s neurochemistry.</p>
+      <h3>The Fire Circle: Recovery and Integration</h3>
+      <p>After the heat and cold, the fire circle is where your body’s parasympathetic nervous system — the “rest and digest” system — takes over. Your heart rate settles. Your muscles continue to benefit from the improved circulation created by the contrast cycle. Cortisol levels, which may have spiked slightly during the cold plunge, begin to normalize.</p>
+      <p>This is also where the social element matters. Research consistently shows that shared experience and social bonding have their own measurable wellness effects — reducing stress hormones and increasing oxytocin. The fire circle wasn’t designed by accident.</p>
+      <h3>How Often Should You Come?</h3>
+      <p>Most wellness practitioners who study contrast therapy suggest that benefits compound with regularity. A single session produces acute effects — improved mood, muscle recovery, mental clarity. Consistent practice over weeks and months is associated with improved baseline circulation, better sleep quality, and greater stress resilience. Joro’s package offerings are designed exactly for this: making regular practice accessible and affordable.</p>
+    `
+  },
+  {
+    tag: "Beginner's Guide",
+    title: 'Your First Cold Plunge: What to Expect, and Why You\'ll Come Back',
+    meta: 'By Joro Team · 5 min read · Guides',
+    img: 'https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/bcab9b6f-0449-4ec5-87ec-3cee69f7ca52/Joro+Men+Cold+Plunge.jpg',
+    content: `
+      <p>Almost everyone arrives at Joro with the same silent thought: I might skip the cold plunge. And almost everyone ends up in the tub. This guide is for the people in the first camp — the ones who are curious, maybe a little nervous, and want to know what they’re actually getting into.</p>
+      <h3>The First 10 Seconds</h3>
+      <p>Let’s be honest: it’s a shock. When you step into water at 2–10°C, your body triggers a cold shock response. Your breathing sharpens — sometimes into a gasp. Your heart rate spikes. For a brief moment, every instinct tells you to get out. This is completely normal, and it passes quickly.</p>
+      <p>At Joro, we offer two plunge options: a gentler tub at 8–10°C for those new to cold exposure, and a deeper challenge at 2–4°C. For your first time, the gentler option is a perfectly legitimate choice. The goal isn’t to prove anything — it’s to experience the benefit.</p>
+      <h3>Seconds 10–60: The Shift</h3>
+      <p>If you stay with your breathing — slow, controlled exhales through the mouth — something shifts around the 15–30 second mark. The sharp sensation dulls. Your nervous system begins to adapt. You stop fighting the cold and start being in it. This is the moment most first-timers describe as a turning point.</p>
+      <p>By 60 seconds, many guests report feeling genuinely calm — a kind of alert stillness that’s hard to describe until you’ve experienced it. Your body has released a flood of norepinephrine, and it’s not unpleasant. It feels like clarity.</p>
+      <h3>Getting Out: The Afterglow</h3>
+      <p>When you step out of the plunge, your body immediately begins rewarming. Blood rushes back to your extremities. You may feel a tingling sensation, a burst of warmth, even a wave of lightness. Most guests describe this as one of the best feelings of their visit — the contrast between the cold and the air, the feeling of your own body doing its work.</p>
+      <p>From there, the fire circle is waiting. Your robe, a cup of tea, the crackling fire, and however much time you want to just sit and be.</p>
+      <h3>Why You’ll Come Back</h3>
+      <p>The thing about the cold plunge is that it changes your relationship to discomfort in a small but meaningful way. You’ve chosen something hard, stayed with it, and come out the other side feeling better than when you started. That’s a feeling people want to repeat.</p>
+      <p>Most guests who visit Joro once say the same thing afterward: “I didn’t think I’d like it, but I’m already thinking about when I can come back.” That’s not marketing — it’s just what happens when your body experiences something it was built to do.</p>
+    `
+  }
+];
+
+function openArticle(idx) {
+  const a = articles[idx];
+  document.getElementById('articleModalInner').innerHTML = `
+    <button class="modal-close" onclick="closeArticle()">&#10005;</button>
+    <img class="article-modal-img" src="${a.img}" alt="${a.title}">
+    <div class="article-modal-body">
+      <div class="article-modal-tag">${a.tag}</div>
+      <h2 class="article-modal-title">${a.title}</h2>
+      <div class="article-modal-meta">${a.meta}</div>
+      ${a.content}
+    </div>`;
+  document.getElementById('articleModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeArticle() {
+  document.getElementById('articleModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); revealObs.unobserve(e.target); }});
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+</script>
+</body>
+</html>
