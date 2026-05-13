@@ -429,7 +429,7 @@
       .pss-two-col.photo-right { grid-template-columns: 1fr; gap: 40px; }
       /* On mobile, always show photo first (even in .photo-right Story panel) */
       .pss-two-col.photo-right .pss-photo { order: -1; }
-      .pss-photo img { height: 320px; }
+      .pss-photo img { height: auto; aspect-ratio: 3 / 2; }
       .pss-tabs { flex-wrap: wrap; }
       .pss-tab { padding: 10px 22px; flex: 1; text-align: center; }
 
@@ -459,7 +459,7 @@
     @media (max-width: 600px) {
       .gallery-grid { grid-template-columns: 1fr; }
       .gallery-item img,
-      .gallery-item.tall img { height: 240px; }
+      .gallery-item.tall img { height: auto; aspect-ratio: 4 / 3; }
     }
 
     /* ══════════════════════════════════════
@@ -519,12 +519,14 @@
       /* PSS */
       .pss-tabs { margin-bottom: 40px; gap: 4px; }
       .pss-tab { padding: 10px 10px; font-size: 10px; letter-spacing: 0.12em; }
-      .pss-photo img { height: 220px; }
+      .pss-photo img { height: auto; aspect-ratio: 4 / 3; }
       .pss-text p { font-size: 15px; line-height: 1.75; margin-top: 16px; }
       .pss-text blockquote { font-size: 18px; margin-top: 24px; padding: 14px 18px; }
       .team-names { flex-direction: column; gap: 18px; margin-top: 28px; }
 
       /* Visit */
+      .visit-map { min-height: 240px; }
+      .visit-map iframe { min-height: 240px; }
       .visit-card { padding: 18px 20px; }
       .visit-card-value { font-size: 19px; }
       .hours-row { font-size: 15px; }
@@ -838,7 +840,10 @@
   function drawF(idx) {
     const img = imgs[idx];
     if (!img || !img.complete || !img.naturalWidth) return;
-    const sc = Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
+    const mobile = window.innerWidth <= 480;
+    const sc = mobile
+      ? Math.min(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight)
+      : Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
     const w  = img.naturalWidth  * sc;
     const h  = img.naturalHeight * sc;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
