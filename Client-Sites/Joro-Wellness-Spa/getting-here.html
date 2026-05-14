@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Story | Jörð Outdoor Spa — Turkey Point, Norfolk County</title>
+<title>Getting Here | Jörð Outdoor Spa — Turkey Point, Norfolk County</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -70,25 +70,94 @@ nav {
 .section-title { font-size: clamp(34px, 4vw, 56px); font-weight: 300; color: var(--cream); }
 .section-title em { font-style: italic; }
 
-/* ── STORY ── */
-.story-section { padding: 140px 5% 100px; background: var(--dark2); min-height: calc(100vh - 72px); }
-.story-inner { max-width: 900px; margin: 0 auto; }
-.story-head { text-align: center; margin-bottom: 64px; }
-.story-layout { display: grid; grid-template-columns: 1fr 1.4fr; gap: 56px; align-items: start; }
-.story-photo { border-radius: var(--radius); overflow: hidden; }
-.story-photo img { width: 100%; height: auto; display: block; aspect-ratio: 3/4; object-fit: cover; }
-.story-text p {
-  font-size: 15.5px; color: rgba(242,234,216,0.7); line-height: 1.85;
-  font-weight: 300; margin-bottom: 24px;
+/* ── HERO ── */
+.hero {
+  position: relative; min-height: 52vh;
+  display: flex; align-items: flex-end;
+  overflow: hidden;
 }
-.story-text p:last-child { margin-bottom: 0; }
-.story-attribution {
-  margin-top: 40px; padding-top: 24px;
-  border-top: 1px solid rgba(242,234,216,0.08);
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 18px; font-style: italic;
-  color: var(--ember);
+.hero-img {
+  position: absolute; inset: 0;
+  background: url('https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/9885e7f7-a602-426f-a42e-9e64710138a4/Ontario+outdoor+spa.png') center/cover no-repeat;
 }
+.hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(14,21,16,0.95) 0%, rgba(14,21,16,0.4) 50%, rgba(14,21,16,0.15) 100%);
+}
+.hero-inner {
+  position: relative; z-index: 2;
+  max-width: 900px; margin: 0 auto; width: 100%;
+  padding: 0 5% 72px;
+  text-align: center;
+}
+.hero-inner .section-title { margin-bottom: 14px; }
+.hero-sub {
+  font-size: 15.5px; color: var(--muted); font-weight: 300;
+  line-height: 1.7; max-width: 520px; margin: 0 auto;
+}
+
+/* ── DIRECTIONS ── */
+.directions { padding: 80px 5%; background: var(--dark2); }
+.directions-inner { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+.dir-content h3 {
+  font-size: 26px; font-weight: 400; margin-bottom: 20px;
+}
+.dir-content p {
+  font-size: 15px; color: rgba(242,234,216,0.65); line-height: 1.85;
+  font-weight: 300; margin-bottom: 20px;
+}
+.dir-address {
+  margin-top: 32px; padding: 24px 28px;
+  background: var(--dark3); border-radius: var(--radius);
+  border: 1px solid rgba(242,234,216,0.06);
+}
+.dir-address p {
+  margin-bottom: 8px; font-size: 14.5px; color: rgba(242,234,216,0.55);
+}
+.dir-address p:last-child { margin-bottom: 0; }
+.dir-address a { color: var(--ember); text-decoration: none; transition: color 0.2s; }
+.dir-address a:hover { color: var(--ember-lt); }
+.dir-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--ember);
+  display: block; margin-bottom: 14px;
+}
+.dir-map {
+  border-radius: var(--radius); overflow: hidden;
+  border: 1px solid rgba(242,234,216,0.06);
+  aspect-ratio: 1/1;
+}
+.dir-map iframe { width: 100%; height: 100%; border: 0; display: block; filter: invert(0.92) hue-rotate(180deg) brightness(0.95) contrast(0.9); }
+
+/* ── PARKING ── */
+.parking { padding: 80px 5% 100px; background: var(--dark); }
+.parking-inner { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1.2fr 1fr; gap: 56px; align-items: center; }
+.parking-img { border-radius: var(--radius); overflow: hidden; }
+.parking-img img { width: 100%; height: auto; display: block; aspect-ratio: 16/10; object-fit: cover; }
+.parking-text h3 { font-size: 26px; font-weight: 400; margin-bottom: 20px; }
+.parking-text p {
+  font-size: 15px; color: rgba(242,234,216,0.65); line-height: 1.85;
+  font-weight: 300; margin-bottom: 20px;
+}
+.parking-text p:last-child { margin-bottom: 0; }
+
+/* ── CTA ── */
+.cta-band {
+  padding: 64px 5%; background: var(--dark2);
+  text-align: center;
+  border-top: 1px solid rgba(242,234,216,0.04);
+}
+.cta-band h3 { font-size: 28px; font-weight: 300; margin-bottom: 12px; }
+.cta-band p { font-size: 14.5px; color: var(--muted); font-weight: 300; margin-bottom: 28px; }
+.cta-btn {
+  display: inline-block; padding: 14px 36px;
+  background: var(--ember); color: var(--dark);
+  font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600;
+  border-radius: 8px; text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
+}
+.cta-btn:hover { background: var(--ember-lt); transform: translateY(-1px); }
 
 /* ── FOOTER ── */
 footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(255,255,255,0.05); }
@@ -125,9 +194,14 @@ footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(
   .nav-links a { font-size: 18px; color: var(--cream); }
   .nav-book { margin-left: auto; font-size: 12px !important; padding: 8px 14px !important; }
   .nav-book-full { display: none; }
-  .story-section { padding: 100px 5% 60px; }
-  .story-layout { grid-template-columns: 1fr; gap: 40px; }
-  .story-photo img { aspect-ratio: 4/3; max-height: 360px; }
+  .hero { min-height: 40vh; }
+  .hero-inner { padding: 0 5% 48px; }
+  .directions { padding: 60px 5%; }
+  .directions-inner { grid-template-columns: 1fr; gap: 40px; }
+  .dir-map { aspect-ratio: 4/3; }
+  .parking { padding: 60px 5% 80px; }
+  .parking-inner { grid-template-columns: 1fr; gap: 32px; }
+  .cta-band { padding: 48px 5%; }
   footer { padding: 40px 5% 28px; }
   .footer-top { grid-template-columns: 1fr; gap: 32px; }
   .footer-bottom { flex-direction: column; text-align: center; }
@@ -142,39 +216,71 @@ footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(
     <img src="https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/dd9cadab-7313-4bbc-a318-d8e93badf2ba/Joro+2-24.png?format=1500w" alt="Jörð Outdoor Spa" style="height:44px; object-fit:contain;">
   </a>
   <div class="nav-links" id="navLinks">
-    <a href="thestory.html" class="active" onclick="closeNav()">The Story</a>
+    <a href="thestory.html" onclick="closeNav()">The Story</a>
     <a href="index.html#experience" onclick="closeNav()">The Experience</a>
     <a href="rates.html" onclick="closeNav()">Session Rates</a>
     <a href="private.html" onclick="closeNav()">Private Events</a>
-    <a href="getting-here.html" onclick="closeNav()">Getting Here</a>
+    <a href="getting-here.html" class="active" onclick="closeNav()">Getting Here</a>
     <a href="faq.html" onclick="closeNav()">FAQ</a>
   </div>
   <a href="https://go.theflybook.com/book/374/EntityConfig/33213" target="_blank" class="nav-book">Book<span class="nav-book-full"> a Session</span></a>
   <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu">&#9776;</button>
 </nav>
 
-<!-- THE STORY -->
-<section class="story-section">
-  <div class="story-inner">
-    <div class="story-head reveal">
-      <span class="section-tag">Our Story</span>
-      <h2 class="section-title">The Story of Norfolk's First<br><em>Outdoor Spa</em></h2>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-img"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-inner reveal">
+    <span class="section-tag">Visit Us</span>
+    <h1 class="section-title">Getting to <em>Jörð Spa</em></h1>
+    <p class="hero-sub">Nestled inside Long Point Eco-Adventures in Turkey Point, Ontario — where nature meets renewal.</p>
+  </div>
+</section>
+
+<!-- DIRECTIONS + MAP -->
+<section class="directions">
+  <div class="directions-inner">
+    <div class="dir-content reveal">
+      <h3>Finding the Spa</h3>
+      <p>Jörð Spa is located on-site at Long Point Eco-Adventures. The property accommodates many types of guests for the activities available. You may experience a short walk — enjoy the nature as a part of your arrival. You will find the road to Jörð as you follow the road right of the welcome centre.</p>
+      <p>There is a map at the welcome centre stairs that also provides further directions to the spa.</p>
+      <div class="dir-address">
+        <span class="dir-label">Contact</span>
+        <p>1730 Front Road, Turkey Point, ON</p>
+        <p><a href="tel:+12265672772">(226) 567-2772</a></p>
+        <p><a href="mailto:joro.wellspa@gmail.com">joro.wellspa@gmail.com</a></p>
+      </div>
     </div>
-    <div class="story-layout reveal">
-      <div class="story-photo">
-        <img src="https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/d8d132e3-8c74-4226-9f83-e8e21fa00e66/Drew+Ferris+-++Joro+Spa" alt="Drew Ferris — Owner & Operator, Jörð Outdoor Spa">
-      </div>
-      <div class="story-text">
-        <p>Through travel and the adventure of living in a remote wellness community, owner and operator Drew Ferris learned first-hand the true benefits of the Nordic Spa nature experience. Hot and cold rituals restore the body, calm the mind and foster stronger relationships.</p>
-        <p>The exploration began when Drew faced a series of life changing challenges, which set him on a path to discover a new way of personal wellness and connection.</p>
-        <p>Returning home and equipped with new knowledge, Drew was determined to help others in Norfolk County experience the benefits of the hot and cold therapies as well as the less talked about social benefits.</p>
-        <p>Tapping into his personal experience and passion, Drew has transformed this natural setting into what Joro spa is today, Norfolk's first outdoor spa. His commitment to providing a safe space for wellness activities where people can slow down to connect with one another, highlights Drew's unique and informed approach to community well-being for Norfolk residents and its visitors alike.</p>
-        <p>The name "Joro" comes from The Earth Goddess of Nordic mythology. Like the earth itself, we believe Joro promotes grounding and connection and we love how this flows into what we do. The high level of care and safe process we provide, is now changing Norfolk's mythology too. When you leave here, you'll be so refreshed you may feel like a god or goddess yourself.</p>
-        <p>There's no better place in Norfolk nature to slow down and connect than right here at Joro.</p>
-        <div class="story-attribution">—Drew Ferris, Owner Operator, Joro Outdoor Spa</div>
-      </div>
+    <div class="dir-map reveal">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2930.5!2d-80.3316!3d42.6592!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x882c0e5b5b5b5b5b%3A0x0!2s1730+Front+Rd%2C+Turkey+Point%2C+ON!5e0!3m2!1sen!2sca!4v1"
+        allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
     </div>
   </div>
+</section>
+
+<!-- PARKING -->
+<section class="parking">
+  <div class="parking-inner">
+    <div class="parking-img reveal">
+      <img src="https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/c83a65fa-2ffc-469b-8a84-d525bc4e7292/Parking.png" alt="Parking area at Long Point Eco-Adventures">
+    </div>
+    <div class="parking-text reveal">
+      <span class="section-tag">When You Arrive</span>
+      <h3>Parking &amp; Access</h3>
+      <p>Park in the main lot at Long Point Eco-Adventures. From there, follow the road to the right of the welcome centre — the short walk through the property is part of the experience.</p>
+      <p>Check the map posted at the welcome centre stairs for a quick visual guide to the spa entrance.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-band reveal">
+  <h3>Ready to <em>slow down?</em></h3>
+  <p>Book your session and we'll see you on the trail.</p>
+  <a href="https://go.theflybook.com/book/374/EntityConfig/33213" target="_blank" class="cta-btn">Book a Session</a>
 </section>
 
 <!-- FOOTER -->
