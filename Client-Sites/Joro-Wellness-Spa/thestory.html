@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Private & Group Events | Jörð Outdoor Spa — Turkey Point, Norfolk County</title>
+<title>The Story | Jörð Outdoor Spa — Turkey Point, Norfolk County</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -70,69 +70,25 @@ nav {
 .section-title { font-size: clamp(34px, 4vw, 56px); font-weight: 300; color: var(--cream); }
 .section-title em { font-style: italic; }
 
-/* ── PRIVATE BOOKING ── */
-.private-booking { padding: 140px 5% 100px; background: var(--dark); min-height: calc(100vh - 72px); }
-.private-inner {
-  max-width: 1000px; margin: 0 auto;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 70px; align-items: start;
+/* ── STORY ── */
+.story-section { padding: 140px 5% 100px; background: var(--dark2); min-height: calc(100vh - 72px); }
+.story-inner { max-width: 900px; margin: 0 auto; }
+.story-head { text-align: center; margin-bottom: 64px; }
+.story-layout { display: grid; grid-template-columns: 1fr 1.4fr; gap: 56px; align-items: start; }
+.story-photo { border-radius: var(--radius); overflow: hidden; }
+.story-photo img { width: 100%; height: auto; display: block; aspect-ratio: 3/4; object-fit: cover; }
+.story-text p {
+  font-size: 15.5px; color: rgba(242,234,216,0.7); line-height: 1.85;
+  font-weight: 300; margin-bottom: 24px;
 }
-.private-left .section-title { margin-bottom: 20px; }
-.private-left p { font-size: 15px; color: rgba(242,234,216,0.6); line-height: 1.8; font-weight: 300; margin-bottom: 16px; }
-.private-feature {
-  display: flex; align-items: flex-start; gap: 14px;
-  padding: 14px 0; border-bottom: 1px solid rgba(242,234,216,0.07);
-}
-.private-feature:last-child { border-bottom: none; }
-.pf-icon {
-  width: 36px; height: 36px; border-radius: 8px;
-  background: rgba(200,129,58,0.12); border: 1px solid rgba(200,129,58,0.2);
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  font-size: 16px;
-}
-.pf-label { font-size: 14px; font-weight: 500; color: var(--cream); margin-bottom: 3px; }
-.pf-desc { font-size: 13px; color: var(--muted); font-weight: 300; line-height: 1.5; }
-
-.private-form {
-  background: var(--dark2); border: 1px solid rgba(242,234,216,0.1);
-  border-radius: 18px; padding: 36px;
-}
-.private-form h3 {
+.story-text p:last-child { margin-bottom: 0; }
+.story-attribution {
+  margin-top: 40px; padding-top: 24px;
+  border-top: 1px solid rgba(242,234,216,0.08);
   font-family: 'Cormorant Garamond', serif;
-  font-size: 24px; font-weight: 400; color: var(--cream); margin-bottom: 24px;
+  font-size: 18px; font-style: italic;
+  color: var(--ember);
 }
-.form-group { margin-bottom: 14px; }
-.form-group label {
-  display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.07em;
-  text-transform: uppercase; color: rgba(242,234,216,0.45); margin-bottom: 7px;
-}
-.form-group input, .form-group select, .form-group textarea {
-  width: 100%; background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(242,234,216,0.12);
-  border-radius: 8px; padding: 11px 14px;
-  font-size: 14px; color: var(--cream); outline: none;
-  font-family: 'Outfit', sans-serif;
-  transition: border-color 0.2s;
-}
-.form-group input::placeholder, .form-group textarea::placeholder { color: rgba(242,234,216,0.25); }
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: rgba(200,129,58,0.5); }
-.form-group select option { background: #1f2a1f; color: var(--cream); }
-.form-group textarea { resize: vertical; min-height: 80px; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.form-submit {
-  width: 100%; padding: 13px; background: var(--ember); color: var(--dark);
-  border: none; border-radius: 8px; font-size: 14px; font-weight: 600;
-  cursor: pointer; font-family: 'Outfit', sans-serif;
-  transition: background 0.2s, transform 0.15s; margin-top: 6px;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-}
-.form-submit:hover { background: var(--ember-lt); transform: translateY(-1px); }
-.form-success {
-  display: none; text-align: center; padding: 28px;
-  background: rgba(200,129,58,0.08); border-radius: 10px;
-  border: 1px solid rgba(200,129,58,0.2);
-}
-.form-success h4 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; color: var(--cream); margin-bottom: 10px; }
-.form-success p { font-size: 14px; color: var(--muted); font-weight: 300; line-height: 1.6; }
 
 /* ── FOOTER ── */
 footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(255,255,255,0.05); }
@@ -152,7 +108,6 @@ footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(
 /* ── SCROLL REVEAL ── */
 .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
 .reveal.visible { opacity: 1; transform: none; }
-.reveal-delay-1 { transition-delay: 0.1s; }
 
 /* ── RESPONSIVE ── */
 @media (max-width: 768px) {
@@ -170,9 +125,9 @@ footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(
   .nav-links a { font-size: 18px; color: var(--cream); }
   .nav-book { margin-left: auto; font-size: 12px !important; padding: 8px 14px !important; }
   .nav-book-full { display: none; }
-  .private-booking { padding: 100px 5% 60px; }
-  .private-inner { grid-template-columns: 1fr; gap: 40px; }
-  .form-row { grid-template-columns: 1fr; }
+  .story-section { padding: 100px 5% 60px; }
+  .story-layout { grid-template-columns: 1fr; gap: 40px; }
+  .story-photo img { aspect-ratio: 4/3; max-height: 360px; }
   footer { padding: 40px 5% 28px; }
   .footer-top { grid-template-columns: 1fr; gap: 32px; }
   .footer-bottom { flex-direction: column; text-align: center; }
@@ -187,10 +142,10 @@ footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(
     <img src="https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/dd9cadab-7313-4bbc-a318-d8e93badf2ba/Joro+2-24.png?format=1500w" alt="Jörð Outdoor Spa" style="height:44px; object-fit:contain;">
   </a>
   <div class="nav-links" id="navLinks">
-    <a href="thestory.html" onclick="closeNav()">The Story</a>
+    <a href="thestory.html" class="active" onclick="closeNav()">The Story</a>
     <a href="index.html#experience" onclick="closeNav()">The Experience</a>
     <a href="rates.html" onclick="closeNav()">Session Rates</a>
-    <a href="private.html" class="active" onclick="closeNav()">Private Events</a>
+    <a href="private.html" onclick="closeNav()">Private Events</a>
     <a href="journal.html" onclick="closeNav()">Wellness Journal</a>
     <a href="faq.html" onclick="closeNav()">FAQ</a>
   </div>
@@ -198,102 +153,25 @@ footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(
   <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu">&#9776;</button>
 </nav>
 
-<!-- PRIVATE BOOKING -->
-<section class="private-booking">
-  <div class="private-inner">
-    <div class="private-left reveal">
-      <span class="section-tag">Private & Group Events</span>
-      <h2 class="section-title">The whole space,<br><em>just for you.</em></h2>
-      <p>Whether it's a corporate retreat, birthday, bachelorette, or a crew that wants the space to themselves — Joro makes it happen. Starting from $249.95 with custom time allotments.</p>
-      <div style="margin-top: 32px;">
-        <div class="private-feature">
-          <div class="pf-icon">🏢</div>
-          <div>
-            <div class="pf-label">Corporate & Team Events</div>
-            <div class="pf-desc">Wellness days, team retreats, client entertainment. Unforgettable and fully catered to your group.</div>
-          </div>
-        </div>
-        <div class="private-feature">
-          <div class="pf-icon">🎉</div>
-          <div>
-            <div class="pf-label">Celebrations</div>
-            <div class="pf-desc">Birthdays, bachelorettes, anniversaries. Private access to the full Joro experience.</div>
-          </div>
-        </div>
-        <div class="private-feature">
-          <div class="pf-icon">👥</div>
-          <div>
-            <div class="pf-label">Group Bookings</div>
-            <div class="pf-desc">Groups of any size welcome. Discounts available for larger parties.</div>
-          </div>
-        </div>
-      </div>
+<!-- THE STORY -->
+<section class="story-section">
+  <div class="story-inner">
+    <div class="story-head reveal">
+      <span class="section-tag">Our Story</span>
+      <h2 class="section-title">The Story of Norfolk's First<br><em>Outdoor Spa</em></h2>
     </div>
-    <div class="reveal reveal-delay-1">
-      <div class="private-form">
-        <h3>Request a Private Session</h3>
-        <div id="privateFormWrap">
-          <div class="form-row">
-            <div class="form-group">
-              <label>First Name</label>
-              <input type="text" placeholder="Your name">
-            </div>
-            <div class="form-group">
-              <label>Last Name</label>
-              <input type="text" placeholder="Last name">
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" placeholder="you@email.com">
-          </div>
-          <div class="form-group">
-            <label>Phone</label>
-            <input type="tel" placeholder="(226) 000-0000">
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Event Type</label>
-              <select>
-                <option value="">Select type...</option>
-                <option>Corporate / Team Day</option>
-                <option>Birthday</option>
-                <option>Bachelorette / Bachelor</option>
-                <option>Anniversary</option>
-                <option>Group of Friends</option>
-                <option>Other</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Group Size</label>
-              <select>
-                <option value="">Guests...</option>
-                <option>2–5 guests</option>
-                <option>6–10 guests</option>
-                <option>11–20 guests</option>
-                <option>20+ guests</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Preferred Date</label>
-            <input type="date">
-          </div>
-          <div class="form-group">
-            <label>Notes</label>
-            <textarea placeholder="Any special requests, dietary needs, or questions..."></textarea>
-          </div>
-          <button class="form-submit" onclick="submitPrivateForm()">
-            Send Request
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
-          <p style="text-align:center; font-size:12px; color:rgba(242,234,216,0.25); margin-top:12px; font-weight:300;">We'll respond within one business day.</p>
-        </div>
-        <div class="form-success" id="privateSuccess">
-          <div style="font-size:32px; margin-bottom:14px;">🌿</div>
-          <h4>Request received — thank you.</h4>
-          <p>Drew will be in touch within one business day to confirm your date and arrange the details. We can't wait to host you.</p>
-        </div>
+    <div class="story-layout reveal">
+      <div class="story-photo">
+        <img src="https://images.squarespace-cdn.com/content/v1/64c3de09fa5e9835efe112a9/d8d132e3-8c74-4226-9f83-e8e21fa00e66/Drew+Ferris+-++Joro+Spa" alt="Drew Ferris — Owner & Operator, Jörð Outdoor Spa">
+      </div>
+      <div class="story-text">
+        <p>Through travel and the adventure of living in a remote wellness community, owner and operator Drew Ferris learned first-hand the true benefits of the Nordic Spa nature experience. Hot and cold rituals restore the body, calm the mind and foster stronger relationships.</p>
+        <p>The exploration began when Drew faced a series of life changing challenges, which set him on a path to discover a new way of personal wellness and connection.</p>
+        <p>Returning home and equipped with new knowledge, Drew was determined to help others in Norfolk County experience the benefits of the hot and cold therapies as well as the less talked about social benefits.</p>
+        <p>Tapping into his personal experience and passion, Drew has transformed this natural setting into what Joro spa is today, Norfolk's first outdoor spa. His commitment to providing a safe space for wellness activities where people can slow down to connect with one another, highlights Drew's unique and informed approach to community well-being for Norfolk residents and its visitors alike.</p>
+        <p>The name "Joro" comes from The Earth Goddess of Nordic mythology. Like the earth itself, we believe Joro promotes grounding and connection and we love how this flows into what we do. The high level of care and safe process we provide, is now changing Norfolk's mythology too. When you leave here, you'll be so refreshed you may feel like a god or goddess yourself.</p>
+        <p>There's no better place in Norfolk nature to slow down and connect than right here at Joro.</p>
+        <div class="story-attribution">—Drew Ferris, Owner Operator, Joro Outdoor Spa</div>
       </div>
     </div>
   </div>
@@ -345,11 +223,6 @@ footer { background: #07100a; padding: 60px 5% 36px; border-top: 1px solid rgba(
 <script>
 function toggleNav() { document.getElementById('navLinks').classList.toggle('open'); }
 function closeNav() { document.getElementById('navLinks').classList.remove('open'); }
-
-function submitPrivateForm() {
-  document.getElementById('privateFormWrap').style.display = 'none';
-  document.getElementById('privateSuccess').style.display = 'block';
-}
 
 const revealObs = new IntersectionObserver(entries => {
   entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); revealObs.unobserve(e.target); }});
