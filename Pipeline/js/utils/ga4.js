@@ -7,7 +7,7 @@
    without waiting for GA4's reporting lag.
    ============================================ */
 
-const GA4 = {
+window.GA4 = {
 
     /** Whether gtag.js has been loaded and configured */
     ready: false,
