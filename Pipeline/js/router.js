@@ -90,6 +90,8 @@ const Router = {
         this.currentCleanup = null;
         this.currentRoute = rawHash;
 
+        if (window.GA4) GA4.pageView(hash, route.title);
+
         // Update sidebar active state (match the path, not the raw hash)
         document.querySelectorAll('.nav-item').forEach((item) => {
             item.classList.toggle('active', item.getAttribute('data-module') === hash);

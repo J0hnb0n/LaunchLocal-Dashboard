@@ -91,6 +91,10 @@
                     <span class="nav-item-icon" data-icon="trendUp" aria-hidden="true"></span>
                     Metrics
                 </a>
+                <a class="nav-item" href="#analytics" data-module="analytics" data-roles="admin">
+                    <span class="nav-item-icon" data-icon="monitor" aria-hidden="true"></span>
+                    Analytics
+                </a>
             </nav>
 
             <div class="sidebar-footer">
@@ -187,6 +191,7 @@
     <script src="js/utils/sales-script.js"></script>
     <script src="js/utils/charts.js"></script>
     <script src="js/utils/nav-badge.js"></script>
+    <script src="js/utils/ga4.js"></script>
 
     <!-- Modules -->
     <script src="js/modules/dashboard.js"></script>
@@ -202,11 +207,13 @@
     <script src="js/modules/metrics.js"></script>
     <script src="js/modules/timeline.js"></script>
     <script src="js/modules/settings.js"></script>
+    <script src="js/modules/analytics.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             LaunchLocal.init();
             Icons.inject();
+            if (window.GA4) GA4.init();
 
             const appLoading = document.getElementById('app-loading');
             const appShell = document.getElementById('app-shell');
@@ -269,6 +276,8 @@
 
                     // Re-inject icons for anything just mounted
                     Icons.inject();
+
+                    if (window.GA4) GA4.setUserProperties({ role: role });
 
                     // Initialize router
                     Router.init();

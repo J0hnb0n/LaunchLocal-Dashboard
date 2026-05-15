@@ -29,7 +29,10 @@ window.AppConfig = {
     DEFAULT_MONTHLY_FEE_CENTS: 15000,
 
     /** HST rate used for expense calculations. */
-    HST_RATE: 0.13
+    HST_RATE: 0.13,
+
+    /** GA4 Measurement ID (G-XXXXXXX). Set to enable Google Analytics tracking. */
+    GA4_MEASUREMENT_ID: ''
 };
 
 /**
